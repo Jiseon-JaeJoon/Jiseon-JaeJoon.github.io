@@ -14,7 +14,7 @@ function App() {
         alt="Main Image" 
         style={{width: '100%', maxWidth: '400px', borderRadius: '10px'}}
       />
-      <p> 뿌빠뿌빠뿌빠뿌뿌뿌</p>
+      <p> 뿌빠뿌빠뿌빠</p>
       </div>
   )
 }
