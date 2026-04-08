@@ -1,9 +1,26 @@
-.wedding-container {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-min-height: 100vh;
-text-align: center;
-padding: 20px;
+/* 모바일 청첩장의 가장 바깥 컨테이너 (너비 고정) */
+.app-container {
+  width: 100%;
+  max-width: 480px; /* 일반적인 모바일 화면 최대 크기 */
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--mobile-bg);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05); /* PC화면일 때 테두리에 그림자 효과 */
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 각 구역(Section)들이 갖는 기본 여백 모양 */
+section {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+/* 섹션 타이틀 공통 디자인 */
+.section-title {
+  font-family: 'Gowun Dodum', serif;
+  font-size: 1.2rem;
+  color: var(--point-color);
+  margin-bottom: 30px;
+  letter-spacing: 4px;
 }
