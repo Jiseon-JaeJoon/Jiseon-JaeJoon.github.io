@@ -14,7 +14,7 @@ export default function Location() {
         marginBottom: '20px',
         color: '#666'
       }}>
-        [카카오맵 또는 네이버맵이 들어갈 자리입니다]
+        [카카오맵 또는 네이버맵 추가]
       </div>
 
       <div style={{ textAlign: 'left', padding: '0 10px', fontSize: '0.95rem', lineHeight: 1.8 }}>
@@ -24,9 +24,9 @@ export default function Location() {
         </p>
 
         <div style={{ color: '#444' }}>
-          <p><strong>지하철:</strong> 2호선, 신분당선 강남역 8번출구 도보 1분</p>
-          <p><strong>버스:</strong> 강남역.... 어딘가 하차</p>
-          <p><strong>주차:</strong> 주차방법 알아보고 적어</p>
+          <p><strong>🚇지하철:</strong> 2호선 · 신분당선 강남역 8번출구 도보 1분</p>
+          <p><strong>🚌버스:</strong> 강남역</p>
+          <p><strong>🚗주차:</strong> 주차방법 알아보고 적어</p>
         </div>
       </div>
     </section>

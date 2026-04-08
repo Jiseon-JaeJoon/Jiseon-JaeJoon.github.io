@@ -13,7 +13,7 @@ function App() {
     <div className="app-container">
       {/* 1. 대문 컨포넌트 */}
       <Cover />
-      
+
       {/* 2. 인사말 및 혼주 소개 */}
       <Greeting />
 
@@ -22,10 +22,10 @@ function App() {
 
       {/* 4. 오시는 길 (지도) */}
       <Location />
-      
+
       {/* Footer (간단한 마무리 영역) */}
       <section style={{ backgroundColor: '#fafafa', padding: '40px 20px', color: '#999', fontSize: '0.8rem' }}>
-        <p>Copyright 2026. 지선 & 재준 All rights reserved.</p>
+        <p>Made by JaeJoon ❤️ Jiseon</p>
       </section>
     </div>
   )

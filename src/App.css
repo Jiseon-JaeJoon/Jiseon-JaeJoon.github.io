@@ -1,11 +1,19 @@
+/*
+App.tsx 화면 하나에만 적용되는 특정 스타일을 작성하는 곳입니다.
+(현재 사진이 가운데 정렬되도록 .wedding-container 스타일이 들어가 있습니다)
+*/
+
+
 /* 모바일 청첩장의 가장 바깥 컨테이너 (너비 고정) */
 .app-container {
   width: 100%;
-  max-width: 480px; /* 일반적인 모바일 화면 최대 크기 */
+  max-width: 480px;
+  /* 일반적인 모바일 화면 최대 크기 */
   min-height: 100vh;
   margin: 0 auto;
   background-color: var(--mobile-bg);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05); /* PC화면일 때 테두리에 그림자 효과 */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  /* PC화면일 때 테두리에 그림자 효과 */
   overflow-x: hidden;
   position: relative;
 }

@@ -5,14 +5,14 @@ export default function Gallery() {
   return (
     <section style={{ backgroundColor: '#fdfbfb' }}>
       <h2 className="section-title">우리의 순간들</h2>
-      
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(3, 1fr)', 
-        gap: '5px' 
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '5px'
       }}>
         {tempPhotos.map((num) => (
-          <div 
+          <div
             key={num}
             style={{
               width: '100%',
@@ -28,9 +28,9 @@ export default function Gallery() {
           </div>
         ))}
       </div>
-      
+
       <p style={{ marginTop: '20px', fontSize: '0.9rem', color: 'var(--text-light)' }}>
-        ※ 추후 이 갤러리는 클릭하면 크게 보이고 양옆으로 넘기는 (Swipe) 기능이 추가될 예정입니다.
+        ※ 추후 이 갤러리는 클릭하면 크게 보이고 양옆으로 넘기는 <br /> (Swipe) 기능이 추가될 예정입니다.
       </p>
     </section>
   )
