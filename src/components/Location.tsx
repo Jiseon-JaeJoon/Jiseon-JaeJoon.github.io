@@ -1,21 +1,41 @@
+import { useEffect, useRef } from 'react'
+
 export default function Location() {
+  const mapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!mapRef.current) return
+
+    const position = new naver.maps.LatLng(37.496820, 127.026919)
+
+    const map = new naver.maps.Map(mapRef.current, {
+      center: position,
+      zoom: 17,
+    })
+
+    const marker = new naver.maps.Marker({ position, map })
+
+    const infoWindow = new naver.maps.InfoWindow({
+      content: `
+        <div style="padding:10px 14px; font-size:11.5px; line-height:1.8;">
+          <strong style="font-size:13px;">삼성전자 서초사옥</strong><br/>
+          서울 서초구 서초대로74길 120
+        </div>
+      `,
+      borderWidth: 0,
+      disableAnchor: false,
+      backgroundColor: 'white',
+      anchorSize: new naver.maps.Size(7, 7),
+    })
+
+    infoWindow.open(map, marker)
+  }, [])
+
   return (
     <section>
       <h2 className="section-title">오시는 길</h2>
 
-      {/* 지도 들어갈 임시 회색 배경 박스 */}
-      <div style={{
-        width: '100%',
-        height: '250px',
-        backgroundColor: '#eee',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '20px',
-        color: '#666'
-      }}>
-        [카카오맵 또는 네이버맵 추가]
-      </div>
+      <div ref={mapRef} style={{ width: '100%', height: '400px', marginBottom: '20px' }} />
 
       <div style={{ textAlign: 'left', padding: '0 10px', fontSize: '0.95rem', lineHeight: 1.8 }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '5px' }}>삼성전자 서초사옥</h3>
