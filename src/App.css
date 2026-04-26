@@ -1,34 +1,82 @@
-/*
-App.tsx 화면 하나에만 적용되는 특정 스타일을 작성하는 곳입니다.
-(현재 사진이 가운데 정렬되도록 .wedding-container 스타일이 들어가 있습니다)
-*/
-
-
-/* 모바일 청첩장의 가장 바깥 컨테이너 (너비 고정) */
 .app-container {
   width: 100%;
   max-width: 480px;
-  /* 일반적인 모바일 화면 최대 크기 */
   min-height: 100vh;
   margin: 0 auto;
-  background-color: var(--mobile-bg);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-  /* PC화면일 때 테두리에 그림자 효과 */
+  background-color: transparent;
   overflow-x: hidden;
   position: relative;
 }
 
-/* 각 구역(Section)들이 갖는 기본 여백 모양 */
+.sections-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 section {
   padding: 80px 20px;
   text-align: center;
+  background-color: #ffffff;
 }
 
-/* 섹션 타이틀 공통 디자인 */
 .section-title {
   font-family: 'Gowun Dodum', serif;
   font-size: 1.2rem;
   color: var(--point-color);
   margin-bottom: 30px;
   letter-spacing: 4px;
+}
+
+.footer-section {
+  background-color: #ffffff;
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 0.8rem;
+  margin-top: 12px;
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    max-width: 1000px;
+    padding: 24px;
+  }
+
+  .sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0;
+    row-gap: 20px;
+  }
+
+  /* 좌측 카드: 왼쪽 모서리만 둥글게 */
+  .sections-grid > *:nth-child(odd) {
+    border-radius: 20px 0 0 20px;
+    overflow: hidden;
+    border-right: 1px solid #f0f0f0;
+  }
+
+  /* 우측 카드: 오른쪽 모서리만 둥글게 */
+  .sections-grid > *:nth-child(even) {
+    border-radius: 0 20px 20px 0;
+    overflow: hidden;
+  }
+
+  /* 홀수 개일 때 마지막 카드 혼자 있으면 전체 너비 + 모두 둥글게 */
+  .sections-grid > *:last-child:nth-child(odd) {
+    border-radius: 20px;
+    grid-column: 1 / -1;
+    border-right: none;
+  }
+
+  .footer-section {
+    border-radius: 20px;
+    margin-top: 20px;
+  }
+
+  .cover-inner {
+    height: 100% !important;
+    min-height: 480px;
+  }
 }

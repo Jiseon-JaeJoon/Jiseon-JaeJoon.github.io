@@ -4,16 +4,11 @@
 
 :root {
   /* 글로벌 색상 변수 설정 */
-  --bg-color: #f7f6f2;
-  /* 전체 화면(PC) 배경색: 따뜻한 베이지 */
-  --mobile-bg: #ffffff;
-  /* 모바일 청첩장 영역 배경: 깨끗한 흰색 */
+  --bg-color: #faeae8;
+  /* 전체 배경색: 웨딩 핑크 */
   --text-main: #333333;
-  /* 기본 글자색: 짙은 쥐색(차콜) */
   --text-light: #777777;
-  /* 서브 글자색 */
-  --point-color: #e5c1c5;
-  /* 포인트 인디핑크 색상 */
+  --point-color: #c8849a;
 
   font-family: 'Noto Sans KR', 'Gowun Dodum', sans-serif;
   line-height: 1.6;

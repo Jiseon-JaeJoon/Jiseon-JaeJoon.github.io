@@ -5,28 +5,37 @@
 import './App.css'
 import Cover from './components/Cover'
 import Greeting from './components/Greeting'
+import CalendarCountdown from './components/CalendarCountdown'
 import Gallery from './components/Gallery'
 import Location from './components/Location'
+import AccountInfo from './components/AccountInfo'
 
 function App() {
   return (
     <div className="app-container">
-      {/* 1. 대문 컨포넌트 */}
-      <Cover />
+      <div className="sections-grid">
+        {/* 1. 대문 컨포넌트 */}
+        <Cover />
 
-      {/* 2. 인사말 및 혼주 소개 */}
-      <Greeting />
+        {/* 2. 인사말 및 혼주 소개 */}
+        <Greeting />
 
-      {/* 3. 웨딩 갤러리 */}
-      <Gallery />
+        {/* 3. 날짜 및 카운트다운 */}
+        <CalendarCountdown />
 
-      {/* 4. 오시는 길 (지도) */}
-      <Location />
+        {/* 4. 웨딩 갤러리 */}
+        <Gallery />
 
-      {/* Footer (간단한 마무리 영역) */}
-      <section style={{ backgroundColor: '#fafafa', padding: '40px 20px', color: '#999', fontSize: '0.8rem' }}>
+        {/* 5. 오시는 길 (지도) */}
+        <Location />
+
+        {/* 6. 마음전하기 */}
+        <AccountInfo />
+      </div>
+
+      <div className="footer-section">
         <p>Made by JaeJoon ❤️ Jiseon</p>
-      </section>
+      </div>
     </div>
   )
 }

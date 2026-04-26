@@ -1,15 +1,18 @@
 export default function Cover() {
   return (
-    <section style={{ padding: 0, borderBottom: 'none' }}>
-      <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
-        {/* 임시 메인 배경 */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: '#e2d5cc' }} />
+    <section style={{ padding: 0 }}>
+      <div className="cover-inner" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+        <img
+          src="/Image/Mobile_Main.jpg"
+          alt="커버 사진"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
 
-        {/* 어두운 오버레이 깔아서 글씨 잘 보이게 하기 */}
+        {/* 텍스트 가독성을 위한 오버레이 */}
         <div style={{
           position: 'absolute',
           top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.3)'
+          backgroundColor: 'rgba(0,0,0,0.25)'
         }} />
 
         {/* 텍스트 영역 */}

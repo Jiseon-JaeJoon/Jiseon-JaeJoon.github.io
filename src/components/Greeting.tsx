@@ -12,10 +12,10 @@ export default function Greeting() {
 
       <div style={{ fontSize: '1.1rem', lineHeight: 2 }}>
         <p>
-          <span style={{ color: 'var(--text-light)' }}>손성규 · 김채안</span> 의 아들 <strong style={{ fontSize: '1.2rem' }}>손재준</strong>
+          <span style={{ color: 'var(--text-light)' }}>손성규 · 김채안</span> 의 아들 <strong style={{ fontSize: '1.2rem' }}>     손재준</strong>
         </p>
         <p>
-          <span style={{ color: 'var(--text-light)' }}>장 · 남궁</span> 의 딸 <strong style={{ fontSize: '1.2rem' }}>장지선</strong>
+          <span style={{ color: 'var(--text-light)' }}>장경오 · 남궁선미</span> 의 딸 <strong style={{ fontSize: '1.2rem' }}>     장지선</strong>
         </p>
       </div>
     </section>
