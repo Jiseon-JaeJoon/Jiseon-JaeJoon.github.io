@@ -4,9 +4,9 @@ const groups = [
   {
     label: '신랑측',
     accounts: [
-      { role: '신랑', name: '손재준', bank: 'XX은행', number: '000-0000-0000' },
+      { role: '신랑', name: '손재준', bank: '신한은행', number: '000-0000-0000' },
       { role: '아버지', name: '손성규', bank: 'XX은행', number: '000-0000-0000' },
-      { role: '어머니', name: '김채안', bank: 'XX은행', number: '000-0000-0000' },
+      { role: '어머니', name: '김채안', bank: '카카오뱅크', number: '3333-19-7014448' },
     ],
   },
   {

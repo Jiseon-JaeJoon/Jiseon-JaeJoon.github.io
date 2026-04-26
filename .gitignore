@@ -12,9 +12,6 @@ dist
 dist-ssr
 *.local
 
-# 로컬 원본 이미지 폴더 (public/Image/에 복사본 있음)
-Image/
-
 # Claude Code 로컬 설정
 .claude/
 
