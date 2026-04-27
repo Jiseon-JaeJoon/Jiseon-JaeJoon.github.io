@@ -8,6 +8,7 @@ import Greeting from './components/Greeting'
 import CalendarCountdown from './components/CalendarCountdown'
 import Gallery from './components/Gallery'
 import Location from './components/Location'
+import Transportation from './components/Transportation'
 import AccountInfo from './components/AccountInfo'
 
 function App() {
@@ -29,7 +30,10 @@ function App() {
         {/* 5. 오시는 길 (지도) */}
         <Location />
 
-        {/* 6. 마음전하기 */}
+        {/* 6. 대중교통 안내 */}
+        <Transportation />
+
+        {/* 7. 마음전하기 */}
         <AccountInfo />
       </div>
 

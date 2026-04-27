@@ -1,48 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-const transportInfo = [
-  {
-    icon: '🚇',
-    title: '지하철',
-    lines: [
-      '2호선 · 신분당선 강남역 8번 출구 지하에서 연결',
-      '에스컬레이터 이용하여 지상으로 올라오시고 다시 엘리베이터 이용하시면 됩니다.',
-      ''
-    ],
-    note: null,
-  },
-  {
-    icon: '🚌',
-    title: '버스',
-    lines: [
-      '강남역 정류장 하차 후 도보 약 5분',
-      '간선(파랑): 146, 341, 360, 740',
-      '지선(초록): 3412, 4412, 4413',
-    ],
-    note: null,
-  },
-  {
-    icon: '🚗',
-    title: '자가용',
-    lines: [
-      '지하주차장 6, 7층 이용',
-      '- 접수대에 비치된 무료 주차 도장 날인 '
-    ]
-  },
-]
-
-const boxStyle: React.CSSProperties = {
-  textAlign: 'left',
-  background: '#fafafa',
-  border: '1px solid #eee',
-  borderRadius: '12px',
-  padding: '16px 18px',
-  marginBottom: '10px',
-  fontSize: '0.9rem',
-  lineHeight: 1.9,
-  color: 'var(--text-main)',
-}
-
 export default function Location() {
   const mapRef = useRef<HTMLDivElement>(null)
 
@@ -107,18 +64,6 @@ export default function Location() {
         ))}
       </div>
 
-      {/* 교통 안내 박스 */}
-      {transportInfo.map(({ icon, title, lines, note }) => (
-        <div key={title} style={boxStyle}>
-          <p style={{ fontWeight: 600, marginBottom: '4px' }}>{icon} {title}</p>
-          {lines.map((line, i) => (
-            <p key={i} style={{ color: 'var(--text-light)' }}>{line}</p>
-          ))}
-          {note && (
-            <p style={{ marginTop: '6px', fontSize: '0.82rem', color: 'var(--point-color)' }}>{note}</p>
-          )}
-        </div>
-      ))}
     </section>
   )
 }

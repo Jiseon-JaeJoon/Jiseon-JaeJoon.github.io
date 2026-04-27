@@ -3,7 +3,7 @@ export default function Cover() {
     <section style={{ padding: 0 }}>
       <div className="cover-inner" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
         <img
-          src="/Image/Mobile_Main.jpg"
+          src="/Image/webp/Mobile_Main.webp"
           alt="커버 사진"
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />

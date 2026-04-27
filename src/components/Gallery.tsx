@@ -1,17 +1,17 @@
 import { useState } from 'react'
 
 const photos = [
-  'IMG_0221.jpg',
-  'LCS_0002.jpg', 'LCS_0240.jpg', 'LCS_0340.jpg', 'LCS_0436.jpg',
-  'LCS_0672.jpg', 'LCS_0678.jpg', 'LCS_0686.jpg', 'LCS_0711.jpg',
-  'LCS_0715.jpg', 'LCS_0750.jpg', 'LCS_0760.jpg', 'LCS_0793.jpg',
-  'LCS_0805.jpg', 'LCS_0872.jpg', 'LCS_0916.jpg', 'LCS_0953.jpg',
-  'LCS_0967.jpg', 'LCS_0980.jpg', 'LCS_1011.jpg', 'LCS_1070.jpg',
-  'LCS_1122.jpg', 'LCS_1145.jpg', 'LCS_1168.jpg', 'LCS_1209.jpg',
-  'LCS_1211.jpg', 'LCS_1224.jpg', 'LCS_1398.jpg', 'LCS_1433.jpg',
-  'LCS_1492.jpg', 'LCS_1587.jpg', 'LCS_1644.jpg', 'LCS_1690.jpg',
-  'LCS_1691.jpg', 'LCS_1888.jpg', 'LCS_1991.jpg', 'LCS_1998.jpg',
-  'LCS_2005.jpg', 'LCS_2337.jpg',
+  'IMG_0221.webp',
+  'LCS_0002.webp', 'LCS_0240.webp', 'LCS_0340.webp', 'LCS_0436.webp',
+  'LCS_0672.webp', 'LCS_0678.webp', 'LCS_0686.webp', 'LCS_0711.webp',
+  'LCS_0715.webp', 'LCS_0750.webp', 'LCS_0760.webp', 'LCS_0793.webp',
+  'LCS_0805.webp', 'LCS_0872.webp', 'LCS_0916.webp', 'LCS_0953.webp',
+  'LCS_0967.webp', 'LCS_0980.webp', 'LCS_1011.webp', 'LCS_1070.webp',
+  'LCS_1122.webp', 'LCS_1145.webp', 'LCS_1168.webp', 'LCS_1209.webp',
+  'LCS_1211.webp', 'LCS_1224.webp', 'LCS_1398.webp', 'LCS_1433.webp',
+  'LCS_1492.webp', 'LCS_1587.webp', 'LCS_1644.webp', 'LCS_1690.webp',
+  'LCS_1691.webp', 'LCS_1888.webp', 'LCS_1991.webp', 'LCS_1998.webp',
+  'LCS_2005.webp', 'LCS_2337.webp',
 ]
 
 export default function Gallery() {
@@ -53,7 +53,7 @@ export default function Gallery() {
           overflow: 'hidden'
         }}>
           <img
-            src={`/Image/${photos[current]}`}
+            src={`/Image/webp/${photos[current]}`}
             alt={`사진 ${current + 1}`}
             style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
           />
@@ -136,7 +136,7 @@ export default function Gallery() {
                     }}
                   >
                     <img
-                      src={`/Image/${filename}`}
+                      src={`/Image/webp/${filename}`}
                       alt=""
                       loading="lazy"
                       style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
