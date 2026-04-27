@@ -4,10 +4,13 @@ export default function Greeting() {
       <h2 className="section-title">초대합니다</h2>
 
       <div style={{ fontFamily: "'Gowun Dodum', serif", lineHeight: 2, color: 'var(--text-main)', marginBottom: '50px' }}>
-        <p>두 사람이 사랑으로 만나</p>
-        <p>진실과 이해로써 하나를 이루려 합니다.</p>
-        <p>이 약속의 자리에 여러분을 모시고자 하오니</p>
-        <p>따스한 격려로 축복해 주시기 바랍니다.</p>
+        <p>함께 있을 때 가장 나다운 사람이 되고</p>
+        <p>함께 있을 때 미래를 꿈꾸게 하는 사람을 만나</p>
+        <p>함께 맞는 다섯 번째 가을, 결혼합니다.</p>
+        <p>지금처럼 서로에게 가장 친한 친구가 되어</p>
+        <p>예쁘고 행복하게 살겠습니다. </p>
+        <p>저희의 새로운 시작을 함께해 주세요.</p>
+
       </div>
 
       <div style={{ fontSize: '1.1rem', lineHeight: 2 }}>
