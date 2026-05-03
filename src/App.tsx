@@ -2,8 +2,9 @@
 가장 중요하게 다루게 될 파일!
 청첩장의 실제 화면을 구성하는 곳 
 */
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
+import VideoIntro from './components/VideoIntro'
 import Cover from './components/Cover'
 import FlowerPetals from './components/FlowerPetals'
 import Greeting from './components/Greeting'
@@ -14,7 +15,11 @@ import Transportation from './components/Transportation'
 import AccountInfo from './components/AccountInfo'
 
 function App() {
+  const [introPlayed, setIntroPlayed] = useState(false)
+
   useEffect(() => {
+    if (!introPlayed) return
+
     const items = document.querySelectorAll('.sections-grid > *, .footer-section');
 
     const observer = new IntersectionObserver(
@@ -26,12 +31,16 @@ function App() {
           }
         });
       },
-      { threshold: 0.06 }
+      { threshold: 0.2 }
     );
 
     items.forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [introPlayed]);
+
+  if (!introPlayed) {
+    return <VideoIntro onEnd={() => setIntroPlayed(true)} />
+  }
 
   return (
     <div className="app-container">

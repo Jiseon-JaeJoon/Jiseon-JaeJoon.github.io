@@ -42,7 +42,7 @@ section {
 .footer-section {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity 0.44s ease-out, transform 0.44s ease-out;
+  transition: opacity 1s ease-out, transform 0.44s ease-out;
 }
 
 .sections-grid > *.revealed,
