@@ -91,20 +91,29 @@ function PetalSVG({ id, colorIdx, size }: { id: number; colorIdx: number; size: 
 
 export default function FlowerPetals() {
   const { petals, css } = useMemo(() => {
-    const petals: Petal[] = Array.from({ length: 38 }, (_, i) => ({
-      id: i,
-      // 왼쪽 화면 밖(-45%)부터 오른쪽(75%)까지 분산 → 대각선 흐름 자연스럽게
-      left: rand(-45, 75),
-      delay: rand(0, 26),
-      duration: rand(9, 17),
-      size: rand(14, 30),
-      colorIdx: Math.floor(Math.random() * COLOR_SETS.length),
-      // 30° from horizontal: X = 110vh × tan(60°) ≈ 190vh
-      xDrift: rand(182, 200),
-      sway: rand(-3.5, 3.5),  // 자연스러운 미세 흔들림 (vh)
-      opacity: rand(0.62, 0.90),
-      rotation: rand(200, 500) * (Math.random() > 0.5 ? 1 : -1),
-    }));
+    // 세로모드에서 xDrift(vh)가 화면 너비 대비 너무 커서 꽃이 오른쪽으로 금방 벗어남
+    const isPortrait = typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
+
+    const petals: Petal[] = Array.from({ length: 38 }, (_, i) => {
+      const duration = rand(9, 17);
+      // 후반 16개는 화면 하단에서 시작 (음수 delay = 애니메이션 중반부터 시작)
+      const spawnLow = i >= 22;
+      const delay = spawnLow ? -(duration * rand(0.40, 0.72)) : rand(0, 26);
+
+      return {
+        id: i,
+        left: rand(-45, 75),
+        delay,
+        duration,
+        size: rand(14, 30),
+        colorIdx: Math.floor(Math.random() * COLOR_SETS.length),
+        // 세로모드: xDrift 축소 (190vh면 화면 너비의 ~3배 → 즉시 이탈)
+        xDrift: isPortrait ? rand(35, 55) : rand(182, 200),
+        sway: rand(-3.5, 3.5),
+        opacity: rand(0.62, 0.90),
+        rotation: rand(200, 500) * (Math.random() > 0.5 ? 1 : -1),
+      };
+    });
 
     const css = petals.map(p => {
       const r = (n: number) => n.toFixed(1);

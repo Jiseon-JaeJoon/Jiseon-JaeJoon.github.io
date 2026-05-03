@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 const photos = [
   'IMG_0221.webp',
@@ -95,9 +96,10 @@ export default function Gallery() {
         사진 전체보기
       </button>
 
-      {/* 라이트박스 */}
-      {lightbox !== null && (
+      {/* 라이트박스 — body에 포탈로 마운트해서 ancestor transform 영향 차단 */}
+      {lightbox !== null && createPortal(
         <div
+          onClick={close}
           style={{
             position: 'fixed', inset: 0,
             backgroundColor: 'rgba(250, 234, 232, 0.97)',
@@ -108,11 +110,14 @@ export default function Gallery() {
           onTouchEnd={handleTouchEnd}
         >
           {/* 상단 바 */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '16px 20px', flexShrink: 0,
-            borderBottom: '1px solid rgba(200,132,154,0.2)',
-          }}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '16px 20px', flexShrink: 0,
+              borderBottom: '1px solid rgba(200,132,154,0.2)',
+            }}
+          >
             <span style={{ color: 'var(--text-light)', fontSize: '0.9rem', fontFamily: 'inherit', letterSpacing: '1px' }}>
               {lightbox + 1} / {photos.length}
             </span>
@@ -126,11 +131,14 @@ export default function Gallery() {
           </div>
 
           {/* 사진 + 화살표 */}
-          <div style={{
-            flex: 1, minHeight: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            position: 'relative', padding: '20px 60px',
-          }}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              flex: 1, minHeight: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', padding: '20px 60px',
+            }}
+          >
             <img
               key={lightbox}
               src={`/Image/webp/${photos[lightbox]}`}
@@ -167,7 +175,8 @@ export default function Gallery() {
           </div>
 
           <div style={{ height: '32px', flexShrink: 0 }} />
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   )
