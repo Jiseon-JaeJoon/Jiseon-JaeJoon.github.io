@@ -37,6 +37,20 @@ section {
   margin-top: 12px;
 }
 
+/* 스크롤 페이드인 */
+.sections-grid > *,
+.footer-section {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.44s ease-out, transform 0.44s ease-out;
+}
+
+.sections-grid > *.revealed,
+.footer-section.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (min-width: 768px) {
   .app-container {
     max-width: 1000px;

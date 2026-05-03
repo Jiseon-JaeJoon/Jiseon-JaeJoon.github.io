@@ -12,9 +12,9 @@ const groups = [
   {
     label: '신부측',
     accounts: [
-      { role: '신부', name: '장지선', bank: 'XX은행', number: '000-0000-0000' },
-      { role: '아버지', name: '장경오', bank: 'XX은행', number: '000-0000-0000' },
-      { role: '어머니', name: '남궁선미', bank: 'XX은행', number: '000-0000-0000' },
+      { role: '신부', name: '장지선', bank: '신한은행', number: '110-453-300686' },
+      { role: '아버지', name: '장경오', bank: '국민은행', number: '240-24-0176-509' },
+      { role: '어머니', name: '남궁선미', bank: '국민은행', number: '612501-01-217593' },
     ],
   },
 ]

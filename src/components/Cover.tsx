@@ -3,7 +3,7 @@ export default function Cover() {
     <section style={{ padding: 0 }}>
       <div className="cover-inner" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
         <img
-          src="/Image/webp/Mobile_Main.webp"
+          src="/Image/webp/Mobile_Main_260503.webp"
           alt="커버 사진"
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
@@ -12,7 +12,8 @@ export default function Cover() {
         <div style={{
           position: 'absolute',
           top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.25)'
+          backgroundColor: 'rgba(0,0,0,0.25)',
+          zIndex: 1,
         }} />
 
         {/* 텍스트 영역 */}
@@ -22,7 +23,8 @@ export default function Cover() {
           width: '100%',
           textAlign: 'center',
           color: 'white',
-          fontFamily: "'Gowun Dodum', serif"
+          fontFamily: "'Gowun Dodum', serif",
+          zIndex: 3,
         }}>
           <h2 style={{ fontSize: '1.2rem', fontWeight: '300', marginBottom: '10px', letterSpacing: '4px' }}>
             WEDDING INVITATION
