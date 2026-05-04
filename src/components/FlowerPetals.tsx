@@ -94,10 +94,13 @@ export default function FlowerPetals() {
     // 세로모드에서 xDrift(vh)가 화면 너비 대비 너무 커서 꽃이 오른쪽으로 금방 벗어남
     const isPortrait = typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
 
-    const petals: Petal[] = Array.from({ length: 38 }, (_, i) => {
+    const petalCount = 22;
+    const spawnLowThreshold = 14;
+
+    const petals: Petal[] = Array.from({ length: petalCount }, (_, i) => {
       const duration = rand(9, 17);
-      // 후반 16개는 화면 하단에서 시작 (음수 delay = 애니메이션 중반부터 시작)
-      const spawnLow = i >= 22;
+      // 후반 일부는 화면 하단에서 시작 (음수 delay = 애니메이션 중반부터 시작)
+      const spawnLow = i >= spawnLowThreshold;
       const delay = spawnLow ? -(duration * rand(0.40, 0.72)) : rand(0, 26);
 
       return {
