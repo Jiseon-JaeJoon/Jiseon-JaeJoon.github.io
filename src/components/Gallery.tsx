@@ -136,7 +136,7 @@ export default function Gallery() {
             style={{
               flex: 1, minHeight: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              position: 'relative', padding: '20px 60px',
+              position: 'relative', padding: '12px 8px',
             }}
           >
             <img
@@ -154,22 +154,24 @@ export default function Gallery() {
             <button
               onClick={prev}
               style={{
-                position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(200,132,154,0.35)',
-                borderRadius: '50%', width: '46px', height: '46px',
+                position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)',
+                background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(200,132,154,0.35)',
+                borderRadius: '50%', width: '40px', height: '40px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--point-color)', fontSize: '1.6rem', cursor: 'pointer',
+                zIndex: 1,
               }}
             >‹</button>
 
             <button
               onClick={next}
               style={{
-                position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(200,132,154,0.35)',
-                borderRadius: '50%', width: '46px', height: '46px',
+                position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
+                background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(200,132,154,0.35)',
+                borderRadius: '50%', width: '40px', height: '40px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--point-color)', fontSize: '1.6rem', cursor: 'pointer',
+                zIndex: 1,
               }}
             >›</button>
           </div>
