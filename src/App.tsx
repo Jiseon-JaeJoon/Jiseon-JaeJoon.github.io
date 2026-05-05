@@ -13,6 +13,7 @@ import Gallery from './components/Gallery'
 import Location from './components/Location'
 import Transportation from './components/Transportation'
 import AccountInfo from './components/AccountInfo'
+import Guestbook from './components/Guestbook'  
 
 function App() {
   const [introPlayed, setIntroPlayed] = useState(false)
@@ -66,6 +67,9 @@ function App() {
 
         {/* 7. 마음전하기 */}
         <AccountInfo />
+
+        {/* 8. 방명록 */}
+        <Guestbook />
       </div>
 
       <div className="footer-section">
