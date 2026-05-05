@@ -10,9 +10,11 @@ interface Entry {
 }
 
 const COLLECTION = import.meta.env.DEV ? 'guestbook_dev' : 'guestbook'
+const PAGE_SIZE = 5
 
 export default function Guestbook() {
   const [entries, setEntries] = useState<Entry[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -126,29 +128,59 @@ export default function Guestbook() {
           <p style={{ textAlign: 'center', color: 'var(--text-light)', fontSize: '0.9rem' }}>
             아직 작성된 방명록이 없습니다.
           </p>
-        ) : (
-          entries.map(entry => (
-            <div
-              key={entry.id}
-              style={{
-                borderTop: '1px solid #f0e0e5',
-                padding: '16px 4px',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
-                  {entry.name}
-                </span>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
-                  {entry.createdAt?.toDate().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
-                </span>
-              </div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
-                {entry.message}
-              </p>
-            </div>
-          ))
-        )}
+        ) : (() => {
+          const totalPages = Math.ceil(entries.length / PAGE_SIZE)
+          const pageEntries = entries.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+          return (
+            <>
+              {pageEntries.map(entry => (
+                <div
+                  key={entry.id}
+                  style={{
+                    borderTop: '1px solid #f0e0e5',
+                    padding: '16px 4px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
+                      {entry.name}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
+                      {entry.createdAt?.toDate().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+                    {entry.message}
+                  </p>
+                </div>
+              ))}
+              {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '20px' }}>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        border: '1px solid var(--point-color)',
+                        borderRadius: '8px',
+                        fontSize: '0.85rem',
+                        fontFamily: 'inherit',
+                        cursor: 'pointer',
+                        background: currentPage === page ? 'var(--point-color)' : 'white',
+                        color: currentPage === page ? 'white' : 'var(--point-color)',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )
+        })()}
       </div>
     </section>
   )
