@@ -5,7 +5,7 @@ export default function VideoIntro({ onEnd }: { onEnd: () => void }) {
 
   const handleEnd = () => {
     setFading(true)
-    setTimeout(onEnd, 800)
+    setTimeout(onEnd, 1000)
   }
 
   return (
@@ -16,7 +16,7 @@ export default function VideoIntro({ onEnd }: { onEnd: () => void }) {
         background: '#000',
         zIndex: 9999,
         opacity: fading ? 0 : 1,
-        transition: 'opacity 0.8s ease-out',
+        transition: 'opacity 1.0s ease-out',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

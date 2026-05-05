@@ -52,3 +52,9 @@ button {
   cursor: pointer;
   font-family: inherit;
 }
+
+@media (max-width: 767px) {
+  html {
+    font-size: 14px;
+  }
+}
