@@ -7,84 +7,97 @@ interface Petal {
   duration: number;
   size: number;
   colorIdx: number;
-  shapeIdx: number;
   xDrift: number;
   sway: number;
   opacity: number;
   rotation: number;
 }
 
-// 장미 색상: [중심 밝은색, 가장자리 짙은색, 테두리]
+// 목련 색상: 백목련~자목련 계열
 const COLOR_SETS = [
-  { inner: '#F4A0C0', outer: '#B03060', stroke: '#C84878' },
-  { inner: '#F07898', outer: '#961838', stroke: '#C03860' },
-  { inner: '#FFB8CC', outer: '#CC6088', stroke: '#E080A0' },
-  { inner: '#F090A8', outer: '#A02048', stroke: '#CC5070' },
-  { inner: '#F5C0D0', outer: '#C07090', stroke: '#DC90A8' },
-];
-
-// 꽃잎 모양 변형 3종 — 자연스러운 비대칭
-const PETAL_PATHS = [
-  'M28,50 C11,43 2,29 5,15 C8,4 17,-1 24,2 Q28,-2 32,2 C39,-1 48,4 51,15 C54,29 45,43 28,50 Z',
-  'M27,50 C10,44 2,30 4,16 C7,5 15,0 22,2 Q27,-1 33,3 C40,0 49,6 52,17 C55,31 46,44 27,50 Z',
-  'M29,50 C13,44 3,30 6,15 C9,4 18,-1 25,2 Q29,-2 34,2 C41,0 50,5 52,16 C55,30 45,43 29,50 Z',
+  { outer: '#FFF8F9', mid: '#FFE4EE', base: '#EDB8D0' }, // 백목련 (흰~연핑크)
+  { outer: '#FFFAF8', mid: '#FFEEE0', base: '#F0CEB0' }, // 크림목련
+  { outer: '#F8F2FF', mid: '#EAD4F8', base: '#C8A0E0' }, // 자목련 (연보라)
+  { outer: '#FFF2F6', mid: '#FFD4E8', base: '#E8A0C4' }, // 연홍목련
+  { outer: '#F4EEFF', mid: '#DFC8F8', base: '#B890D8' }, // 짙은 자목련
 ];
 
 const rand = (min: number, max: number) => Math.random() * (max - min) + min;
 
-function RosePetalSVG({ id, colorIdx, shapeIdx, size }: { id: number; colorIdx: number; shapeIdx: number; size: number }) {
-  const { inner, outer, stroke } = COLOR_SETS[colorIdx];
-  const gid = `rg${id}`;
+function MagnoliaPetalSVG({ id, colorIdx, size }: { id: number; colorIdx: number; size: number }) {
+  const { outer, mid, base } = COLOR_SETS[colorIdx];
+  const gid = `mg${id}`;
 
   return (
     <svg
       width={size}
-      height={Math.round(size * 0.95)}
-      viewBox="0 0 56 52"
+      height={Math.round(size * 1.9)}
+      viewBox="0 0 44 84"
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'block' }}
     >
       <defs>
-        {/* 중심에서 가장자리로 — 밝은 중심, 짙은 테두리 (벨벳 느낌) */}
-        <radialGradient id={gid} cx="50%" cy="42%" r="62%">
-          <stop offset="0%"   stopColor={inner} stopOpacity="0.90" />
-          <stop offset="55%"  stopColor={outer} stopOpacity="0.88" />
-          <stop offset="100%" stopColor={outer} stopOpacity="0.70" />
+        {/* 목련: 밑동(짙음)에서 끝(연함)으로 — 두꺼운 왁스질 느낌 */}
+        <radialGradient id={gid} cx="50%" cy="82%" r="88%">
+          <stop offset="0%"   stopColor={base}  stopOpacity="0.95" />
+          <stop offset="45%"  stopColor={mid}   stopOpacity="0.88" />
+          <stop offset="100%" stopColor={outer} stopOpacity="0.75" />
         </radialGradient>
       </defs>
 
-      {/* 꽃잎 본체 */}
+      {/* 목련 꽃잎: 길쭉한 주걱 모양, 위아래 모두 뾰족 */}
       <path
-        d={PETAL_PATHS[shapeIdx]}
+        d="M22,81
+           C8,70 1,52 2,32
+           C3,14 10,2 17,2
+           Q22,-1 27,2
+           C34,2 41,14 42,32
+           C43,52 36,70 22,81 Z"
         fill={`url(#${gid})`}
-        stroke={stroke}
+        stroke={mid}
         strokeWidth="0.4"
-        strokeOpacity="0.25"
+        strokeOpacity="0.20"
       />
 
-      {/* 중심 맥 (midrib) */}
+      {/* 목련 특유의 세로 주름선 (왁스질 광택 표현) */}
       <path
-        d="M28,49 Q27.5,32 28,4"
-        stroke="rgba(255,255,255,0.38)"
-        strokeWidth="0.7"
+        d="M22,79 Q21.5,42 22,3"
+        stroke="rgba(255,255,255,0.50)"
+        strokeWidth="0.85"
         fill="none"
         strokeLinecap="round"
       />
 
-      {/* 좌측 측맥 */}
+      {/* 좌측 광택선 */}
       <path
-        d="M27,38 Q19,27 13,18"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="0.45"
+        d="M20,65 Q13,44 10,24"
+        stroke="rgba(255,255,255,0.22)"
+        strokeWidth="0.5"
         fill="none"
         strokeLinecap="round"
       />
 
-      {/* 우측 측맥 */}
+      {/* 우측 광택선 */}
       <path
-        d="M29,38 Q37,27 43,18"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="0.45"
+        d="M24,65 Q31,44 34,24"
+        stroke="rgba(255,255,255,0.22)"
+        strokeWidth="0.5"
+        fill="none"
+        strokeLinecap="round"
+      />
+
+      {/* 가장자리 광택 (목련 꽃잎의 두꺼운 느낌) */}
+      <path
+        d="M8,48 Q4,36 6,22"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="0.4"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M36,48 Q40,36 38,22"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="0.4"
         fill="none"
         strokeLinecap="round"
       />
@@ -96,26 +109,26 @@ export default function FlowerPetals() {
   const { petals, css } = useMemo(() => {
     const isPortrait = typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
 
-    const petalCount = 24;
-    const spawnLowThreshold = 15;
+    const petalCount = 18;
+    const spawnLowThreshold = 12;
 
     const petals: Petal[] = Array.from({ length: petalCount }, (_, i) => {
-      const duration = rand(9, 17);
+      // 목련 꽃잎은 크고 무거워서 좀 더 느리게
+      const duration = rand(11, 20);
       const spawnLow = i >= spawnLowThreshold;
-      const delay = spawnLow ? -(duration * rand(0.40, 0.72)) : rand(0, 26);
+      const delay = spawnLow ? -(duration * rand(0.40, 0.72)) : rand(0, 28);
 
       return {
         id: i,
         left: rand(-10, 85),
         delay,
         duration,
-        size: rand(22, 40),
+        size: rand(24, 44),
         colorIdx: Math.floor(Math.random() * COLOR_SETS.length),
-        shapeIdx: Math.floor(Math.random() * PETAL_PATHS.length),
-        xDrift: isPortrait ? rand(30, 55) : rand(160, 200),
+        xDrift: isPortrait ? rand(25, 48) : rand(140, 190),
         sway: rand(-4, 4),
-        opacity: rand(0.68, 0.92),
-        rotation: rand(200, 500) * (Math.random() > 0.5 ? 1 : -1),
+        opacity: rand(0.70, 0.94),
+        rotation: rand(160, 420) * (Math.random() > 0.5 ? 1 : -1),
       };
     });
 
@@ -123,7 +136,7 @@ export default function FlowerPetals() {
       const r = (n: number) => n.toFixed(1);
       return `
         @keyframes pf${p.id} {
-          0%   { transform: translateX(0vh)                               translateY(-10vh) rotate(${r(p.rotation * -0.08)}deg); opacity: 0; }
+          0%   { transform: translateX(0vh)                               translateY(-12vh) rotate(${r(p.rotation * -0.08)}deg); opacity: 0; }
           6%   { opacity: ${p.opacity.toFixed(2)}; }
           33%  { transform: translateX(${r(p.xDrift * 0.33 + p.sway)}vh) translateY(${r(110 * 0.33)}vh) rotate(${r(p.rotation * 0.33)}deg); }
           66%  { transform: translateX(${r(p.xDrift * 0.66 - p.sway)}vh) translateY(${r(110 * 0.66)}vh) rotate(${r(p.rotation * 0.66)}deg); }
@@ -151,7 +164,7 @@ export default function FlowerPetals() {
             willChange: 'transform, opacity',
           }}
         >
-          <RosePetalSVG id={p.id} colorIdx={p.colorIdx} shapeIdx={p.shapeIdx} size={p.size} />
+          <MagnoliaPetalSVG id={p.id} colorIdx={p.colorIdx} size={p.size} />
         </div>
       ))}
     </div>
