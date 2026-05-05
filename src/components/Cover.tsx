@@ -16,7 +16,7 @@ export default function Cover() {
       {/* 사진 */}
       <div style={{ borderRadius: '10px', overflow: 'hidden', margin: '0 8px' }}>
         <img
-          src="/Image/webp/Mobile_Main_260503.webp"
+          src="/Image/Mobile_Main.png"
           alt="커버 사진"
           style={{ width: '100%', display: 'block', objectFit: 'cover' }}
         />
