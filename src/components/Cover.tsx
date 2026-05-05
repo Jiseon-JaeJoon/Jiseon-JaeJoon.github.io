@@ -11,16 +11,10 @@ export default function Cover() {
         <p style={{ fontSize: '1rem', letterSpacing: '5px', color: 'var(--point-color)', marginBottom: '8px' }}>
           WEDDING INVITATION
         </p>
-        <p style={{ fontSize: '2rem', letterSpacing: '3px', color: '#444' }}>
-          2026 · 09 · 19
-        </p>
-        <p style={{ fontSize: '1.5rem', letterSpacing: '2px', color: '#777', marginTop: '6px' }}>
-          Saturday
-        </p>
       </div>
 
       {/* 사진 */}
-      <div style={{ borderRadius: '10px', overflow: 'hidden' }}>
+      <div style={{ borderRadius: '10px', overflow: 'hidden', margin: '0 8px' }}>
         <img
           src="/Image/webp/Mobile_Main_260503.webp"
           alt="커버 사진"
@@ -35,7 +29,7 @@ export default function Cover() {
         marginTop: '24px',
         color: '#333',
       }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: '400', marginBottom: '14px' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: '400', marginBottom: '14px' }}>
           손재준 <span style={{ fontSize: '1.2rem', margin: '0 10px', color: '#ccc', fontWeight: '200' }}>|</span> 장지선
         </h1>
         <p style={{ fontSize: '0.95rem', letterSpacing: '2px', color: '#666', marginBottom: '6px' }}>
