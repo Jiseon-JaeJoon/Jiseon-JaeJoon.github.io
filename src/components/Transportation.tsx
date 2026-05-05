@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 type Line = string | { text: string; dot: string }
 
 const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
@@ -41,6 +43,8 @@ const boxStyle: React.CSSProperties = {
 }
 
 export default function Transportation() {
+  const [showMap, setShowMap] = useState(false)
+
   return (
     <section>
       <h2 className="section-title">오시는 길</h2>
@@ -60,6 +64,62 @@ export default function Transportation() {
           )}
         </div>
       ))}
+
+      <button
+        onClick={() => setShowMap(true)}
+        style={{
+          width: '100%',
+          marginTop: '8px',
+          padding: '12px 6px',
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          background: 'white',
+          fontSize: '0.9rem',
+          color: 'var(--text-main)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '5px',
+        }}
+      >
+       약도 보기
+      </button>
+
+      {showMap && (
+        <div
+          onClick={() => setShowMap(false)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '90%',
+              maxWidth: '400px',
+              position: 'relative',
+            }}
+          >
+            <button
+              onClick={() => setShowMap(false)}
+              style={{
+                position: 'absolute', top: '12px', right: '16px',
+                background: 'none', border: 'none',
+                fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-light)',
+              }}
+            >✕</button>
+            <p style={{ fontWeight: 600, marginBottom: '16px', fontSize: '1rem', color: 'var(--text-main)' }}>약도</p>
+            {/* 약도 이미지 자리 */}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
