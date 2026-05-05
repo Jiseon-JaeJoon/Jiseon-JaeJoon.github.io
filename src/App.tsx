@@ -13,7 +13,8 @@ import Gallery from './components/Gallery'
 import Location from './components/Location'
 import Transportation from './components/Transportation'
 import AccountInfo from './components/AccountInfo'
-import Guestbook from './components/Guestbook'  
+import Rsvp from './components/Rsvp'
+import Guestbook from './components/Guestbook'
 
 function App() {
   const [introPlayed, setIntroPlayed] = useState(false)
@@ -65,10 +66,13 @@ function App() {
         {/* 6. 대중교통 안내 */}
         <Transportation />
 
-        {/* 7. 마음전하기 */}
+        {/* 7. 참석 의사 전달 */}
+        <Rsvp />
+
+        {/* 8. 마음전하기 */}
         <AccountInfo />
 
-        {/* 8. 방명록 */}
+        {/* 9. 방명록 */}
         <Guestbook />
       </div>
 
