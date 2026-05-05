@@ -151,7 +151,7 @@ export default function Guestbook() {
             opacity: (!name.trim() || !message.trim()) ? 0.5 : 1,
           }}
         >
-          {submitted ? '작성 완료 ✓' : submitting ? '전송 중...' : '마음 전하기'}
+          {submitted ? '작성 완료 ✓' : submitting ? '전송 중...' : '축하 남기기'}
         </button>
       </form>
 

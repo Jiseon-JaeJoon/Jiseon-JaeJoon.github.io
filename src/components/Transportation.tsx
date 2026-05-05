@@ -1,20 +1,21 @@
-const transportInfo = [
+type Line = string | { text: string; dot: string }
+
+const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
   {
     icon: '🚇',
     title: '지하철',
     lines: [
-      '2호선 · 신분당선 강남역 8번 출구 지하에서 연결',
-      '좌측의 에스컬레이터 이용하시면 됩니다.',
+      { text: '2호선: 8번 출구 지하에서 연결', dot: '#00A84D' },
+      { text: '신분당선: 6번 출구 도보 2분', dot: '#9B0D54' },
     ],
   },
   {
     icon: '🚌',
     title: '버스',
     lines: [
-      '강남역 정류장 하차 후 도보 5분',
-      '8번출구에서 지상에서 건물 보이는 방향에서 자회전 후 건물 1층에서 엘리베이터 이용하시면 됩니다.',
-      '간선(파랑): 146, 341, 360, 740',
-      '지선(초록): 3412, 4412, 4413',
+      '강남역 정류장 도보 2분',
+      { text: '간선: 146, 341, 360, 740', dot: '#4A90D9' },
+      { text: '지선: 3412, 4412, 4413', dot: '#4CAF50' },
     ],
   },
   {
@@ -47,9 +48,16 @@ export default function Transportation() {
       {transportInfo.map(({ icon, title, lines }) => (
         <div key={title} style={boxStyle}>
           <p style={{ fontWeight: 600, marginBottom: '4px' }}>{icon} {title}</p>
-          {lines.map((line, i) => (
-            <p key={i} style={{ color: 'var(--text-light)' }}>{line}</p>
-          ))}
+          {lines.map((line, i) =>
+            typeof line === 'string' ? (
+              <p key={i} style={{ color: 'var(--text-light)' }}>{line}</p>
+            ) : (
+              <p key={i} style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
+                {line.text}
+              </p>
+            )
+          )}
         </div>
       ))}
     </section>
