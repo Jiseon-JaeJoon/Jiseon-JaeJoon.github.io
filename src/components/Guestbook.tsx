@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { collection, addDoc, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore'
+import { collection, addDoc, onSnapshot, orderBy, query, Timestamp, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
 interface Entry {
@@ -11,6 +11,15 @@ interface Entry {
 
 const COLLECTION = import.meta.env.DEV ? 'guestbook_dev' : 'guestbook'
 const PAGE_SIZE = 5
+const MY_ENTRIES_KEY = 'my_guestbook_entries'
+
+function getMyEntries(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(MY_ENTRIES_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
 
 export default function Guestbook() {
   const [entries, setEntries] = useState<Entry[]>([])
@@ -19,6 +28,8 @@ export default function Guestbook() {
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [myEntries, setMyEntries] = useState<string[]>(() => getMyEntries())
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'))
@@ -37,17 +48,39 @@ export default function Guestbook() {
     if (!name.trim() || !message.trim()) return
     setSubmitting(true)
     try {
-      await addDoc(collection(db, COLLECTION), {
+      const docRef = await addDoc(collection(db, COLLECTION), {
         name: name.trim(),
         message: message.trim(),
         createdAt: Timestamp.now(),
       })
+      const updated = [...getMyEntries(), docRef.id]
+      localStorage.setItem(MY_ENTRIES_KEY, JSON.stringify(updated))
+      setMyEntries(updated)
       setName('')
       setMessage('')
       setSubmitted(true)
       setTimeout(() => setSubmitted(false), 2000)
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('작성하신 방명록을 삭제하시겠습니까?')) return
+    setDeletingId(id)
+    try {
+      await deleteDoc(doc(db, COLLECTION, id))
+      const updated = getMyEntries().filter(e => e !== id)
+      localStorage.setItem(MY_ENTRIES_KEY, JSON.stringify(updated))
+      setMyEntries(updated)
+      const remaining = entries.length - 1
+      const totalPages = Math.ceil(remaining / PAGE_SIZE)
+      if (currentPage > totalPages && totalPages > 0) setCurrentPage(totalPages)
+    } catch (err) {
+      console.error('삭제 실패:', err)
+      alert('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -141,13 +174,33 @@ export default function Guestbook() {
                     padding: '16px 4px',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
                       {entry.name}
                     </span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
-                      {entry.createdAt?.toDate().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
+                        {entry.createdAt?.toDate().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                      </span>
+                      {myEntries.includes(entry.id) && (
+                        <button
+                          onClick={() => handleDelete(entry.id)}
+                          disabled={deletingId === entry.id}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: deletingId === entry.id ? 'not-allowed' : 'pointer',
+                            color: 'var(--text-light)',
+                            fontSize: '1rem',
+                            padding: '0 2px',
+                            lineHeight: 1,
+                            opacity: deletingId === entry.id ? 0.3 : 0.5,
+                          }}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
                     {entry.message}
