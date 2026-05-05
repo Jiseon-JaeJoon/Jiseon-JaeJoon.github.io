@@ -15,7 +15,7 @@
 }
 
 section {
-  padding: 80px 20px;
+  padding: clamp(40px, 8vh, 80px) 20px;
   text-align: center;
   background-color: #ffffff;
 }

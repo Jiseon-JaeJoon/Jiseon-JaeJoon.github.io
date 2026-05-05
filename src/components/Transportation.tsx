@@ -43,9 +43,6 @@ export default function Transportation() {
   return (
     <section>
       <h2 className="section-title">오시는 길</h2>
-      <p style={{ fontSize: '0.95rem', color: 'var(--text-light)', marginBottom: '20px', textAlign: 'center' }}>
-        대중교통 이용 안내
-      </p>
 
       {transportInfo.map(({ icon, title, lines }) => (
         <div key={title} style={boxStyle}>

@@ -166,47 +166,55 @@ export default function Guestbook() {
           const pageEntries = entries.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
           return (
             <>
-              {pageEntries.map(entry => (
-                <div
-                  key={entry.id}
-                  style={{
-                    borderTop: '1px solid #f0e0e5',
-                    padding: '16px 4px',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
-                      {entry.name}
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
-                        {entry.createdAt?.toDate().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+              {pageEntries.map((entry) => {
+                const d = entry.createdAt?.toDate()
+                const dateStr = d
+                  ? `${String(d.getFullYear()).slice(-2)}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+                  : ''
+                return (
+                  <div
+                    key={entry.id}
+                    style={{
+                      background: '#fdfaf8',
+                      border: '1px solid #ecddd6',
+                      borderRadius: '8px',
+                      padding: '18px 20px 20px',
+                      marginBottom: '14px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #ecddd6', paddingBottom: '10px' }}>
+                      <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
+                        {entry.name}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: '#bbb', letterSpacing: '0.02em' }}>
+                        {dateStr}
                       </span>
                       {myEntries.includes(entry.id) && (
                         <button
                           onClick={() => handleDelete(entry.id)}
                           disabled={deletingId === entry.id}
                           style={{
+                            marginLeft: 'auto',
                             background: 'none',
                             border: 'none',
                             cursor: deletingId === entry.id ? 'not-allowed' : 'pointer',
-                            color: 'var(--text-light)',
+                            color: '#ccc',
                             fontSize: '1rem',
                             padding: '0 2px',
                             lineHeight: 1,
-                            opacity: deletingId === entry.id ? 0.3 : 0.5,
+                            opacity: deletingId === entry.id ? 0.3 : 0.7,
                           }}
                         >
                           ×
                         </button>
                       )}
                     </div>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.75, whiteSpace: 'pre-wrap', margin: 0 }}>
+                      {entry.message}
+                    </p>
                   </div>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
-                    {entry.message}
-                  </p>
-                </div>
-              ))}
+                )
+              })}
               {totalPages > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '20px' }}>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (

@@ -2,12 +2,15 @@ import { useMemo } from 'react';
 
 interface Petal {
   id: number;
-  left: number;
+  spawnSide: 'top' | 'left';
+  left: number;   // top-spawn: rand%, left-spawn: -8%
+  top: number;    // top-spawn: 0,    left-spawn: rand%
   delay: number;
   duration: number;
   size: number;
   colorIdx: number;
   xDrift: number;
+  yDrift: number; // top-spawn: 110, left-spawn: 작은 값
   sway: number;
   opacity: number;
   rotation: number;
@@ -38,20 +41,17 @@ function PlumPetalSVG({ id, colorIdx, size }: { id: number; colorIdx: number; si
       style={{ display: 'block' }}
     >
       <defs>
-        {/* 매화: 밑동(짙음)에서 끝(연함)으로 */}
         <radialGradient id={gid} cx="50%" cy="78%" r="85%">
           <stop offset="0%"   stopColor={base}  stopOpacity="0.95" />
           <stop offset="42%"  stopColor={mid}   stopOpacity="0.88" />
           <stop offset="100%" stopColor={outer} stopOpacity="0.72" />
         </radialGradient>
-        {/* 광택 하이라이트 */}
         <radialGradient id={vid} cx="38%" cy="30%" r="45%">
           <stop offset="0%"   stopColor="rgba(255,255,255,0.55)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </radialGradient>
       </defs>
 
-      {/* 매화 꽃잎: 넓고 둥근 주걱형, 위가 넓고 아래로 갈수록 좁아짐 */}
       <path
         d="M17,37
            C4,29 0,18 1,10
@@ -63,8 +63,6 @@ function PlumPetalSVG({ id, colorIdx, size }: { id: number; colorIdx: number; si
         strokeWidth="0.35"
         strokeOpacity="0.25"
       />
-
-      {/* 광택 하이라이트 */}
       <path
         d="M17,37
            C4,29 0,18 1,10
@@ -73,74 +71,97 @@ function PlumPetalSVG({ id, colorIdx, size }: { id: number; colorIdx: number; si
            C34,18 30,29 17,37 Z"
         fill={`url(#${vid})`}
       />
-
-      {/* 중앙 주맥 */}
-      <path
-        d="M17,35 Q17,18 17,2"
-        stroke="rgba(255,255,255,0.45)"
-        strokeWidth="0.7"
-        fill="none"
-        strokeLinecap="round"
-      />
-
-      {/* 좌측 측맥 */}
-      <path
-        d="M15,26 Q10,18 9,10"
-        stroke="rgba(255,255,255,0.20)"
-        strokeWidth="0.45"
-        fill="none"
-        strokeLinecap="round"
-      />
-
-      {/* 우측 측맥 */}
-      <path
-        d="M19,26 Q24,18 25,10"
-        stroke="rgba(255,255,255,0.20)"
-        strokeWidth="0.45"
-        fill="none"
-        strokeLinecap="round"
-      />
+      <path d="M17,35 Q17,18 17,2" stroke="rgba(255,255,255,0.45)" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+      <path d="M15,26 Q10,18 9,10" stroke="rgba(255,255,255,0.20)" strokeWidth="0.45" fill="none" strokeLinecap="round" />
+      <path d="M19,26 Q24,18 25,10" stroke="rgba(255,255,255,0.20)" strokeWidth="0.45" fill="none" strokeLinecap="round" />
     </svg>
   );
 }
 
 export default function FlowerPetals() {
   const { petals, css } = useMemo(() => {
-    const petalCount = 18;
-    const spawnLowThreshold = 12;
+    // 상단 spawn 10개 + 좌측 spawn 8개
+    const topCount = 10;
+    const leftCount = 8;
+    const total = topCount + leftCount;
 
-    const petals: Petal[] = Array.from({ length: petalCount }, (_, i) => {
-      const duration = rand(9, 17);
-      const spawnLow = i >= spawnLowThreshold;
-      const delay = spawnLow ? -(duration * rand(0.40, 0.72)) : rand(0, 24);
+    const petals: Petal[] = Array.from({ length: total }, (_, i) => {
+      const isLeft = i >= topCount;
+      const colorIdx = Math.floor(Math.random() * COLOR_SETS.length);
+      const rotation = rand(180, 400) * (Math.random() > 0.5 ? 1 : -1);
+      const opacity = rand(0.72, 0.95);
 
-      return {
-        id: i,
-        left: rand(-10, 85),
-        delay,
-        duration,
-        size: rand(16, 30),
-        colorIdx: Math.floor(Math.random() * COLOR_SETS.length),
-        // portrait/landscape 구분 없이 동일 각도 유지
-        xDrift: rand(140, 190),
-        sway: rand(-3, 3),
-        opacity: rand(0.72, 0.95),
-        rotation: rand(180, 400) * (Math.random() > 0.5 ? 1 : -1),
-      };
+      if (isLeft) {
+        // 좌측에서 spawn: 화면 왼쪽 밖에서 다양한 높이로 시작
+        const duration = rand(14, 24);
+        const topPct = rand(8, 88); // 화면 상하 전반에 걸쳐 분포
+        const delay = rand(-duration * 0.8, duration * 0.5);
+        return {
+          id: i,
+          spawnSide: 'left',
+          left: -8,
+          top: topPct,
+          delay,
+          duration,
+          size: rand(16, 30),
+          colorIdx,
+          xDrift: rand(80, 140),  // 오른쪽으로 이동
+          yDrift: rand(20, 55),   // 아래로 조금만 이동 (이미 중간 높이에서 시작)
+          sway: rand(-2, 2),
+          opacity,
+          rotation,
+        };
+      } else {
+        // 상단에서 spawn: 기존 방식
+        const duration = rand(14, 24);
+        const spawnLow = i >= Math.floor(topCount * 0.65);
+        const delay = spawnLow ? -(duration * rand(0.35, 0.70)) : rand(0, 28);
+        return {
+          id: i,
+          spawnSide: 'top',
+          left: rand(-10, 80),
+          top: 0,
+          delay,
+          duration,
+          size: rand(16, 30),
+          colorIdx,
+          xDrift: rand(140, 190),
+          yDrift: 110,
+          sway: rand(-3, 3),
+          opacity,
+          rotation,
+        };
+      }
     });
 
     const css = petals.map(p => {
       const r = (n: number) => n.toFixed(1);
-      return `
-        @keyframes pf${p.id} {
-          0%   { transform: translateX(0vh)                               translateY(-10vh) rotate(${r(p.rotation * -0.08)}deg); opacity: 0; }
-          5%   { opacity: ${p.opacity.toFixed(2)}; }
-          33%  { transform: translateX(${r(p.xDrift * 0.33 + p.sway)}vh) translateY(${r(110 * 0.33)}vh) rotate(${r(p.rotation * 0.33)}deg); }
-          66%  { transform: translateX(${r(p.xDrift * 0.66 - p.sway)}vh) translateY(${r(110 * 0.66)}vh) rotate(${r(p.rotation * 0.66)}deg); }
-          90%  { opacity: ${(p.opacity * 0.5).toFixed(2)}; }
-          100% { transform: translateX(${r(p.xDrift)}vh)                  translateY(110vh) rotate(${r(p.rotation)}deg); opacity: 0; }
-        }
-      `;
+
+      if (p.spawnSide === 'left') {
+        // 좌측에서 진입: translateX 음수에서 시작
+        return `
+          @keyframes pf${p.id} {
+            0%   { transform: translateX(-8vh) translateY(0vh) rotate(${r(p.rotation * -0.06)}deg); opacity: 0; }
+            8%   { opacity: ${p.opacity.toFixed(2)}; }
+            33%  { transform: translateX(${r(p.xDrift * 0.33 + p.sway)}vh) translateY(${r(p.yDrift * 0.33)}vh) rotate(${r(p.rotation * 0.33)}deg); }
+            66%  { transform: translateX(${r(p.xDrift * 0.66 - p.sway)}vh) translateY(${r(p.yDrift * 0.66)}vh) rotate(${r(p.rotation * 0.66)}deg); }
+            90%  { opacity: ${(p.opacity * 0.45).toFixed(2)}; }
+            100% { transform: translateX(${r(p.xDrift)}vh)   translateY(${r(p.yDrift)}vh)   rotate(${r(p.rotation)}deg); opacity: 0; }
+          }
+        `;
+      } else {
+        // 상단에서 진입: translateY 음수에서 시작
+        return `
+          @keyframes pf${p.id} {
+            0%   { transform: translateX(0vh)                               translateY(-10vh) rotate(${r(p.rotation * -0.08)}deg); opacity: 0; }
+            5%   { opacity: ${p.opacity.toFixed(2)}; }
+            33%  { transform: translateX(${r(p.xDrift * 0.33 + p.sway)}vh) translateY(${r(p.yDrift * 0.33)}vh) rotate(${r(p.rotation * 0.33)}deg); }
+            66%  { transform: translateX(${r(p.xDrift * 0.66 - p.sway)}vh) translateY(${r(p.yDrift * 0.66)}vh) rotate(${r(p.rotation * 0.66)}deg); }
+            90%  { opacity: ${(p.opacity * 0.5).toFixed(2)}; }
+            100% { transform: translateX(${r(p.xDrift)}vh)                  translateY(${r(p.yDrift)}vh) rotate(${r(p.rotation)}deg); opacity: 0; }
+          }
+        `;
+      }
     }).join('');
 
     return { petals, css };
@@ -155,7 +176,7 @@ export default function FlowerPetals() {
           style={{
             position: 'absolute',
             left: `${p.left}%`,
-            top: 0,
+            top: p.spawnSide === 'left' ? `${p.top}%` : 0,
             animation: `pf${p.id} ${p.duration}s ${p.delay}s infinite linear`,
             animationFillMode: 'backwards',
             willChange: 'transform, opacity',
