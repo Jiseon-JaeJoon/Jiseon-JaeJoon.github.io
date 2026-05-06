@@ -26,6 +26,7 @@ const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
     lines: [
       '지하주차장 6, 7층 이용',
       '접수대에 비치된 무료 주차 도장 날인',
+      '주차장 입구는 약도에 표시되어 있습니다.'
     ],
   },
 ]
@@ -116,7 +117,11 @@ export default function Transportation() {
               }}
             >✕</button>
             <p style={{ fontWeight: 600, marginBottom: '16px', fontSize: '1rem', color: 'var(--text-main)' }}>약도</p>
-            {/* 약도 이미지 자리 */}
+            <img
+              src="/Image/SketchMap.png"
+              alt="약도"
+              style={{ width: '100%', height: 'auto' }}
+            />
           </div>
         </div>
       )}
