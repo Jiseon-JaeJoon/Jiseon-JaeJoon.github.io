@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 export default function VideoIntro({ onEnd }: { onEnd: () => void }) {
   const [fading, setFading] = useState(false)
+  const [videoVisible, setVideoVisible] = useState(false)
 
   const handleEnd = () => {
     setFading(true)
@@ -27,6 +28,7 @@ export default function VideoIntro({ onEnd }: { onEnd: () => void }) {
         autoPlay
         muted
         playsInline
+        onPlay={() => setVideoVisible(true)}
         onEnded={handleEnd}
         onClick={handleEnd}
         style={{
@@ -35,6 +37,8 @@ export default function VideoIntro({ onEnd }: { onEnd: () => void }) {
           width: 'auto',
           height: 'auto',
           display: 'block',
+          opacity: videoVisible ? 1 : 0,
+          transition: 'opacity 0.2s ease-in',
         }}
       />
 
