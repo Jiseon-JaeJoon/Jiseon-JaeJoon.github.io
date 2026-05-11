@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 const photos = [
@@ -15,20 +15,50 @@ const photos = [
   'LCS_2005.webp', 'LCS_2337.webp',
 ]
 
+const GAP = 10
+
 export default function Gallery() {
   const [lightbox, setLightbox] = useState<number | null>(null)
-  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [carouselIdx, setCarouselIdx] = useState(0)
+  const [containerWidth, setContainerWidth] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [lbTouchStart, setLbTouchStart] = useState<number | null>(null)
+  const [carTouchStart, setCarTouchStart] = useState<number | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => setLbTouchStart(e.touches[0].clientX)
+  const handleTouchEnd   = (e: React.TouchEvent) => {
+    if (lbTouchStart === null) return
+    const diff = lbTouchStart - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 50) diff > 0 ? nextLb() : prevLb()
+    setLbTouchStart(null)
+  }
 
   const open  = (idx: number) => setLightbox(idx)
   const close = () => setLightbox(null)
-  const prev  = () => setLightbox(i => i !== null ? (i - 1 + photos.length) % photos.length : null)
-  const next  = () => setLightbox(i => i !== null ? (i + 1) % photos.length : null)
+  const prevLb = () => setLightbox(i => i !== null ? (i - 1 + photos.length) % photos.length : null)
+  const nextLb = () => setLightbox(i => i !== null ? (i + 1) % photos.length : null)
+  const prevCar = () => setCarouselIdx(i => (i - 1 + photos.length) % photos.length)
+  const nextCar = () => setCarouselIdx(i => (i + 1) % photos.length)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(entries => setContainerWidth(entries[0].contentRect.width))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (lightbox !== null) return
+    const timer = setInterval(nextCar, 3000)
+    return () => clearInterval(timer)
+  }, [lightbox]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (lightbox === null) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft')  prev()
-      if (e.key === 'ArrowRight') next()
+      if (e.key === 'ArrowLeft')  prevLb()
+      if (e.key === 'ArrowRight') nextLb()
       if (e.key === 'Escape')     close()
     }
     window.addEventListener('keydown', onKey)
@@ -40,57 +70,72 @@ export default function Gallery() {
     return () => { document.body.style.overflow = '' }
   }, [lightbox !== null]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStartX(e.touches[0].clientX)
-  const handleTouchEnd   = (e: React.TouchEvent) => {
-    if (touchStartX === null) return
-    const diff = touchStartX - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) diff > 0 ? next() : prev()
-    setTouchStartX(null)
-  }
+  const photoWidth = containerWidth * 0.55
+  const offset = containerWidth > 0
+    ? (containerWidth - photoWidth) / 2 - carouselIdx * (photoWidth + GAP)
+    : 0
 
   return (
-    <section style={{ padding: '80px 20px' }}>
-      <h2 className="section-title">Gallery</h2>
+    <section style={{ padding: '80px 0' }}>
+      <h2 className="section-title" style={{ padding: '0 20px' }}>Gallery</h2>
 
-      {/* 3×3 미리보기 그리드 */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '3px',
-        borderRadius: '10px',
-        overflow: 'hidden',
-      }}>
-        {photos.slice(0, 9).map((filename, idx) => (
-          <div
-            key={filename}
-            onClick={() => open(idx)}
-            style={{ aspectRatio: '1/1', overflow: 'hidden', cursor: 'pointer', background: '#f0f0f0' }}
-          >
-            <img
-              src={`/Image/webp/${filename}`}
-              alt=""
-              loading="lazy"
+      {/* 가로 슬라이드 캐러셀 */}
+      <div
+        ref={containerRef}
+        style={{ position: 'relative', overflow: 'hidden', visibility: containerWidth === 0 ? 'hidden' : 'visible' }}
+        onTouchStart={e => setCarTouchStart(e.touches[0].clientX)}
+        onTouchEnd={e => {
+          if (carTouchStart === null) return
+          const diff = carTouchStart - e.changedTouches[0].clientX
+          if (Math.abs(diff) > 50) diff > 0 ? nextCar() : prevCar()
+          setCarTouchStart(null)
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: `${GAP}px`,
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            transform: `translateX(${offset}px)`,
+          }}
+        >
+          {photos.map((filename, idx) => (
+            <div
+              key={filename}
+              onClick={() => open(idx)}
               style={{
-                width: '100%', height: '100%',
-                objectFit: 'cover', display: 'block',
-                transition: 'transform 0.25s ease',
+                flexShrink: 0,
+                width: `${photoWidth}px`,
+                aspectRatio: '3/4',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                opacity: idx === carouselIdx ? 1 : 0.55,
+                transform: idx === carouselIdx ? 'scale(1)' : 'scale(0.93)',
+                transition: 'opacity 0.5s ease, transform 0.5s ease',
               }}
-              onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
-              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-            />
-          </div>
-        ))}
+            >
+              <img
+                src={`/Image/webp/${filename}`}
+                alt=""
+                loading={idx < 4 ? 'eager' : 'lazy'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {/* 전체보기 버튼 */}
       <button
-        onClick={() => open(0)}
+        onClick={() => open(carouselIdx)}
         style={{
-          marginTop: '16px', width: '100%', padding: '14px',
+          marginTop: '12px', width: 'calc(100% - 40px)', marginLeft: '20px', padding: '14px',
           border: '1px solid var(--point-color)', borderRadius: '8px',
           background: 'transparent', color: 'var(--point-color)',
           fontSize: '1rem', cursor: 'pointer', fontFamily: 'inherit',
-          letterSpacing: '2px',
+          letterSpacing: '2px', display: 'block',
         }}
       >
         사진 전체보기
@@ -113,13 +158,16 @@ export default function Gallery() {
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '16px 20px', flexShrink: 0,
-              borderBottom: '1px solid rgba(200,132,154,0.2)',
+              position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+              padding: '14px 20px', flexShrink: 0,
             }}
           >
-            <span style={{ color: 'var(--text-light)', fontSize: '0.9rem', fontFamily: 'inherit', letterSpacing: '1px' }}>
-              {lightbox + 1} / {photos.length}
+            <span style={{
+              position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+              color: 'var(--text-light)', fontSize: '0.72rem', fontFamily: 'inherit',
+              letterSpacing: '0.5px', opacity: 0.7, whiteSpace: 'nowrap',
+            }}>
+              이미지를 넘기려면 양끝을 클릭하거나 스와이프하세요
             </span>
             <button
               onClick={close}
@@ -151,29 +199,8 @@ export default function Gallery() {
               }}
             />
 
-            <button
-              onClick={prev}
-              style={{
-                position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(200,132,154,0.35)',
-                borderRadius: '50%', width: '40px', height: '40px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--point-color)', fontSize: '1.6rem', cursor: 'pointer',
-                zIndex: 1,
-              }}
-            >‹</button>
-
-            <button
-              onClick={next}
-              style={{
-                position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(200,132,154,0.35)',
-                borderRadius: '50%', width: '40px', height: '40px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--point-color)', fontSize: '1.6rem', cursor: 'pointer',
-                zIndex: 1,
-              }}
-            >›</button>
+            <div onClick={e => { e.stopPropagation(); prevLb() }} style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', cursor: 'pointer', zIndex: 1 }} />
+            <div onClick={e => { e.stopPropagation(); nextLb() }} style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', cursor: 'pointer', zIndex: 1 }} />
           </div>
 
           <div style={{ height: '32px', flexShrink: 0 }} />
