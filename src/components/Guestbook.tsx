@@ -92,7 +92,7 @@ export default function Guestbook() {
   })
 
   return (
-    <section ref={ref} className={revealed ? 'revealed' : ''}>
+    <section id="guestbook" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={a(0)}>방명록</h2>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
@@ -182,7 +182,7 @@ export default function Guestbook() {
                   <div
                     key={entry.id}
                     style={{
-                      background: '#fafafa',
+                      background: 'transparent',
                       border: '1px solid #e8e8e8',
                       borderRadius: '8px',
                       padding: '18px 20px 20px',

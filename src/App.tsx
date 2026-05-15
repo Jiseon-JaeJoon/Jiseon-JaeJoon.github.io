@@ -1,9 +1,10 @@
 /*
 가장 중요하게 다루게 될 파일!
-청첩장의 실제 화면을 구성하는 곳 
+청첩장의 실제 화면을 구성하는 곳
 */
 import { useState } from 'react'
 import './App.css'
+import Navigation from './components/Navigation'
 import KakaoGuide from './components/KakaoGuide'
 import VideoIntro from './components/VideoIntro'
 import Cover from './components/Cover'
@@ -32,38 +33,22 @@ function App() {
 
   return (
     <div className="app-container">
+      <Navigation />
       <FlowerPetals />
       <div className="sections-grid">
-        {/* 1. 대문 컨포넌트 */}
         <Cover />
-
-        {/* 2. 인사말 및 혼주 소개 */}
         <Greeting />
-
-        {/* 3. 날짜 및 카운트다운 */}
         <CalendarCountdown />
-
-        {/* 4. 웨딩 갤러리 */}
         <Gallery />
-
-        {/* 5. 오시는 길 (지도) */}
         <Location />
-
-        {/* 6. 대중교통 안내 */}
         <Transportation />
-
-        {/* 7. 참석 의사 전달 */}
         <Rsvp />
-
-        {/* 8. 마음전하기 */}
         <AccountInfo />
-
-        {/* 9. 방명록 */}
         <Guestbook />
       </div>
 
       <div className="footer-section">
-        <p>Made by JaeJoon ❤️ Jiseon</p>
+        <p>Made with love · 손재준 ❤️ 장지선 · 2026.09.19</p>
       </div>
     </div>
   )

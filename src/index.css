@@ -3,14 +3,12 @@
 */
 
 :root {
-  /* 글로벌 색상 변수 설정 */
-  --bg-color: #faeae8;
-  /* 전체 배경색: 웨딩 핑크 */
-  --text-main: #333333;
-  --text-light: #777777;
-  --point-color: #c8849a;
+  --bg-color: #ffffff;
+  --text-main: #111111;
+  --text-light: #888888;
+  --point-color: #111111;
 
-  font-family: 'Noto Sans KR', 'Gowun Dodum', sans-serif;
+  font-family: 'Nanum Myeongjo', 'Noto Sans KR', serif;
   line-height: 1.6;
   font-weight: 400;
   color: var(--text-main);
@@ -28,13 +26,15 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 56px;
+}
+
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* flex stretch로 #root가 100vh에 고정되는 것 방지 */
-  /* PC에서 청첩장을 가운데로 정렬 */
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 ul,

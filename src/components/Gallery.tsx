@@ -78,7 +78,7 @@ export default function Gallery() {
     : 0
 
   return (
-    <section ref={ref} className={revealed ? 'revealed' : ''} style={{ padding: 'clamp(60px, 10vh, 120px) 0' }}>
+    <section id="gallery" ref={ref} className={revealed ? 'revealed' : ''} style={{ padding: 'clamp(60px, 10vh, 120px) 0' }}>
       <h2
         className="section-title"
         style={{

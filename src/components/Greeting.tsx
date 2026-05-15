@@ -25,7 +25,7 @@ export default function Greeting() {
   })
 
   return (
-    <section ref={ref} className={revealed ? 'revealed' : ''}>
+    <section id="greeting" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={a(40)}>초대합니다</h2>
 
       <div style={{ fontFamily: "'Nanum Myeongjo', serif", lineHeight: 2.4, color: 'var(--text-main)', marginBottom: '50px' }}>

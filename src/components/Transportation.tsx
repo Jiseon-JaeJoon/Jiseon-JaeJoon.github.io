@@ -36,9 +36,9 @@ const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
 
 const boxStyle: React.CSSProperties = {
   textAlign: 'left',
-  background: '#fafafa',
-  border: '1px solid #e8e8e8',
-  borderRadius: '12px',
+  background: 'transparent',
+  border: '1px solid #e0e0e0',
+  borderRadius: '2px',
   padding: '16px 18px',
   marginBottom: '10px',
   fontSize: '0.9rem',
@@ -56,7 +56,7 @@ export default function Transportation() {
   })
 
   return (
-    <section ref={ref} className={revealed ? 'revealed' : ''}>
+    <section id="transport" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={a(0)}>오시는 길</h2>
 
       {transportInfo.map(({ icon, title, lines }, ti) => (

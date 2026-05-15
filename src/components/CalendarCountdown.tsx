@@ -111,7 +111,7 @@ export default function CalendarCountdown() {
   })
 
   return (
-    <section ref={ref} className={revealed ? 'revealed' : ''}>
+    <section id="calendar" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={a(0)}>Wedding day</h2>
 
       {/* 달력 */}

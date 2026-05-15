@@ -25,7 +25,7 @@ export default function Location() {
   })
 
   return (
-    <section ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
+    <section id="location" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
       <h2 className="section-title" style={a(0)}>Location</h2>
 
       <h3 style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.5rem)', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)', ...a(100) }}>

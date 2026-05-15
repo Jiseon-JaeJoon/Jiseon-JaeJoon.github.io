@@ -1,98 +1,103 @@
 .app-container {
   width: 100%;
-  max-width: 480px;
-  min-height: 100vh;
-  margin: 0 auto;
-  background-color: transparent;
-  overflow: clip;
   position: relative;
 }
 
 .sections-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 section {
-  padding: clamp(40px, 8vh, 80px) 20px;
+  min-height: 100vh;
+  padding: clamp(80px, 10vh, 120px) clamp(32px, 10vw, 240px);
   text-align: center;
   background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-margin-top: 56px;
+}
+
+section.dark-section {
+  background-color: #111111;
+  --text-main: #ffffff;
+  --text-light: #aaaaaa;
+  --point-color: #ffffff;
 }
 
 .section-title {
-  font-family: 'Gowun Dodum', serif;
-  font-size: 1.2rem;
-  color: var(--point-color);
-  margin-bottom: 30px;
-  letter-spacing: 4px;
-}
-
-@media (max-width: 767px) {
-  .section-title {
-    font-size: 1.37rem;
-  }
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+  font-style: italic;
+  color: var(--text-light);
+  margin-bottom: 32px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
 }
 
 .footer-section {
-  background-color: #ffffff;
-  padding: 14px 20px;
+  background-color: #111111;
+  padding: 40px 20px;
   text-align: center;
-  color: #999;
-  font-size: 0.8rem;
-  margin-top: 12px;
+  color: #555;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
 }
 
 /* 스크롤 페이드인 */
-.sections-grid > *,
-.footer-section {
+.sections-grid > * {
   opacity: 0;
   transform: translateY(32px);
   transition: opacity 1.8s ease-out, transform 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.sections-grid > *.revealed,
-.footer-section.revealed {
+.sections-grid > *.revealed {
   opacity: 1;
   transform: translateY(0);
 }
 
-@media (min-width: 768px) {
-  .app-container {
-    max-width: 1000px;
-    padding: 24px;
+/* 애니메이션 keyframes */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-
-  .sections-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 0;
-    row-gap: 20px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  /* 좌측 카드: 왼쪽 모서리만 둥글게 */
-  .sections-grid > *:nth-child(odd) {
-    border-radius: 20px 0 0 20px;
-    overflow: hidden;
-    border-right: 1px solid #f0f0f0;
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
   }
-
-  /* 우측 카드: 오른쪽 모서리만 둥글게 */
-  .sections-grid > *:nth-child(even) {
-    border-radius: 0 20px 20px 0;
-    overflow: hidden;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
+}
 
-  /* 홀수 개일 때 마지막 카드 혼자 있으면 전체 너비 + 모두 둥글게 */
-  .sections-grid > *:last-child:nth-child(odd) {
-    border-radius: 20px;
-    grid-column: 1 / -1;
-    border-right: none;
+@keyframes charReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
-
-  .footer-section {
-    border-radius: 20px;
-    margin-top: 20px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
+@keyframes slotTick {
+  from {
+    transform: translateY(-20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

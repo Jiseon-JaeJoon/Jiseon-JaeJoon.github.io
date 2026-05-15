@@ -48,7 +48,7 @@ export default function AccountInfo() {
   let itemIdx = 0
 
   return (
-    <section ref={ref} className={revealed ? 'revealed' : ''}>
+    <section id="account" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={a(0)}>마음전하기</h2>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
@@ -101,7 +101,7 @@ export default function AccountInfo() {
                   <div style={{
                     borderTop: '1px solid #e8e8e8',
                     padding: '14px 18px',
-                    background: '#fafafa',
+                    background: '#f7f7f7',
                   }}>
                     <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '12px' }}>
                       {bank} {number}
