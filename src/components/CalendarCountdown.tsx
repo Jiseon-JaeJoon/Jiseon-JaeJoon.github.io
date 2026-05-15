@@ -174,11 +174,11 @@ export default function CalendarCountdown() {
         <p style={{ fontSize: '0.8rem', color: 'var(--text-light)', letterSpacing: '2px', marginBottom: '20px', ...a(680) }}>
           결혼식까지
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: '100%', gap: '4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
           {countdownItems.flatMap(({ label, value }, idx) => {
             const numEl = (
               <div key={label} style={{
-                flex: '1 1 0', minWidth: 0, textAlign: 'center',
+                width: 'clamp(56px, 18vw, 88px)', textAlign: 'center', flexShrink: 0,
                 opacity: revealed ? undefined : 0,
                 animation: revealed ? `slideUpFade 0.6s ease ${730 + idx * 80}ms both` : 'none',
               }}>
@@ -204,7 +204,7 @@ export default function CalendarCountdown() {
               return [numEl, (
                 <span key={`sep-${idx}`} style={{
                   fontSize: 'clamp(1.2rem, 5vw, 2rem)', color: 'var(--point-color)',
-                  lineHeight: 1.1, marginTop: '2px', flexShrink: 0,
+                  lineHeight: 1.1, marginTop: '2px', flexShrink: 0, padding: '0 4px',
                 }}>:</span>
               )]
             }
