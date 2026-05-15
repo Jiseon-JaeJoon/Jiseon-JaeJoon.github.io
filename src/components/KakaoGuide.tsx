@@ -1,21 +1,14 @@
-import { useState } from 'react'
-
-const isAndroid = /Android/i.test(navigator.userAgent)
+import { useEffect } from 'react'
 
 export default function KakaoGuide() {
   const url = window.location.href
-  const [opened, setOpened] = useState(false)
 
-  const openInBrowser = () => {
-    if (isAndroid) {
-      window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;end`
-    } else {
-      window.open(url, '_blank')
-    }
-    setOpened(true)
-  }
-
-  const showOpened = opened
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(url)}`
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <div style={{
@@ -88,35 +81,10 @@ export default function KakaoGuide() {
           color: '#111',
         }}>✦</span>
 
-        {showOpened ? (
-          <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.9, margin: 0 }}>
-            외부 브라우저에서 이용이 가능합니다.<br />
-            해당 페이지는 닫으시면 됩니다.
-          </p>
-        ) : (
-          <>
-            <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.9, marginBottom: '24px' }}>
-              외부 브라우저에서<br />청첩장을 확인해 주세요.
-            </p>
-            <button
-              onClick={openInBrowser}
-              style={{
-                width: '100%',
-                padding: '13px',
-                background: '#111',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                letterSpacing: '1px',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              외부 브라우저로 열기
-            </button>
-          </>
-        )}
+        <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.9, margin: 0 }}>
+          외부 브라우저에서 이용이 가능합니다.<br />
+          해당 페이지는 닫으시면 됩니다.
+        </p>
       </div>
     </div>
   )
