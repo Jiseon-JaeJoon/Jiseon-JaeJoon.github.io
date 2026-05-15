@@ -186,7 +186,7 @@ export default function CalendarCountdown() {
                 <div
                   key={value}
                   style={{
-                    fontSize: 'clamp(2.2rem, 4vw, 3.4rem)', fontWeight: '300', color: 'var(--text-main)',
+                    fontSize: 'clamp(1.6rem, 8vw, 3.4rem)', fontWeight: '300', color: 'var(--text-main)',
                     fontFamily: "'Cormorant Garamond', serif", lineHeight: 1.1,
                     animation: revealed ? 'slotTick 0.22s ease both' : 'none',
                     overflow: 'hidden',

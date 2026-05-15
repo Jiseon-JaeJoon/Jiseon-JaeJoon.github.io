@@ -116,7 +116,8 @@ export default function Cover() {
 
       {/* 사진 */}
       <div style={{
-        width: 'clamp(300px, 94vw, 520px)',
+        width: '100%',
+        maxWidth: '520px',
         aspectRatio: '4 / 5',
         overflow: 'hidden',
         margin: '0 auto',
@@ -133,7 +134,8 @@ export default function Cover() {
       {/* 혼주 정보 - 사진 하단 */}
       <div style={{
         display: 'flex',
-        width: 'clamp(300px, 94vw, 520px)',
+        width: '100%',
+        maxWidth: '520px',
         margin: '0 auto',
         paddingTop: '20px',
         ...a(900),
