@@ -4,7 +4,6 @@ const sections = [
   { id: 'calendar',  label: '일정' },
   { id: 'gallery',   label: '갤러리' },
   { id: 'location',  label: '오시는 길' },
-  { id: 'transport', label: '교통' },
   { id: 'rsvp',      label: '참석' },
   { id: 'account',   label: '마음전하기' },
   { id: 'guestbook', label: '방명록' },
