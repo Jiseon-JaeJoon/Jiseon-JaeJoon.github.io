@@ -176,10 +176,12 @@ export default function Rsvp() {
               </button>
             </div>
 
-            <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.9, marginBottom: '28px' }}>
-              원활한 예식 진행을 위해 참석 정보를<br />
-              미리 알려주시면 감사하겠습니다.
-            </p>
+            {!submitted && (
+              <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.9, marginBottom: '28px' }}>
+                원활한 예식 진행을 위해 참석 정보를<br />
+                미리 알려주시면 감사하겠습니다.
+              </p>
+            )}
 
             {submitted ? (
               <p style={{ textAlign: 'center', color: 'var(--point-color)', padding: '48px 0', fontSize: '1rem' }}>
