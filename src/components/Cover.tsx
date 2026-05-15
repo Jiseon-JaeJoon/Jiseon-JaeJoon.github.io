@@ -1,80 +1,158 @@
 import { useReveal } from '../hooks/useReveal'
 
+const INVITED_WORDS = ["You're", "invited", "to", "the", "wedding", "of"]
+
 export default function Cover() {
-  const { ref, revealed } = useReveal(0.1)
+  const { ref, revealed } = useReveal(0.05)
 
   const a = (delay: number, name = 'slideUpFade') => ({
     opacity: revealed ? undefined : 0,
     animation: revealed ? `${name} 0.7s ease ${delay}ms both` : 'none',
   })
 
+  const slideFrom = (dir: 'Left' | 'Right', delay: number) => ({
+    opacity: revealed ? undefined : 0,
+    animation: revealed
+      ? `slideFrom${dir} 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms both`
+      : 'none',
+  })
+
   return (
     <section id="cover" ref={ref} className={revealed ? 'revealed' : ''}>
 
-      <div style={{ ...a(0) }}>
-        <p style={{
+      {/* INVITATION 배지 */}
+      {/* <div style={{ marginBottom: '14px', ...a(0) }}>
+        <span style={{
+          display: 'inline-block',
+          border: '1.5px solid var(--text-main)',
+          borderRadius: '50px',
+          padding: '5px 18px',
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(0.65rem, 1.2vw, 0.8rem)',
-          fontStyle: 'italic',
+          fontSize: 'clamp(0.6rem, 1.6vw, 0.75rem)',
           letterSpacing: '4px',
-          color: 'var(--text-light)',
+          color: 'var(--text-main)',
           textTransform: 'uppercase',
-          marginBottom: '32px',
+          fontWeight: 600,
         }}>
-          You're invited to the wedding of
-        </p>
+          Invitation
+        </span>
+      </div> */}
+
+      {/* You're invited... - 단어별 순차 등장 */}
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '0.25em',
+        marginBottom: '24px',
+      }}>
+        {INVITED_WORDS.map((word, i) => (
+          <span
+            key={i}
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(0.65rem, 1.8vw, 0.85rem)',
+              fontStyle: 'italic',
+              letterSpacing: '3px',
+              color: 'var(--text-light)',
+              textTransform: 'uppercase',
+              display: 'inline-block',
+              opacity: revealed ? undefined : 0,
+              animation: revealed ? `wordFadeIn 0.5s ease ${i * 130}ms both` : 'none',
+            }}
+          >
+            {word}
+          </span>
+        ))}
       </div>
 
-      {/* 오벌 커버 사진 */}
+      {/* 이름 블록 */}
+      <div style={{ position: 'relative', marginBottom: '40px' }}>
+
+        {/* Son Jaejoon - 왼쪽에서 슬라이드인 */}
+        <h1 style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 'clamp(3rem, 13vw, 6rem)',
+          fontWeight: 400,
+          fontStyle: 'italic',
+          letterSpacing: '1px',
+          color: 'var(--text-main)',
+          lineHeight: 0.85,
+          margin: 0,
+          ...slideFrom('Left', 250),
+        }}>
+          Son Jaejoon
+        </h1>
+
+        {/* and - 두 이름 사이 */}
+        <div style={{ ...a(480), lineHeight: 1, margin: '0.05em 0' }}>
+          <span style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 'clamp(0.9rem, 3vw, 1.3rem)',
+            fontWeight: 300,
+            fontStyle: 'italic',
+            color: 'var(--text-light)',
+          }}>
+            &
+          </span>
+        </div>
+
+        {/* Jang Jiseon - 오른쪽에서 슬라이드인 */}
+        <h1 style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 'clamp(3rem, 13vw, 6rem)',
+          fontWeight: 400,
+          fontStyle: 'italic',
+          letterSpacing: '1px',
+          color: 'var(--text-main)',
+          lineHeight: 0.85,
+          margin: 0,
+          ...slideFrom('Right', 420),
+        }}>
+          Jang Jiseon
+        </h1>
+
+      </div>
+
+      {/* 사진 */}
       <div style={{
-        width: 'clamp(200px, 40vw, 480px)',
+        width: 'clamp(300px, 94vw, 520px)',
         aspectRatio: '4 / 5',
-        borderRadius: '50%',
         overflow: 'hidden',
-        margin: '0 auto 40px',
-        ...a(120, 'scaleIn'),
+        margin: '0 auto',
+        borderRadius: '12px',
+        ...a(700, 'scaleIn'),
       }}>
         <img
           src="/Image/Mobile_Main.webp"
           alt="커버 사진"
-          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover', objectPosition: 'center top' }}
+          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover', objectPosition: 'center 30%' }}
         />
       </div>
 
-      {/* 이름 */}
-      <h1 style={{
-        fontFamily: "'Cormorant Garamond', serif",
-        fontSize: 'clamp(2rem, 5vw, 3.6rem)',
-        fontWeight: 300,
-        fontStyle: 'italic',
-        letterSpacing: '2px',
-        color: 'var(--text-main)',
-        lineHeight: 1.15,
-        marginBottom: '36px',
-        ...a(300),
-      }}>
-        Son Jaejun<br />
-        <span style={{ fontSize: '0.55em', fontWeight: 400, color: 'var(--text-light)' }}>& </span>
-        Jang Jiseon
-      </h1>
-
-      {/* 혼주 정보 */}
+      {/* 혼주 정보 - 사진 하단 */}
       <div style={{
         display: 'flex',
-        gap: 'clamp(32px, 8vw, 80px)',
-        justifyContent: 'center',
-        ...a(480),
+        width: 'clamp(300px, 94vw, 520px)',
+        margin: '0 auto',
+        paddingTop: '20px',
+        ...a(900),
       }}>
-        <div>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.7rem', letterSpacing: '2px', color: 'var(--text-light)', marginBottom: '8px', textTransform: 'uppercase', fontStyle: 'italic' }}>bride</p>
-          <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1rem', color: 'var(--text-main)' }}>장지선</p>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '5px', lineHeight: 1.6 }}>장경오 · 남궁선미의 딸</p>
+        {/* 신부 */}
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.58rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', textTransform: 'uppercase', fontStyle: 'italic' }}>Bride</p>
+          <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>장지선</p>
+          <p style={{ fontSize: '0.6rem', color: '#777', lineHeight: 1.6 }}>장경오 · 남궁선미의 딸</p>
         </div>
-        <div style={{ width: '1px', background: '#e0e0e0', alignSelf: 'stretch' }} />
-        <div>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.7rem', letterSpacing: '2px', color: 'var(--text-light)', marginBottom: '8px', textTransform: 'uppercase', fontStyle: 'italic' }}>groom</p>
-          <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1rem', color: 'var(--text-main)' }}>손재준</p>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '5px', lineHeight: 1.6 }}>손성규 · 김채안의 아들</p>
+
+        {/* 구분선 */}
+        <div style={{ width: '1px', backgroundColor: '#d0c8be', margin: '4px 0' }} />
+
+        {/* 신랑 */}
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.58rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', textTransform: 'uppercase', fontStyle: 'italic' }}>Groom</p>
+          <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>손재준</p>
+          <p style={{ fontSize: '0.6rem', color: '#777', lineHeight: 1.6 }}>손성규 · 김채안의 아들</p>
         </div>
       </div>
 

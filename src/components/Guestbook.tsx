@@ -93,7 +93,7 @@ export default function Guestbook() {
 
   return (
     <section id="guestbook" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
-      <h2 className="section-title" style={a(0)}>방명록</h2>
+      <h2 className="section-title section-title-kr" style={a(0)}>방명록</h2>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
         두 사람의 새 출발을 축하하는<br />

@@ -57,7 +57,7 @@ export default function Transportation() {
 
   return (
     <section id="transport" ref={ref} className={revealed ? 'revealed' : ''}>
-      <h2 className="section-title" style={a(0)}>오시는 길</h2>
+      <h2 className="section-title section-title-kr" style={a(0)}>오시는 길</h2>
 
       {transportInfo.map(({ icon, title, lines }, ti) => (
         <div key={title} style={{ ...boxStyle, ...a(100 + ti * 110) }}>

@@ -19,6 +19,13 @@ section {
   scroll-margin-top: 56px;
 }
 
+#cover {
+  padding-top: clamp(48px, 6vh, 80px);
+  padding-bottom: clamp(32px, 5vh, 64px);
+  padding-left: clamp(16px, 4vw, 240px);
+  padding-right: clamp(16px, 4vw, 240px);
+}
+
 section.dark-section {
   background-color: #111111;
   --text-main: #ffffff;
@@ -36,11 +43,18 @@ section.dark-section {
   letter-spacing: 2px;
 }
 
+.section-title-kr {
+  font-family: 'Gowun Batang', serif;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0px;
+}
+
 .footer-section {
   background-color: #111111;
   padding: 40px 20px;
   text-align: center;
-  color: #555;
+  color: #ffffff;
   font-size: 0.78rem;
   letter-spacing: 1px;
 }

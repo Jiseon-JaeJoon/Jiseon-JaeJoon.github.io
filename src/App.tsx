@@ -46,7 +46,7 @@ function App() {
       </div>
 
       <div className="footer-section">
-        <p>Made with love · 손재준 ❤️ 장지선 · 2026.09.19</p>
+        <p>Made by JaeJoon & Jiseon</p>
       </div>
     </div>
   )
