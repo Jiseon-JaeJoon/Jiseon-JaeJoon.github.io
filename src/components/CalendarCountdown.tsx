@@ -111,8 +111,9 @@ export default function CalendarCountdown() {
   })
 
   return (
-    <section id="calendar" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
-      <h2 className="section-title" style={a(0)}>Wedding day</h2>
+    <section id="calendar" ref={ref} className={revealed ? 'revealed' : ''}>
+      <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Wedding day</h2>
+      <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '2.5rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>일정</p>
 
       {/* 달력 */}
       <div style={{ fontFamily: "'Nanum Myeongjo', serif", marginBottom: '40px', maxWidth: '480px', margin: '0 auto 40px' }}>

@@ -78,15 +78,26 @@ export default function Gallery() {
     : 0
 
   return (
-    <section id="gallery" ref={ref} className={revealed ? 'revealed' : ''} style={{ padding: 'clamp(60px, 10vh, 120px) 0' }}>
+    <section id="gallery" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`} style={{ padding: 'clamp(60px, 10vh, 120px) 0' }}>
       <h2
         className="section-title"
         style={{
           padding: '0 clamp(20px, 7vw, 120px)',
+          marginBottom: '6px',
           opacity: revealed ? undefined : 0,
           animation: revealed ? 'slideUpFade 0.6s ease 0ms both' : 'none',
         }}
       >Gallery</h2>
+      <p style={{
+        padding: '0 clamp(20px, 7vw, 120px)',
+        fontFamily: "'Nanum Myeongjo', serif",
+        fontSize: '2rem',
+        letterSpacing: '3px',
+        color: 'var(--text-light)',
+        marginBottom: '32px',
+        opacity: revealed ? undefined : 0,
+        animation: revealed ? 'slideUpFade 0.6s ease 80ms both' : 'none',
+      }}>갤러리</p>
 
       {/* 가로 슬라이드 캐러셀 */}
       <div

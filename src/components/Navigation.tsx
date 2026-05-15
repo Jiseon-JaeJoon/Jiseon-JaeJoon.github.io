@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 const sections = [
   { id: 'cover',     label: '초대' },
   { id: 'greeting',  label: '인사말' },
@@ -10,6 +12,14 @@ const sections = [
 ]
 
 export default function Navigation() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 10)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -34,6 +44,8 @@ export default function Navigation() {
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(0,0,0,0.07)',
+        transform: visible ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform 0.3s ease',
       }}>
         <div className="nav-inner" style={{
           display: 'flex',

@@ -92,8 +92,9 @@ export default function Guestbook() {
   })
 
   return (
-    <section id="guestbook" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
-      <h2 className="section-title section-title-kr" style={a(0)}>방명록</h2>
+    <section id="guestbook" ref={ref} className={revealed ? 'revealed' : ''}>
+      <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Guestbook</h2>
+      <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>방명록</p>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
         두 사람의 새 출발을 축하하는<br />
@@ -112,12 +113,12 @@ export default function Guestbook() {
             width: '100%',
             padding: '12px 16px',
             marginBottom: '10px',
-            border: '1px solid #333',
+            border: '1px solid #e0e0e0',
             borderRadius: '12px',
             fontSize: '0.95rem',
             fontFamily: 'inherit',
             color: 'var(--text-main)',
-            background: '#1a1a1a',
+            background: '#f9f7f5',
             outline: 'none',
             boxSizing: 'border-box',
           }}
@@ -132,12 +133,12 @@ export default function Guestbook() {
             width: '100%',
             padding: '12px 16px',
             marginBottom: '14px',
-            border: '1px solid #333',
+            border: '1px solid #e0e0e0',
             borderRadius: '12px',
             fontSize: '0.95rem',
             fontFamily: 'inherit',
             color: 'var(--text-main)',
-            background: '#1a1a1a',
+            background: '#f9f7f5',
             outline: 'none',
             resize: 'none',
             boxSizing: 'border-box',
@@ -185,17 +186,17 @@ export default function Guestbook() {
                     key={entry.id}
                     style={{
                       background: 'transparent',
-                      border: '1px solid #333',
+                      border: '1px solid #e8e8e8',
                       borderRadius: '8px',
                       padding: '18px 20px 20px',
                       marginBottom: '14px',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #e8e8e8', paddingBottom: '10px' }}>
                       <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
                         {entry.name}
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: '#bbb', letterSpacing: '0.02em' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#999', letterSpacing: '0.02em' }}>
                         {dateStr}
                       </span>
                       {myEntries.includes(entry.id) && (
@@ -207,7 +208,7 @@ export default function Guestbook() {
                             background: 'none',
                             border: 'none',
                             cursor: deletingId === entry.id ? 'not-allowed' : 'pointer',
-                            color: '#ccc',
+                            color: '#aaa',
                             fontSize: '1rem',
                             padding: '0 2px',
                             lineHeight: 1,
