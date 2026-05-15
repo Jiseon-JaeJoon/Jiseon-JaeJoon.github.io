@@ -126,7 +126,7 @@ export default function Gallery() {
               style={{
                 flexShrink: 0,
                 width: `${photoWidth}px`,
-                aspectRatio: '3/4',
+                height: `${photoWidth * (4 / 3)}px`,
                 borderRadius: '12px',
                 overflow: 'hidden',
                 cursor: 'pointer',
