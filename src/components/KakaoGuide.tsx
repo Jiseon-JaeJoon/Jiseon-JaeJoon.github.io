@@ -34,7 +34,6 @@ export default function KakaoGuide() {
           fontSize: 'clamp(0.65rem, 1.5vw, 0.78rem)',
           letterSpacing: '4px',
           color: '#ccc',
-          textTransform: 'uppercase',
           marginBottom: '16px',
         }}>
           You're invited to the wedding of

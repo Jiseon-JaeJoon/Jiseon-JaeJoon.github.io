@@ -45,6 +45,7 @@ export default function Cover() {
         justifyContent: 'center',
         gap: '0.25em',
         marginBottom: '24px',
+        textTransform: 'uppercase',
       }}>
         {INVITED_WORDS.map((word, i) => (
           <span
@@ -55,7 +56,6 @@ export default function Cover() {
               fontStyle: 'italic',
               letterSpacing: '3px',
               color: 'var(--text-light)',
-              textTransform: 'uppercase',
               display: 'inline-block',
               opacity: revealed ? undefined : 0,
               animation: revealed ? `wordFadeIn 0.5s ease ${i * 130}ms both` : 'none',
@@ -72,7 +72,7 @@ export default function Cover() {
         {/* Son Jaejoon - 왼쪽에서 슬라이드인 */}
         <h1 style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(3rem, 13vw, 6rem)',
+          fontSize: 'clamp(2.25rem, 9.75vw, 4.5rem)',
           fontWeight: 400,
           fontStyle: 'italic',
           letterSpacing: '1px',
@@ -100,12 +100,14 @@ export default function Cover() {
         {/* Jang Jiseon - 오른쪽에서 슬라이드인 */}
         <h1 style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(3rem, 13vw, 6rem)',
+          fontSize: 'clamp(2.25rem, 9.75vw, 4.5rem)',
           fontWeight: 400,
           fontStyle: 'italic',
           letterSpacing: '1px',
           color: 'var(--text-main)',
           lineHeight: 0.85,
+
+          
           margin: 0,
           ...slideFrom('Right', 420),
         }}>
@@ -142,9 +144,9 @@ export default function Cover() {
       }}>
         {/* 신부 */}
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.58rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', textTransform: 'uppercase', fontStyle: 'italic' }}>Bride</p>
-          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>장지선</p>
-          <p style={{ fontSize: '0.6rem', color: '#777', lineHeight: 1.6 }}>장경오 · 남궁선미의 딸</p>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', fontStyle: 'italic' }}>Bride</p>
+          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.5rem', color: 'var(--text-main)', marginBottom: '5px' }}>장지선</p>
+          <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.6 }}>장경오 · 남궁선미의 딸</p>
         </div>
 
         {/* 구분선 */}
@@ -152,9 +154,9 @@ export default function Cover() {
 
         {/* 신랑 */}
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.58rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', textTransform: 'uppercase', fontStyle: 'italic' }}>Groom</p>
-          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>손재준</p>
-          <p style={{ fontSize: '0.6rem', color: '#777', lineHeight: 1.6 }}>손성규 · 김채안의 아들</p>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', fontStyle: 'italic' }}>Groom</p>
+          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.5rem', color: 'var(--text-main)', marginBottom: '5px' }}>손재준</p>
+          <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.6 }}>손성규 · 김채안의 아들</p>
         </div>
       </div>
 
