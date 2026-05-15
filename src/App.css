@@ -1,98 +1,59 @@
 .app-container {
   width: 100%;
-  max-width: 480px;
   min-height: 100vh;
-  margin: 0 auto;
   background-color: transparent;
-  overflow: clip;
   position: relative;
+  /* FlowerPetals가 자체 overflow:hidden 래퍼를 갖고 있어 여기선 불필요 */
 }
 
 .sections-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
 section {
-  padding: clamp(40px, 8vh, 80px) 20px;
+  /* 넓은 화면: 자동 중앙 정렬(최대 840px 콘텐츠), 좁은 화면: 최소 24px 여백 */
+  padding: clamp(60px, 10vh, 120px) clamp(24px, calc((100% - 840px) / 2), 300px);
   text-align: center;
   background-color: #ffffff;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* 다크 섹션 — Location 등에서 사용 */
+section.dark-section {
+  background-color: #0d0d0d;
+  --text-main: #e0e0e0;
+  --text-light: #666666;
+  --point-color: #e0e0e0;
 }
 
 .section-title {
-  font-family: 'Gowun Dodum', serif;
-  font-size: 1.2rem;
+  font-family: 'Cormorant Garamond', 'Nanum Myeongjo', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  font-weight: 400;
   color: var(--point-color);
   margin-bottom: 30px;
   letter-spacing: 4px;
 }
 
-@media (max-width: 767px) {
-  .section-title {
-    font-size: 1.37rem;
-  }
-}
-
 .footer-section {
-  background-color: #ffffff;
-  padding: 14px 20px;
+  background-color: #111111;
+  padding: clamp(20px, 4vh, 40px) clamp(20px, 7vw, 120px);
   text-align: center;
-  color: #999;
-  font-size: 0.8rem;
-  margin-top: 12px;
+  color: #444;
+  font-size: 0.85rem;
 }
 
-/* 스크롤 페이드인 */
-.sections-grid > *,
-.footer-section {
+/* 섹션 진입 애니메이션 — 각 컴포넌트에서 useReveal로 .revealed 클래스 부여 */
+.sections-grid > section {
   opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 1.8s ease-out, transform 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.sections-grid > *.revealed,
-.footer-section.revealed {
+.sections-grid > section.revealed {
   opacity: 1;
   transform: translateY(0);
-}
-
-@media (min-width: 768px) {
-  .app-container {
-    max-width: 1000px;
-    padding: 24px;
-  }
-
-  .sections-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 0;
-    row-gap: 20px;
-  }
-
-  /* 좌측 카드: 왼쪽 모서리만 둥글게 */
-  .sections-grid > *:nth-child(odd) {
-    border-radius: 20px 0 0 20px;
-    overflow: hidden;
-    border-right: 1px solid #f0f0f0;
-  }
-
-  /* 우측 카드: 오른쪽 모서리만 둥글게 */
-  .sections-grid > *:nth-child(even) {
-    border-radius: 0 20px 20px 0;
-    overflow: hidden;
-  }
-
-  /* 홀수 개일 때 마지막 카드 혼자 있으면 전체 너비 + 모두 둥글게 */
-  .sections-grid > *:last-child:nth-child(odd) {
-    border-radius: 20px;
-    grid-column: 1 / -1;
-    border-right: none;
-  }
-
-  .footer-section {
-    border-radius: 20px;
-    margin-top: 20px;
-  }
-
 }
