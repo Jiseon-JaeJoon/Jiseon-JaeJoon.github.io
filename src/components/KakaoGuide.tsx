@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+
+const isAndroid = /Android/i.test(navigator.userAgent)
 
 export default function KakaoGuide() {
   const url = window.location.href
   const [opened, setOpened] = useState(false)
 
-  useEffect(() => {
-    const w = window.open(url, '_blank')
-    if (w) setOpened(true)
-  }, [])
-
   const openInBrowser = () => {
-    window.open(url, '_blank')
+    if (isAndroid) {
+      window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;end`
+    } else {
+      window.open(url, '_blank')
+    }
     setOpened(true)
   }
 
