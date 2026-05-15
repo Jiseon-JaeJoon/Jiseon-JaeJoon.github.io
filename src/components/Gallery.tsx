@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useReveal } from '../hooks/useReveal'
 
@@ -42,9 +42,11 @@ export default function Gallery() {
   const prevCar = () => setCarouselIdx(i => (i - 1 + photos.length) % photos.length)
   const nextCar = () => setCarouselIdx(i => (i + 1) % photos.length)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = containerRef.current
     if (!el) return
+    const initial = el.getBoundingClientRect().width
+    if (initial > 0) setContainerWidth(initial)
     const ro = new ResizeObserver(entries => setContainerWidth(entries[0].contentRect.width))
     ro.observe(el)
     return () => ro.disconnect()
