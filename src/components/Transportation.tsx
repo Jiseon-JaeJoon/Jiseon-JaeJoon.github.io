@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useReveal } from '../hooks/useReveal'
 
 type Line = string | { text: string; dot: string }
 
@@ -36,7 +37,7 @@ const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
 const boxStyle: React.CSSProperties = {
   textAlign: 'left',
   background: '#fafafa',
-  border: '1px solid #eee',
+  border: '1px solid #e8e8e8',
   borderRadius: '12px',
   padding: '16px 18px',
   marginBottom: '10px',
@@ -47,13 +48,19 @@ const boxStyle: React.CSSProperties = {
 
 export default function Transportation() {
   const [showMap, setShowMap] = useState(false)
+  const { ref, revealed } = useReveal(0.2)
+
+  const a = (delay: number) => ({
+    opacity: revealed ? undefined : 0,
+    animation: revealed ? `slideUpFade 0.6s ease ${delay}ms both` : 'none',
+  })
 
   return (
-    <section>
-      <h2 className="section-title">오시는 길</h2>
+    <section ref={ref} className={revealed ? 'revealed' : ''}>
+      <h2 className="section-title" style={a(0)}>오시는 길</h2>
 
-      {transportInfo.map(({ icon, title, lines }) => (
-        <div key={title} style={boxStyle}>
+      {transportInfo.map(({ icon, title, lines }, ti) => (
+        <div key={title} style={{ ...boxStyle, ...a(100 + ti * 110) }}>
           <p style={{ fontWeight: 600, marginBottom: '4px' }}>{icon} {title}</p>
           {lines.map((line, i) =>
             typeof line === 'string' ? (
@@ -74,7 +81,7 @@ export default function Transportation() {
           width: '100%',
           marginTop: '8px',
           padding: '12px 6px',
-          border: '1px solid #ddd',
+          border: '1px solid #e0e0e0',
           borderRadius: '8px',
           background: 'white',
           fontSize: '0.9rem',
@@ -84,6 +91,7 @@ export default function Transportation() {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '5px',
+          ...a(430),
         }}
       >
        약도 보기

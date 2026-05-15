@@ -2,8 +2,9 @@
 가장 중요하게 다루게 될 파일!
 청첩장의 실제 화면을 구성하는 곳 
 */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
+import KakaoGuide from './components/KakaoGuide'
 import VideoIntro from './components/VideoIntro'
 import Cover from './components/Cover'
 import FlowerPetals from './components/FlowerPetals'
@@ -16,29 +17,14 @@ import AccountInfo from './components/AccountInfo'
 import Rsvp from './components/Rsvp'
 import Guestbook from './components/Guestbook'
 
+const isKakaoTalk = /KAKAOTALK/i.test(navigator.userAgent)
+
 function App() {
   const [introPlayed, setIntroPlayed] = useState(false)
 
-  useEffect(() => {
-    if (!introPlayed) return
-
-    const items = document.querySelectorAll('.sections-grid > *, .footer-section');
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    items.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [introPlayed]);
+  if (isKakaoTalk) {
+    return <KakaoGuide />
+  }
 
   if (!introPlayed) {
     return <VideoIntro onEnd={() => setIntroPlayed(true)} />

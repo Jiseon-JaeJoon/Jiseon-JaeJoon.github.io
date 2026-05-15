@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { collection, addDoc, onSnapshot, orderBy, query, Timestamp, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
+import { useReveal } from '../hooks/useReveal'
 
 interface Entry {
   id: string
@@ -22,6 +23,7 @@ function getMyEntries(): string[] {
 }
 
 export default function Guestbook() {
+  const { ref, revealed } = useReveal(0.15)
   const [entries, setEntries] = useState<Entry[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [name, setName] = useState('')
@@ -84,17 +86,22 @@ export default function Guestbook() {
     }
   }
 
-  return (
-    <section>
-      <h2 className="section-title">방명록</h2>
+  const a = (delay: number) => ({
+    opacity: revealed ? undefined : 0,
+    animation: revealed ? `slideUpFade 0.6s ease ${delay}ms both` : 'none',
+  })
 
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px' }}>
+  return (
+    <section ref={ref} className={revealed ? 'revealed' : ''}>
+      <h2 className="section-title" style={a(0)}>방명록</h2>
+
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
         두 사람의 새 출발을 축하하는<br />
         따뜻한 말 한마디 남겨주세요.
       </p>
 
       {/* 작성 폼 */}
-      <form onSubmit={handleSubmit} style={{ marginBottom: '40px', textAlign: 'left' }}>
+      <form onSubmit={handleSubmit} style={{ marginBottom: '40px', textAlign: 'left', ...a(200) }}>
         <input
           type="text"
           placeholder="이름"
@@ -105,7 +112,7 @@ export default function Guestbook() {
             width: '100%',
             padding: '12px 16px',
             marginBottom: '10px',
-            border: '1px solid var(--point-color)',
+            border: '1px solid #e0e0e0',
             borderRadius: '12px',
             fontSize: '0.95rem',
             fontFamily: 'inherit',
@@ -124,7 +131,7 @@ export default function Guestbook() {
             width: '100%',
             padding: '12px 16px',
             marginBottom: '14px',
-            border: '1px solid var(--point-color)',
+            border: '1px solid #e0e0e0',
             borderRadius: '12px',
             fontSize: '0.95rem',
             fontFamily: 'inherit',
@@ -175,14 +182,14 @@ export default function Guestbook() {
                   <div
                     key={entry.id}
                     style={{
-                      background: '#fdfaf8',
-                      border: '1px solid #ecddd6',
+                      background: '#fafafa',
+                      border: '1px solid #e8e8e8',
                       borderRadius: '8px',
                       padding: '18px 20px 20px',
                       marginBottom: '14px',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #ecddd6', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #e8e8e8', paddingBottom: '10px' }}>
                       <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
                         {entry.name}
                       </span>

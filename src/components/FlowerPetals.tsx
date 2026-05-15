@@ -16,13 +16,13 @@ interface Petal {
   rotation: number;
 }
 
-// 매화 색상: 백매~홍매~연보라매 계열
+// 매화 색상: 흑백 모노크롬 계열
 const COLOR_SETS = [
-  { outer: '#FFFCFD', mid: '#FFE4EF', base: '#F8B8D0' }, // 백매 (흰~연핑크)
-  { outer: '#FFF0F5', mid: '#FFD0E8', base: '#F098BE' }, // 연홍매
-  { outer: '#FFE4EE', mid: '#FFB4D0', base: '#E87AAC' }, // 홍매 (진핑크)
-  { outer: '#FFF5FA', mid: '#FFCCE2', base: '#F4A8CA' }, // 중간 홍매
-  { outer: '#FEF0FF', mid: '#F8D4F8', base: '#DFA8DF' }, // 연보라 매화
+  { outer: '#f0f0f0', mid: '#d8d8d8', base: '#b8b8b8' },
+  { outer: '#ebebeb', mid: '#d0d0d0', base: '#aaaaaa' },
+  { outer: '#e8e8e8', mid: '#cccccc', base: '#b0b0b0' },
+  { outer: '#f4f4f4', mid: '#dcdcdc', base: '#c0c0c0' },
+  { outer: '#eeeeee', mid: '#d4d4d4', base: '#b4b4b4' },
 ];
 
 const rand = (min: number, max: number) => Math.random() * (max - min) + min;

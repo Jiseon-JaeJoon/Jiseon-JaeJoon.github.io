@@ -1,20 +1,23 @@
-export default function Cover() {
-  return (
-    <section style={{ padding: '40px 28px 36px' }}>
+import { useReveal } from '../hooks/useReveal'
 
-      {/* 위: 날짜 */}
-      <div style={{
-        fontFamily: "'Gowun Dodum', serif",
-        textAlign: 'center',
-        marginBottom: '22px',
-      }}>
-        <p style={{ fontSize: '1rem', letterSpacing: '5px', color: 'var(--point-color)', marginBottom: '8px' }}>
-          WEDDING INVITATION
+export default function Cover() {
+  const { ref, revealed } = useReveal(0.1)
+
+  const a = (delay: number, name = 'slideUpFade') => ({
+    opacity: revealed ? undefined : 0,
+    animation: revealed ? `${name} 0.7s ease ${delay}ms both` : 'none',
+  })
+
+  return (
+    <section ref={ref} className={revealed ? 'revealed' : ''}>
+
+      <div style={{ fontFamily: "'Cormorant Garamond', serif", textAlign: 'center', marginBottom: '32px', ...a(0) }}>
+        <p style={{ fontSize: 'clamp(0.85rem, 1.2vw, 1.2rem)', fontStyle: 'italic', letterSpacing: '4px', color: 'var(--point-color)', fontWeight: 400, textTransform: 'uppercase' }}>
+          Wedding Invitation
         </p>
       </div>
 
-      {/* 사진 */}
-      <div style={{ borderRadius: '10px', overflow: 'hidden', margin: '0 8px' }}>
+      <div style={{ borderRadius: '12px', overflow: 'hidden', maxWidth: '760px', margin: '0 auto', ...a(120, 'scaleIn') }}>
         <img
           src="/Image/Mobile_Main.webp"
           alt="커버 사진"
@@ -22,22 +25,10 @@ export default function Cover() {
         />
       </div>
 
-      {/* 아래: 이름 + 날짜/장소 */}
-      <div style={{
-        textAlign: 'center',
-        fontFamily: "'Gowun Dodum', serif",
-        marginTop: '24px',
-        color: '#333',
-      }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: '400', marginBottom: '14px' }}>
-          손재준 <span style={{ fontSize: '1.2rem', margin: '0 10px', color: '#ccc', fontWeight: '200' }}>|</span> 장지선
+      <div style={{ textAlign: 'center', marginTop: '36px', color: 'var(--text-main)' }}>
+        <h1 style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: 'clamp(1.4rem, 2.5vw, 2.2rem)', fontWeight: '400', letterSpacing: '4px', ...a(340) }}>
+          손재준 <span style={{ fontSize: '1.2rem', margin: '0 16px', color: '#c8c8c8', fontWeight: '200' }}>|</span> 장지선
         </h1>
-        <p style={{ fontSize: '0.95rem', letterSpacing: '2px', color: '#666', marginBottom: '6px' }}>
-          2026. 09. 19. SAT PM 1:00
-        </p>
-        <p style={{ fontSize: '0.85rem', color: '#999' }}>
-          삼성전자 서초사옥 5층
-        </p>
       </div>
 
     </section>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useReveal } from '../hooks/useReveal'
 
 const groups = [
   {
@@ -22,6 +23,7 @@ const groups = [
 export default function AccountInfo() {
   const [openKeys, setOpenKeys] = useState<Set<string>>(new Set())
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
+  const { ref, revealed } = useReveal(0.2)
 
   const toggle = (key: string) => {
     setOpenKeys(prev => {
@@ -38,42 +40,49 @@ export default function AccountInfo() {
     })
   }
 
-  return (
-    <section>
-      <h2 className="section-title">마음전하기</h2>
+  const a = (delay: number) => ({
+    opacity: revealed ? undefined : 0,
+    animation: revealed ? `slideUpFade 0.6s ease ${delay}ms both` : 'none',
+  })
 
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px' }}>
+  let itemIdx = 0
+
+  return (
+    <section ref={ref} className={revealed ? 'revealed' : ''}>
+      <h2 className="section-title" style={a(0)}>마음전하기</h2>
+
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
         참석이 어려우신 분들을 위해<br />
         계좌번호를 기재하였습니다.
       </p>
 
-      {groups.map(({ label, accounts }) => (
+      {groups.map(({ label, accounts }, gi) => (
         <div key={label} style={{ marginBottom: '24px' }}>
-          {/* 그룹 헤더 */}
           <p style={{
             fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-light)',
-            letterSpacing: '2px', marginBottom: '10px'
+            letterSpacing: '2px', marginBottom: '10px',
+            ...a(180 + gi * 160),
           }}>
             {label}
           </p>
 
-          {/* 개별 토글 항목 */}
           {accounts.map(({ role, name, bank, number }) => {
             const key = `${label}-${name}`
             const isOpen = openKeys.has(key)
+            const delay = 240 + (itemIdx++) * 75
 
             return (
               <div
                 key={key}
                 style={{
-                  border: '1px solid var(--point-color)',
+                  border: '1px solid #e0e0e0',
                   borderRadius: isOpen ? '12px 12px 12px 12px' : '12px',
                   marginBottom: '8px',
                   overflow: 'hidden',
                   background: 'white',
+                  ...a(delay),
                 }}
               >
-                {/* 토글 버튼 행 */}
                 <button
                   onClick={() => toggle(key)}
                   style={{
@@ -88,10 +97,9 @@ export default function AccountInfo() {
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>{isOpen ? '▲' : '▼'}</span>
                 </button>
 
-                {/* 펼쳐지는 계좌 영역 */}
                 {isOpen && (
                   <div style={{
-                    borderTop: '1px solid var(--point-color)',
+                    borderTop: '1px solid #e8e8e8',
                     padding: '14px 18px',
                     background: '#fafafa',
                   }}>

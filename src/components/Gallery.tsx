@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useReveal } from '../hooks/useReveal'
 
 const photos = [
   'IMG_0221.webp',
@@ -18,6 +19,7 @@ const photos = [
 const GAP = 10
 
 export default function Gallery() {
+  const { ref, revealed } = useReveal(0.1)
   const [lightbox, setLightbox] = useState<number | null>(null)
   const [carouselIdx, setCarouselIdx] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -76,8 +78,15 @@ export default function Gallery() {
     : 0
 
   return (
-    <section style={{ padding: '80px 0' }}>
-      <h2 className="section-title" style={{ padding: '0 20px' }}>Gallery</h2>
+    <section ref={ref} className={revealed ? 'revealed' : ''} style={{ padding: 'clamp(60px, 10vh, 120px) 0' }}>
+      <h2
+        className="section-title"
+        style={{
+          padding: '0 clamp(20px, 7vw, 120px)',
+          opacity: revealed ? undefined : 0,
+          animation: revealed ? 'slideUpFade 0.6s ease 0ms both' : 'none',
+        }}
+      >Gallery</h2>
 
       {/* 가로 슬라이드 캐러셀 */}
       <div
@@ -131,7 +140,7 @@ export default function Gallery() {
       <button
         onClick={() => open(carouselIdx)}
         style={{
-          marginTop: '12px', width: 'calc(100% - 40px)', marginLeft: '20px', padding: '14px',
+          marginTop: '12px', width: 'calc(100% - clamp(40px, 14vw, 240px))', marginLeft: 'clamp(20px, 7vw, 120px)', padding: '14px',
           border: '1px solid var(--point-color)', borderRadius: '8px',
           background: 'transparent', color: 'var(--point-color)',
           fontSize: '1rem', cursor: 'pointer', fontFamily: 'inherit',
@@ -147,7 +156,7 @@ export default function Gallery() {
           onClick={close}
           style={{
             position: 'fixed', inset: 0,
-            backgroundColor: 'rgba(250, 234, 232, 0.97)',
+            backgroundColor: 'rgba(245, 245, 245, 0.97)',
             zIndex: 1000,
             display: 'flex', flexDirection: 'column',
           }}
@@ -195,7 +204,7 @@ export default function Gallery() {
                 maxWidth: '100%', maxHeight: '100%',
                 objectFit: 'contain', display: 'block',
                 borderRadius: '8px',
-                boxShadow: '0 8px 32px rgba(180,100,120,0.15)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
               }}
             />
 

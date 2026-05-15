@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
+import { useReveal } from '../hooks/useReveal'
 
 const COLLECTION = import.meta.env.DEV ? 'rsvp_dev' : 'rsvp'
 
@@ -40,7 +41,7 @@ const inputStyle: React.CSSProperties = {
 const counterBtnStyle: React.CSSProperties = {
   width: '32px',
   height: '32px',
-  border: '1px solid #ddd',
+  border: '1px solid #e0e0e0',
   borderRadius: '50%',
   background: 'white',
   fontSize: '1.1rem',
@@ -89,6 +90,7 @@ export default function Rsvp() {
   const [form, setForm] = useState<FormData>(initialForm)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const { ref, revealed } = useReveal(0.2)
 
   const close = () => {
     setOpen(false)
@@ -116,10 +118,15 @@ export default function Rsvp() {
 
   const canSubmit = form.name.trim() && form.contact.trim() && !submitting
 
+  const a = (delay: number) => ({
+    opacity: revealed ? undefined : 0,
+    animation: revealed ? `slideUpFade 0.6s ease ${delay}ms both` : 'none',
+  })
+
   return (
-    <section>
-      <h2 className="section-title">참석 의사 전달</h2>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.9, marginBottom: '28px' }}>
+    <section ref={ref} className={revealed ? 'revealed' : ''}>
+      <h2 className="section-title" style={a(0)}>참석 의사 전달</h2>
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.9, marginBottom: '28px', ...a(100) }}>
         원활한 예식 진행을 위해 참석 정보를<br />
         미리 알려주시면 감사하겠습니다.
       </p>
@@ -134,6 +141,7 @@ export default function Rsvp() {
           fontSize: '0.95rem',
           fontFamily: 'inherit',
           cursor: 'pointer',
+          ...a(200),
         }}
       >
         참석 의사 전달하기
@@ -163,9 +171,8 @@ export default function Rsvp() {
             overflowY: 'auto',
             padding: '28px 24px 48px',
           }}>
-            {/* 헤더 */}
             <div style={{ position: 'relative', textAlign: 'center', marginBottom: '20px' }}>
-              <span style={{ fontFamily: 'Gowun Dodum', fontSize: '1.1rem', color: 'var(--text-main)' }}>
+              <span style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1.1rem', color: 'var(--text-main)' }}>
                 참석 의사 전달
               </span>
               <button
@@ -189,7 +196,6 @@ export default function Rsvp() {
               </p>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* 참석 여부 */}
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button type="button" style={toggleBtnStyle(form.attendance === 'yes')} onClick={() => setForm(f => ({ ...f, attendance: 'yes' }))}>
                     <span>🪑 가능</span>
@@ -201,7 +207,6 @@ export default function Rsvp() {
                   </button>
                 </div>
 
-                {/* 성함 */}
                 <div style={{ textAlign: 'left' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <span style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>성함</span>
@@ -232,7 +237,6 @@ export default function Rsvp() {
                   />
                 </div>
 
-                {/* 연락처 */}
                 <div style={{ textAlign: 'left' }}>
                   <span style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '10px' }}>연락처</span>
                   <input
@@ -244,7 +248,6 @@ export default function Rsvp() {
                   />
                 </div>
 
-                {/* 추가 인원 */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
                     <span style={{ color: 'var(--point-color)', marginRight: '3px' }}>*</span>추가인원
@@ -266,7 +269,6 @@ export default function Rsvp() {
                   </div>
                 </div>
 
-                {/* 식사 여부 */}
                 <div style={{ textAlign: 'left' }}>
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', marginBottom: '10px' }}>
                     <span style={{ color: 'var(--point-color)', marginRight: '3px' }}>*</span>식사여부
@@ -280,7 +282,7 @@ export default function Rsvp() {
                     </button>
                   </div>
                 </div>
-        
+
                 <button
                   type="submit"
                   disabled={!canSubmit}
