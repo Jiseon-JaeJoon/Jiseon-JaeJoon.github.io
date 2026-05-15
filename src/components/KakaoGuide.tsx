@@ -5,8 +5,8 @@ export default function KakaoGuide() {
   const [opened, setOpened] = useState(false)
 
   useEffect(() => {
-    window.open(url, '_blank')
-    setOpened(true)
+    const w = window.open(url, '_blank')
+    if (w) setOpened(true)
   }, [])
 
   const openInBrowser = () => {
