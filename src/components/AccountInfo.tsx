@@ -50,7 +50,7 @@ export default function AccountInfo() {
   return (
     <section id="account" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Account</h2>
-      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.25rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>마음전하기</p>
+      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.25rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>마음 전하기</p>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
         참석이 어려우신 분들을 위해<br />
@@ -118,6 +118,7 @@ export default function AccountInfo() {
                         fontSize: '0.85rem', cursor: 'pointer',
                         fontFamily: 'inherit',
                         transition: 'all 0.2s',
+                        outline: 'none',
                       }}
                     >
                       {copiedKey === key ? '복사됨 ✓' : '계좌 복사'}
