@@ -94,7 +94,7 @@ export default function Guestbook() {
   return (
     <section id="guestbook" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Guestbook</h2>
-      <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>방명록</p>
+      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>방명록</p>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
         두 사람의 새 출발을 축하하는<br />

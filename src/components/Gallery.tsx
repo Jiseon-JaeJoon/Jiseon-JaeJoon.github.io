@@ -90,8 +90,8 @@ export default function Gallery() {
       >Gallery</h2>
       <p style={{
         padding: '0 clamp(20px, 7vw, 120px)',
-        fontFamily: "'Nanum Myeongjo', serif",
-        fontSize: '2rem',
+        fontFamily: "'Gowun Batang', serif",
+        fontSize: '1.25rem',
         letterSpacing: '3px',
         color: 'var(--text-light)',
         marginBottom: '32px',

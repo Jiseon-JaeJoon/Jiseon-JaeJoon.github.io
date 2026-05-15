@@ -46,7 +46,9 @@ function App() {
       </div>
 
       <div className="footer-section">
-        <p>Made by JaeJoon & Jiseon</p>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1rem', letterSpacing: '2px' }}>
+          Made by JaeJoon & Jiseon
+        </p>
       </div>
     </div>
   )

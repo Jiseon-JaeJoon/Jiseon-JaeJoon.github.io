@@ -141,7 +141,7 @@ export default function Cover() {
         {/* 신부 */}
         <div style={{ flex: 1, textAlign: 'center' }}>
           <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.58rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', textTransform: 'uppercase', fontStyle: 'italic' }}>Bride</p>
-          <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>장지선</p>
+          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>장지선</p>
           <p style={{ fontSize: '0.6rem', color: '#777', lineHeight: 1.6 }}>장경오 · 남궁선미의 딸</p>
         </div>
 
@@ -151,7 +151,7 @@ export default function Cover() {
         {/* 신랑 */}
         <div style={{ flex: 1, textAlign: 'center' }}>
           <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.58rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '6px', textTransform: 'uppercase', fontStyle: 'italic' }}>Groom</p>
-          <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>손재준</p>
+          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1rem', color: 'var(--text-main)', marginBottom: '5px' }}>손재준</p>
           <p style={{ fontSize: '0.6rem', color: '#777', lineHeight: 1.6 }}>손성규 · 김채안의 아들</p>
         </div>
       </div>

@@ -126,7 +126,7 @@ export default function Rsvp() {
   return (
     <section id="rsvp" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>RSVP</h2>
-      <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>참석</p>
+      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>참석</p>
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.9, marginBottom: '28px', ...a(100) }}>
         원활한 예식 진행을 위해 참석 정보를<br />
         미리 알려주시면 감사하겠습니다.
@@ -173,7 +173,7 @@ export default function Rsvp() {
             padding: '28px 24px 48px',
           }}>
             <div style={{ position: 'relative', textAlign: 'center', marginBottom: '20px' }}>
-              <span style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '1.1rem', color: 'var(--text-main)' }}>
+              <span style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.1rem', color: 'var(--text-main)' }}>
                 참석 의사 전달
               </span>
               <button

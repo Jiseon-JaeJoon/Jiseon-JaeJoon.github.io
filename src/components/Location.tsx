@@ -72,7 +72,7 @@ export default function Location() {
   return (
     <section id="location" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
       <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Location</h2>
-      <p style={{ fontFamily: "'Nanum Myeongjo', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>오시는 길</p>
+      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '0.72rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>오시는 길</p>
 
       <h3 style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.5rem)', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)', ...a(100) }}>
         삼성전자 서초사옥 5층

@@ -27,7 +27,7 @@ export default function Greeting() {
   return (
     <section id="greeting" ref={ref} className={revealed ? 'revealed' : ''}>
 
-      <div style={{ fontFamily: "'Nanum Myeongjo', serif", lineHeight: 2.4, color: 'var(--text-main)', marginBottom: '50px' }}>
+      <div style={{ fontFamily: "'Gowun Batang', serif", lineHeight: 2.4, color: 'var(--text-main)', marginBottom: '50px' }}>
         {LINES.map((line, li) => (
           <p key={li} style={{ marginBottom: li === 2 ? '0.4rem' : li < LINES.length - 1 ? '0.1rem' : 0 }}>
             {line.split('').map((char, ci) => (
