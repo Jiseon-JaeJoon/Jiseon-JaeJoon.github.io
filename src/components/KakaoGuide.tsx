@@ -82,7 +82,8 @@ export default function KakaoGuide() {
         }}>✦</span>
 
         <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.9, margin: 0 }}>
-          외부 브라우저로 이동합니다.
+          곧 외부 브라우저로 이동합니다.<br />
+          잠시만 기다려주세요.
         </p>
       </div>
     </div>
