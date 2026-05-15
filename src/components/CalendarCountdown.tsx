@@ -113,7 +113,7 @@ export default function CalendarCountdown() {
   return (
     <section id="calendar" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Wedding day</h2>
-      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.5rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>일정</p>
+      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.25rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>일정</p>
 
       {/* 달력 */}
       <div style={{ fontFamily: "'Gowun Batang', serif", marginBottom: '40px', maxWidth: '480px', margin: '0 auto 40px' }}>
@@ -174,22 +174,20 @@ export default function CalendarCountdown() {
         <p style={{ fontSize: '0.8rem', color: 'var(--text-light)', letterSpacing: '2px', marginBottom: '20px', ...a(680) }}>
           결혼식까지
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'flex-start' }}>
-          {countdownItems.map(({ label, value }, idx) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-              <div style={{
-                textAlign: 'center', minWidth: '56px',
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: '100%', gap: '4px' }}>
+          {countdownItems.flatMap(({ label, value }, idx) => {
+            const numEl = (
+              <div key={label} style={{
+                flex: '1 1 0', minWidth: 0, textAlign: 'center',
                 opacity: revealed ? undefined : 0,
                 animation: revealed ? `slideUpFade 0.6s ease ${730 + idx * 80}ms both` : 'none',
               }}>
-                {/* key={value}로 값이 바뀔 때마다 slotTick 애니메이션 재실행 */}
                 <div
                   key={value}
                   style={{
-                    fontSize: 'clamp(1.6rem, 8vw, 3.4rem)', fontWeight: '300', color: 'var(--text-main)',
+                    fontSize: 'clamp(1.6rem, 7vw, 3.2rem)', fontWeight: '300', color: 'var(--text-main)',
                     fontFamily: "'Cormorant Garamond', serif", lineHeight: 1.1,
                     animation: revealed ? 'slotTick 0.22s ease both' : 'none',
-                    overflow: 'hidden',
                   }}
                 >
                   {value}
@@ -201,11 +199,17 @@ export default function CalendarCountdown() {
                   {label}
                 </div>
               </div>
-              {idx < 3 && (
-                <span style={{ fontSize: '1.6rem', color: 'var(--point-color)', lineHeight: 1.1, marginTop: '2px' }}>:</span>
-              )}
-            </div>
-          ))}
+            )
+            if (idx < 3) {
+              return [numEl, (
+                <span key={`sep-${idx}`} style={{
+                  fontSize: 'clamp(1.2rem, 5vw, 2rem)', color: 'var(--point-color)',
+                  lineHeight: 1.1, marginTop: '2px', flexShrink: 0,
+                }}>:</span>
+              )]
+            }
+            return [numEl]
+          })}
         </div>
       </div>
     </section>
