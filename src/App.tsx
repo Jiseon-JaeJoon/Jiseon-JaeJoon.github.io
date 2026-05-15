@@ -13,7 +13,6 @@ import Greeting from './components/Greeting'
 import CalendarCountdown from './components/CalendarCountdown'
 import Gallery from './components/Gallery'
 import Location from './components/Location'
-import Transportation from './components/Transportation'
 import AccountInfo from './components/AccountInfo'
 import Rsvp from './components/Rsvp'
 import Guestbook from './components/Guestbook'
@@ -41,7 +40,6 @@ function App() {
         <CalendarCountdown />
         <Gallery />
         <Location />
-        <Transportation />
         <Rsvp />
         <AccountInfo />
         <Guestbook />

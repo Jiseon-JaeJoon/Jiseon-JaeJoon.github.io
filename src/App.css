@@ -28,12 +28,12 @@ section.dark-section {
 
 .section-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+  font-size: clamp(3rem, 10vw, 5rem);
   font-style: italic;
-  color: var(--text-light);
+  font-weight: 400;
+  color: var(--text-main);
   margin-bottom: 32px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .footer-section {

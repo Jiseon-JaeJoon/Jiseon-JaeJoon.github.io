@@ -1,6 +1,51 @@
 import { useEffect, useRef } from 'react'
 import { useReveal } from '../hooks/useReveal'
 
+type Line = string | { text: string; dot: string }
+
+const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
+  {
+    icon: '🚇',
+    title: '지하철',
+    lines: [
+      { text: '2호선: 8번 출구 지하에서 연결', dot: '#00A84D' },
+      { text: '신분당선: 6번 출구 도보 2분', dot: '#9B0D54' },
+    ],
+  },
+  {
+    icon: '🚌',
+    title: '버스',
+    lines: [
+      '강남역 정류장 도보 2분',
+      { text: '간선: 146, 341, 360, 740', dot: '#087af5' },
+      { text: '지선: 0411, 3412, 4312', dot: '#209f24' },
+      { text: '마을: 서초03, 서초11', dot: '#7fdc88' },
+    ],
+  },
+  {
+    icon: '🚗',
+    title: '자가용',
+    lines: [
+      '내비게이션 "삼성전자 서초사옥 주차장"',
+      '지하주차장 6, 7층 이용',
+      '주차장 입구는 약도에 표시되어 있습니다.',
+      '* 축의대에 비치된 무료 주차 도장 날인',
+    ],
+  },
+]
+
+const boxStyle: React.CSSProperties = {
+  textAlign: 'left',
+  background: 'transparent',
+  border: '1px solid #333',
+  borderRadius: '2px',
+  padding: '16px 18px',
+  marginBottom: '10px',
+  fontSize: '0.9rem',
+  lineHeight: 1.9,
+  color: 'var(--text-main)',
+}
+
 export default function Location() {
   const mapRef = useRef<HTMLDivElement>(null)
   const { ref, revealed } = useReveal(0.15)
@@ -40,7 +85,7 @@ export default function Location() {
         style={{ width: '100%', height: 'clamp(280px, 40vh, 500px)', borderRadius: '16px', overflow: 'hidden', marginBottom: '16px', ...a(260) }}
       />
 
-      <div style={{ display: 'flex', marginBottom: '20px', ...a(380) }}>
+      <div style={{ display: 'flex', marginBottom: '32px', ...a(380) }}>
         {[
           { label: '네이버 지도', href: 'https://map.naver.com/p/search/삼성전자%20서초사옥', icon: 'map.naver.com' },
           { label: '카카오 내비', href: 'https://map.kakao.com/link/to/삼성전자+서초사옥,37.496820,127.026919', icon: 'kakao.com' },
@@ -71,6 +116,29 @@ export default function Location() {
         ))}
       </div>
 
+      {transportInfo.map(({ icon, title, lines }, ti) => (
+        <div key={title} style={{ ...boxStyle, ...a(460 + ti * 110) }}>
+          <p style={{ fontWeight: 600, marginBottom: '4px' }}>{icon} {title}</p>
+          {lines.map((line, i) =>
+            typeof line === 'string' ? (
+              <p key={i} style={{ color: 'var(--text-light)' }}>{line}</p>
+            ) : (
+              <p key={i} style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
+                {line.text}
+              </p>
+            )
+          )}
+        </div>
+      ))}
+
+      <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', ...a(790) }}>
+        <img
+          src="/Image/SketchMap.png"
+          alt="약도"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
+      </div>
     </section>
   )
 }

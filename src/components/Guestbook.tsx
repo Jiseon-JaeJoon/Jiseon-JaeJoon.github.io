@@ -92,7 +92,7 @@ export default function Guestbook() {
   })
 
   return (
-    <section id="guestbook" ref={ref} className={revealed ? 'revealed' : ''}>
+    <section id="guestbook" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
       <h2 className="section-title" style={a(0)}>방명록</h2>
 
       <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.8, marginBottom: '32px', ...a(100) }}>
@@ -112,11 +112,12 @@ export default function Guestbook() {
             width: '100%',
             padding: '12px 16px',
             marginBottom: '10px',
-            border: '1px solid #e0e0e0',
+            border: '1px solid #333',
             borderRadius: '12px',
             fontSize: '0.95rem',
             fontFamily: 'inherit',
             color: 'var(--text-main)',
+            background: '#1a1a1a',
             outline: 'none',
             boxSizing: 'border-box',
           }}
@@ -131,11 +132,12 @@ export default function Guestbook() {
             width: '100%',
             padding: '12px 16px',
             marginBottom: '14px',
-            border: '1px solid #e0e0e0',
+            border: '1px solid #333',
             borderRadius: '12px',
             fontSize: '0.95rem',
             fontFamily: 'inherit',
             color: 'var(--text-main)',
+            background: '#1a1a1a',
             outline: 'none',
             resize: 'none',
             boxSizing: 'border-box',
@@ -147,8 +149,8 @@ export default function Guestbook() {
           style={{
             width: '100%',
             padding: '13px',
-            background: submitted ? 'var(--point-color)' : 'white',
-            color: submitted ? 'white' : 'var(--point-color)',
+            background: submitted ? 'var(--point-color)' : 'transparent',
+            color: submitted ? '#111' : 'var(--point-color)',
             border: '1px solid var(--point-color)',
             borderRadius: '12px',
             fontSize: '0.95rem',
@@ -183,13 +185,13 @@ export default function Guestbook() {
                     key={entry.id}
                     style={{
                       background: 'transparent',
-                      border: '1px solid #e8e8e8',
+                      border: '1px solid #333',
                       borderRadius: '8px',
                       padding: '18px 20px 20px',
                       marginBottom: '14px',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #e8e8e8', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
                       <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
                         {entry.name}
                       </span>
@@ -236,8 +238,8 @@ export default function Guestbook() {
                         fontSize: '0.85rem',
                         fontFamily: 'inherit',
                         cursor: 'pointer',
-                        background: currentPage === page ? 'var(--point-color)' : 'white',
-                        color: currentPage === page ? 'white' : 'var(--point-color)',
+                        background: currentPage === page ? 'var(--point-color)' : 'transparent',
+                        color: currentPage === page ? '#111' : 'var(--point-color)',
                         transition: 'all 0.2s',
                       }}
                     >
