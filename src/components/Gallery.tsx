@@ -135,6 +135,7 @@ export default function Gallery() {
                 opacity: idx === carouselIdx ? 1 : 0.55,
                 transform: idx === carouselIdx ? 'scale(1)' : 'scale(0.93)',
                 transition: 'opacity 0.5s ease, transform 0.5s ease',
+                WebkitTapHighlightColor: 'transparent',
               }}
             >
               <img
@@ -221,8 +222,8 @@ export default function Gallery() {
               }}
             />
 
-            <div onClick={e => { e.stopPropagation(); prevLb() }} style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', cursor: 'pointer', zIndex: 1 }} />
-            <div onClick={e => { e.stopPropagation(); nextLb() }} style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', cursor: 'pointer', zIndex: 1 }} />
+            <div onClick={e => { e.stopPropagation(); prevLb() }} style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', cursor: 'pointer', zIndex: 1, WebkitTapHighlightColor: 'transparent' }} />
+            <div onClick={e => { e.stopPropagation(); nextLb() }} style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', cursor: 'pointer', zIndex: 1, WebkitTapHighlightColor: 'transparent' }} />
           </div>
 
           <div style={{ height: '32px', flexShrink: 0 }} />
