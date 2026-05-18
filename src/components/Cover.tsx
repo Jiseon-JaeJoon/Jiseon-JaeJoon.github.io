@@ -1,6 +1,6 @@
 import { useReveal } from '../hooks/useReveal'
 
-const INVITED_WORDS = ["You're", "invited", "to", "the", "wedding", "of"]
+const INVITED_WORDS = ["You are", "invited", "to", "the", "wedding", "of"]
 
 export default function Cover() {
   const { ref, revealed } = useReveal(0.05)
@@ -44,7 +44,7 @@ export default function Cover() {
         flexWrap: 'wrap',
         justifyContent: 'center',
         gap: '0.25em',
-        marginBottom: '24px',
+        marginBottom: '14px',
         textTransform: 'uppercase',
       }}>
         {INVITED_WORDS.map((word, i) => (
@@ -55,7 +55,7 @@ export default function Cover() {
               fontSize: 'clamp(0.65rem, 1.8vw, 0.85rem)',
               fontStyle: 'italic',
               letterSpacing: '3px',
-              color: 'var(--text-light)',
+              color: 'var(--text-main)',
               display: 'inline-block',
               opacity: revealed ? undefined : 0,
               animation: revealed ? `wordFadeIn 0.5s ease ${i * 130}ms both` : 'none',
@@ -67,7 +67,7 @@ export default function Cover() {
       </div>
 
       {/* 이름 블록 */}
-      <div style={{ position: 'relative', marginBottom: '40px' }}>
+      <div style={{ position: 'relative', marginBottom: '22px' }}>
 
         {/* Son Jaejoon - 왼쪽에서 슬라이드인 */}
         <h1 style={{
@@ -121,6 +121,7 @@ export default function Cover() {
         width: '100%',
         maxWidth: '520px',
         aspectRatio: '4 / 5',
+        maxHeight: '50vh',
         overflow: 'hidden',
         margin: '0 auto',
         borderRadius: '12px',
@@ -139,7 +140,7 @@ export default function Cover() {
         width: '100%',
         maxWidth: '520px',
         margin: '0 auto',
-        paddingTop: '20px',
+        paddingTop: '12px',
         ...a(900),
       }}>
         {/* 신부 */}
