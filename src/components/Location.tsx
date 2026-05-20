@@ -37,7 +37,7 @@ const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
 const boxStyle: React.CSSProperties = {
   textAlign: 'left',
   background: 'transparent',
-  border: '1px solid #333',
+  border: '1px solid #e0e0e0',
   borderRadius: '2px',
   padding: '16px 18px',
   marginBottom: '10px',
@@ -70,7 +70,7 @@ export default function Location() {
   })
 
   return (
-    <section id="location" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`}>
+    <section id="location" ref={ref} className={revealed ? 'revealed' : ''}>
       <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>Location</h2>
       <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.25rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(80) }}>오시는 길</p>
 
@@ -99,11 +99,11 @@ export default function Location() {
             rel="noopener noreferrer"
             style={{
               flex: 1, padding: '12px 6px', textAlign: 'center',
-              border: '1px solid #333',
-              borderLeft: idx === 0 ? '1px solid #333' : 'none',
+              border: '1px solid #e0e0e0',
+              borderLeft: idx === 0 ? '1px solid #e0e0e0' : 'none',
               borderRadius: idx === 0 ? '8px 0 0 8px' : idx === arr.length - 1 ? '0 8px 8px 0' : '0',
               fontSize: '0.9rem', color: 'var(--text-main)',
-              background: '#1a1a1a', textDecoration: 'none',
+              background: '#f5f5f5', textDecoration: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
             }}
           >
@@ -122,9 +122,9 @@ export default function Location() {
           <p style={{ fontWeight: 600, marginBottom: '4px' }}>{icon} {title}</p>
           {lines.map((line, i) =>
             typeof line === 'string' ? (
-              <p key={i} style={{ color: 'var(--text-light)' }}>{line}</p>
+              <p key={i} style={{ color: 'var(--text-main)' }}>{line}</p>
             ) : (
-              <p key={i} style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <p key={i} style={{ color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
                 {line.text}
               </p>

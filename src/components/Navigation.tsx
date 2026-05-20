@@ -4,9 +4,9 @@ const sections = [
   { id: 'cover',     label: '초대' },
   { id: 'greeting',  label: '인사말' },
   { id: 'calendar',  label: '일정' },
-  { id: 'gallery',   label: '갤러리' },
-  { id: 'location',  label: '오시는 길' },
   { id: 'rsvp',      label: '참석 여부' },
+  { id: 'location',  label: '오시는 길' },
+  { id: 'gallery',   label: '갤러리' },
   { id: 'account',   label: '마음 전하기' },
   { id: 'guestbook', label: '방명록' },
 ]

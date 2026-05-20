@@ -38,9 +38,9 @@ function App() {
         <Cover />
         <Greeting />
         <CalendarCountdown />
-        <Gallery />
-        <Location />
         <Rsvp />
+        <Location />
+        <Gallery />
         <AccountInfo />
         <Guestbook />
       </div>

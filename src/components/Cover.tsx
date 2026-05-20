@@ -72,7 +72,7 @@ export default function Cover() {
         {/* Son Jaejoon - 왼쪽에서 슬라이드인 */}
         <h1 style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(2.25rem, 9.75vw, 4.5rem)',
+          fontSize: 'clamp(2.75rem, 12vw, 5.5rem)',
           fontWeight: 400,
           fontStyle: 'italic',
           letterSpacing: '1px',
@@ -100,7 +100,7 @@ export default function Cover() {
         {/* Jang Jiseon - 오른쪽에서 슬라이드인 */}
         <h1 style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(2.25rem, 9.75vw, 4.5rem)',
+          fontSize: 'clamp(2.75rem, 12vw, 5.5rem)',
           fontWeight: 400,
           fontStyle: 'italic',
           letterSpacing: '1px',

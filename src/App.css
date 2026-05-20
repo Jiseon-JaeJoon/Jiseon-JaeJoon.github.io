@@ -26,6 +26,18 @@ section {
   padding-right: clamp(16px, 4vw, 240px);
 }
 
+#greeting {
+  min-height: unset;
+  padding-top: clamp(10px, 5vh, 20px);
+  padding-bottom: clamp(10px, 5vh, 20px);
+}
+
+#rsvp {
+  min-height: unset;
+  padding-top: clamp(40px, 5vh, 60px);
+  padding-bottom: clamp(40px, 5vh, 60px);
+}
+
 section.dark-section {
   background-color: #111111;
   --text-main: #ffffff;
