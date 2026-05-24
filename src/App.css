@@ -28,8 +28,15 @@ section {
 
 #greeting {
   min-height: unset;
-  padding-top: clamp(10px, 5vh, 20px);
-  padding-bottom: clamp(10px, 5vh, 20px);
+  padding-top: clamp(20px, 3vh, 45px);
+  padding-bottom: clamp(40px, 5vh, 80px);
+}
+
+@media (min-width: 768px) {
+  #greeting {
+    padding-top: clamp(60px, 8vh, 120px);
+    padding-bottom: clamp(80px, 10vh, 160px);
+  }
 }
 
 #rsvp {
