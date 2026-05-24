@@ -17,15 +17,29 @@ interface FormData {
 }
 const initialForm: FormData = { attendance: 'yes', name: '', contact: '', totalGuests: 1 }
 
-// Layout
-// CARD_H=300, ENV_H=240, OVERLAP=50
-// ENV_Y=250, CONTAINER_H=490, SLIDE_AMOUNT=250
+// ── Layout ────────────────────────────────────────────────────────────────────
+//
+//   0          CARD_H = 300        CARD_H + ENV_H = 510
+//   ├──────────────────────────────┼──────────────────────┤
+//   │  card area (slides up here)  │   envelope body       │
+//   └──────────────────────────────┴───────────────────────┘
+//
+//   FLAP_TOP = 195   FLAP_H = 105
+//   ├──────────────────────┤   ← flap sits just above envelope mouth (y=300)
+//
+//   Initially the card is pushed down by SLIDE_Y=300 so it lives inside the
+//   envelope (y=300→510 clipped to container). The envelope front (z:5, V-notch)
+//   and inner lining (z:2) fill that zone. When revealed: flap rotates open,
+//   card slides up to y=0, fully visible above the envelope.
+//
 const CARD_H      = 300
-const ENV_H       = 240
-const OVERLAP     =  50
-const ENV_Y       = CARD_H - OVERLAP
-const CONTAINER_H = ENV_Y + ENV_H
-const SLIDE_AMOUNT = ENV_Y
+const ENV_H       = 210
+const FLAP_H      = 105
+const CONTAINER_H = CARD_H + ENV_H  // 510
+
+const ENV_TOP  = CARD_H            // 300 — top edge of envelope body
+const FLAP_TOP = ENV_TOP - FLAP_H  // 195 — top of flap element (hinge at bottom = y 300)
+const SLIDE_Y  = CARD_H            // 300 — card starts fully inside envelope
 
 export default function Rsvp() {
   const [form, setForm]             = useState<FormData>(initialForm)
@@ -83,25 +97,40 @@ export default function Rsvp() {
 
       <div style={{
         position: 'relative', width: '100%',
-        maxWidth: '420px',
-        margin: '0 auto',
+        maxWidth: '420px', margin: '0 auto',
         height: `${CONTAINER_H}px`,
         overflow: 'hidden',
       }}>
 
-        {/* CARD z:3 */}
+        {/* ── z:1  ENVELOPE BACK — fills entire scene as envelope texture ────── */}
+        {/* Visible in the top area (y=0→195) and behind the inner lining below.  */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0,
+          height: `${CONTAINER_H}px`, zIndex: 1,
+          ...pngBg(envelopeBodySrc),
+        }} />
+
+        {/* ── z:2  INNER LINING — shows inside the envelope (below card) ──────── */}
+        <div style={{
+          position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
+          height: `${ENV_H}px`, zIndex: 2,
+          ...pngBg(envelopeInnerSrc),
+        }} />
+
+        {/* ── z:3  CARD — slides up from inside the envelope ───────────────────── */}
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0,
           height: `${CARD_H}px`,
           background: '#fff',
           zIndex: 3,
-          boxShadow: '0 12px 48px rgba(0,0,0,0.24), 0 2px 8px rgba(0,0,0,0.10)',
-          transform:  revealed ? 'translateY(0)' : `translateY(${SLIDE_AMOUNT}px)`,
-          transition: revealed ? 'transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.35s' : 'none',
+          boxShadow: '0 16px 56px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.10)',
+          transform:  revealed ? 'translateY(0)' : `translateY(${SLIDE_Y}px)`,
+          transition: revealed ? 'transform 1.0s cubic-bezier(0.22, 1, 0.36, 1) 0.38s' : 'none',
           willChange: 'transform',
         }}>
           <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
+            {/* RSVP title */}
             <div style={{ textAlign: 'center', padding: '18px 0 14px', ...hairline }}>
               <h2 style={{
                 fontFamily: "'PP Editorial Old', 'Cormorant Garamond', serif",
@@ -119,10 +148,11 @@ export default function Rsvp() {
             ) : (
               <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
+                {/* 참석 / 불참 */}
                 <div style={{ display: 'flex', ...hairline }}>
                   {(['yes', 'no'] as const).map((v, i) => (
                     <button key={v} type="button" onClick={() => setAttendance(v)} style={{
-                      flex: 1, padding: '12px 0', border: 'none',
+                      flex: 1, padding: '11px 0', border: 'none',
                       borderRight: i === 0 ? '1px solid #ebebeb' : 'none',
                       background: form.attendance === v ? '#111' : '#f8f8f8',
                       color: form.attendance === v ? 'white' : '#bbb',
@@ -134,13 +164,14 @@ export default function Rsvp() {
                   ))}
                 </div>
 
+                {/* 성함 | 전화번호 */}
                 <div style={{ display: 'flex', ...hairline }}>
                   {[
                     { k: 'name',    lb: 'Name',  ph: '성함',    t: 'text' },
                     { k: 'contact', lb: 'Phone', ph: '전화번호', t: 'tel'  },
                   ].map((f, i) => (
                     <div key={f.k} style={{
-                      flex: 1, padding: '10px 16px',
+                      flex: 1, padding: '10px 14px',
                       borderRight: i === 0 ? '1px solid #ebebeb' : 'none',
                       display: 'flex', flexDirection: 'column', gap: '5px',
                     }}>
@@ -160,6 +191,7 @@ export default function Rsvp() {
                   ))}
                 </div>
 
+                {/* 참석 인원 */}
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   gap: '20px', padding: '12px 0', ...hairline,
@@ -186,6 +218,7 @@ export default function Rsvp() {
                   </div>
                 </div>
 
+                {/* 전달하기 */}
                 <div style={{ padding: '12px 18px 16px', marginTop: 'auto' }}>
                   <button type="submit" disabled={!canSubmit} style={{
                     width: '100%', padding: '13px',
@@ -204,62 +237,53 @@ export default function Rsvp() {
           </div>
         </div>
 
-        {/* ENVELOPE LAYERS — top: ENV_Y, height: ENV_H */}
-
-        {/* z:1 — Inner lining */}
+        {/* ── z:5  ENVELOPE FRONT (V-notch) — covers card bottom, shows envelope ── */}
+        {/* Sits at ENV_TOP, clipped to keep just the outer shell (V opening at top) */}
         <div style={{
-          position: 'absolute', top: `${ENV_Y}px`, left: 0, right: 0,
-          height: `${ENV_H}px`, zIndex: 1,
-          ...pngBg(envelopeInnerSrc),
+          position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
+          height: `${ENV_H}px`, zIndex: 5,
+          clipPath: 'polygon(0% 100%, 0% 28%, 50% 68%, 100% 28%, 100% 100%)',
+          boxShadow: '0 8px 36px rgba(0,0,0,0.22)',
+          ...pngBg(envelopeBodySrc),
         }} />
 
-        {/* z:5 — Pentagon flap, transformOrigin: TOP CENTER */}
+        {/* ── z:6  PENTAGON FLAP — hinged at bottom (y = ENV_TOP = 300) ─────────── */}
+        {/* Element placed at FLAP_TOP (y=195), height FLAP_H (105px).              */}
+        {/* transformOrigin '50% 100%' = hinge at the element's BOTTOM edge (y=300). */}
+        {/* Initially flat (rotateX 0), opens to -180deg when revealed.             */}
         <div style={{
-          position: 'absolute', top: `${ENV_Y}px`, left: 0, right: 0,
-          height: `${ENV_H}px`, zIndex: 5,
-          perspective: '900px', pointerEvents: 'none',
+          position: 'absolute', top: `${FLAP_TOP}px`, left: 0, right: 0,
+          height: `${FLAP_H}px`,
+          perspective: '800px',
+          zIndex: 6,
+          pointerEvents: 'none',
         }}>
           <div style={{
             position: 'absolute', inset: 0,
-            transformOrigin: '50% 0%',
+            transformOrigin: '50% 100%',
             transform: revealed ? 'rotateX(-180deg)' : 'rotateX(0deg)',
             transition: 'transform 0.75s cubic-bezier(0.4, 0, 0.2, 1)',
             backfaceVisibility: 'hidden',
           }}>
+            {/* Pentagon shape: full-width top → narrows at 60% → point at bottom */}
             <div style={{
               position: 'absolute', inset: 0,
-              clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%)',
-              filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.20))',
+              clipPath: 'polygon(0% 0%, 100% 0%, 100% 60%, 50% 100%, 0% 60%)',
+              filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.22))',
               ...pngBg(envelopeTopSrc),
             }}>
+              {/* Monogram */}
               <div style={{
-                position: 'absolute', top: '22%', left: '50%',
+                position: 'absolute', top: '32%', left: '50%',
                 transform: 'translate(-50%, -50%)',
                 fontFamily: "'Cormorant Garamond', serif",
                 fontStyle: 'italic', fontSize: '0.82rem',
-                color: 'rgba(110,98,84,0.60)',
+                color: 'rgba(110,98,84,0.65)',
                 letterSpacing: '3px', whiteSpace: 'nowrap', userSelect: 'none',
               }}>J &amp; J</div>
             </div>
           </div>
         </div>
-
-        {/* z:10 — Body back */}
-        <div style={{
-          position: 'absolute', top: `${ENV_Y}px`, left: 0, right: 0,
-          height: `${ENV_H}px`, zIndex: 10,
-          clipPath: 'polygon(0% 100%, 100% 100%, 100% 20%, 50% 80%, 0% 20%)',
-          boxShadow: '0 8px 36px rgba(0,0,0,0.22)',
-          ...pngBg(envelopeBodySrc),
-        }} />
-
-        {/* z:11 — Bottom lip */}
-        <div style={{
-          position: 'absolute', top: `${ENV_Y}px`, left: 0, right: 0,
-          height: `${ENV_H}px`, zIndex: 11,
-          clipPath: 'polygon(20% 45%, 80% 45%, 100% 100%, 0% 100%)',
-          ...pngBg(envelopeBodySrc),
-        }} />
 
       </div>
     </section>
