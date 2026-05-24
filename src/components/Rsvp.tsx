@@ -1,13 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-import { useReveal } from '../hooks/useReveal'
 
 import envelopeBodySrc  from '../assets/envelope-Bfk8GE_u.png'
 import envelopeTopSrc   from '../assets/envelopeTop-DNGkXVSC.png'
 import envelopeInnerSrc from '../assets/envelopeInner-Bl_NByj8.png'
 
 const COLLECTION = import.meta.env.DEV ? 'rsvp_dev' : 'rsvp'
+
+// ── Layout (레퍼런스 사이트 치수 그대로 재현) ──────────────────────────────────
+// 레퍼런스: container 680px, card top 460px / h 200px, env top 450px / h 200px
+// 우리 사이즈: 모바일 맞춰 약간 축소
+const CONTAINER_H  = 580   // 씬 전체 높이
+const CARD_W       = 320   // 카드 너비
+const CARD_H       = 195   // 카드 높이 (컴팩트)
+const CARD_BASE_Y  = 375   // 카드 초기 top (봉투 안, 봉투 top보다 약간 아래)
+const ENV_TOP      = 365   // 봉투 body 시작 y
+const ENV_H        = 190   // 봉투 body 높이
+
+// 카드가 스크롤에 따라 이동하는 총 거리 (위로)
+// 완전히 나왔을 때: 카드 top = CARD_BASE_Y + CARD_Y_TRAVEL = 375 - 315 = 60
+const CARD_Y_TRAVEL = -(CARD_BASE_Y - 60)  // -315px
+
+function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
+function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v }
+function easeOut3(t: number) { return 1 - (1 - t) ** 3 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface FormData {
   attendance: 'yes' | 'no'
@@ -17,35 +36,60 @@ interface FormData {
 }
 const initialForm: FormData = { attendance: 'yes', name: '', contact: '', totalGuests: 1 }
 
-// ── Layout ────────────────────────────────────────────────────────────────────
-//
-//   0          CARD_H = 300        CARD_H + ENV_H = 510
-//   ├──────────────────────────────┼──────────────────────┤
-//   │  card area (slides up here)  │   envelope body       │
-//   └──────────────────────────────┴───────────────────────┘
-//
-//   FLAP_TOP = 195   FLAP_H = 105
-//   ├──────────────────────┤   ← flap sits just above envelope mouth (y=300)
-//
-//   Initially the card is pushed down by SLIDE_Y=300 so it lives inside the
-//   envelope (y=300→510 clipped to container). The envelope front (z:5, V-notch)
-//   and inner lining (z:2) fill that zone. When revealed: flap rotates open,
-//   card slides up to y=0, fully visible above the envelope.
-//
-const CARD_H      = 300
-const ENV_H       = 210
-const FLAP_H      = 105
-const CONTAINER_H = CARD_H + ENV_H  // 510
-
-const ENV_TOP  = CARD_H            // 300 — top edge of envelope body
-const FLAP_TOP = ENV_TOP - FLAP_H  // 195 — top of flap element (hinge at bottom = y 300)
-const SLIDE_Y  = CARD_H            // 300 — card starts fully inside envelope
-
 export default function Rsvp() {
   const [form, setForm]             = useState<FormData>(initialForm)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted]   = useState(false)
-  const { ref, revealed }           = useReveal(0.2)
+  const [revealed,  setRevealed]    = useState(false)
+
+  const sectionRef   = useRef<HTMLElement>(null)
+  const cardRef      = useRef<HTMLDivElement>(null)
+  const flapInnerRef = useRef<HTMLDivElement>(null)
+
+  // 섹션 페이드인(IntersectionObserver) + 봉투 스크롤 애니메이션 동시 등록
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    // ① 섹션 최초 진입 → 페이드인
+    const ioObs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setRevealed(true) },
+      { threshold: 0.04 }   // 200vh 섹션이라 낮은 threshold 사용
+    )
+    ioObs.observe(section)
+
+    // ② 스크롤 위치 → 카드 Y / 플랩 각도 직접 DOM 업데이트 (setState 없이 60fps)
+    const onScroll = () => {
+      const rect    = section.getBoundingClientRect()
+      const sectH   = section.offsetHeight
+      const vh      = window.innerHeight
+      // 섹션 top이 0(뷰포트 상단)이 됐을 때부터 progress 시작
+      const scrolled = clamp01(-rect.top / (sectH - vh))
+
+      // 플랩: 스크롤 시작부터 45%까지 0→200deg (먼저 열림)
+      const flapP    = easeOut3(clamp01(scrolled / 0.45))
+      const flapAngle = lerp(0, 200, flapP)
+
+      // 카드: 5% 지연 후 95%까지 안으로→밖으로
+      const cardP    = easeOut3(clamp01((scrolled - 0.05) / 0.90))
+      const cardY    = lerp(0, CARD_Y_TRAVEL, cardP)
+
+      if (cardRef.current) {
+        cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px)`
+      }
+      if (flapInnerRef.current) {
+        flapInnerRef.current.style.transform = `rotateX(${flapAngle}deg)`
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()  // 최초 실행 (섹션이 이미 뷰포트 안에 있을 때 대비)
+
+    return () => {
+      ioObs.disconnect()
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   const setAttendance = (v: 'yes' | 'no') =>
     setForm(f => ({ ...f, attendance: v, totalGuests: v === 'yes' ? Math.max(1, f.totalGuests) : 0 }))
@@ -57,8 +101,8 @@ export default function Rsvp() {
     try {
       await addDoc(collection(db, COLLECTION), {
         attendance: form.attendance, name: form.name.trim(),
-        contact: form.contact.trim(), totalGuests: form.totalGuests,
-        createdAt: Timestamp.now(),
+        contact:    form.contact.trim(), totalGuests: form.totalGuests,
+        createdAt:  Timestamp.now(),
       })
       setSubmitted(true)
     } finally { setSubmitting(false) }
@@ -71,7 +115,7 @@ export default function Rsvp() {
   }
 
   const labelSt: React.CSSProperties = {
-    fontFamily: "'Cormorant Garamond', serif", fontSize: '0.52rem',
+    fontFamily: "'Cormorant Garamond', serif", fontSize: '0.5rem',
     letterSpacing: '3px', color: '#aaa', display: 'block', textTransform: 'uppercase',
   }
   const hairline: React.CSSProperties = { borderBottom: '1px solid #ebebeb' }
@@ -81,210 +125,249 @@ export default function Rsvp() {
   })
 
   return (
+    // ─── 섹션을 200vh로 늘려서 스크롤 공간 확보 ──────────────────────────────
+    // display:block, padding:0 으로 App.css flex/padding 오버라이드
     <section
       id="rsvp"
-      ref={ref as React.RefObject<HTMLElement>}
-      className={`dark-section${revealed ? ' revealed' : ''}`}
-      style={{ background: 'linear-gradient(to bottom, #1c1917 0%, #111111 60%)' }}
+      ref={sectionRef}
+      className="dark-section"
+      style={{
+        display: 'block',
+        minHeight: '200vh',
+        padding: 0,
+        background: 'linear-gradient(to bottom, #1c1917 0%, #111111 60%)',
+        position: 'relative',
+        // transform을 none으로 고정 → App.css의 translateY(32px)가 sticky를 깨지 않도록
+        transform: 'translateY(0)',
+        opacity: revealed ? 1 : 0,
+        transition: 'opacity 1.8s ease-out',
+      }}
     >
-      <p style={{
-        fontFamily: "'Gowun Batang', serif", fontSize: '0.76rem',
-        color: 'rgba(255,255,255,0.38)', letterSpacing: '1.5px',
-        lineHeight: 2, marginBottom: '28px',
-      }}>
-        원활한 식사 제공을 위해 참석 인원 확인이 필요합니다
-      </p>
-
+      {/* ─── sticky wrapper: 뷰포트에 고정된 채 봉투 씬을 보여줌 ─────────────── */}
       <div style={{
-        position: 'relative', width: '100%',
-        maxWidth: '420px', margin: '0 auto',
-        height: `${CONTAINER_H}px`,
+        position: 'sticky', top: 0,
+        height: '100vh',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
 
-        {/* ── z:1  ENVELOPE BACK — fills entire scene as envelope texture ────── */}
-        {/* Visible in the top area (y=0→195) and behind the inner lining below.  */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0,
-          height: `${CONTAINER_H}px`, zIndex: 1,
-          ...pngBg(envelopeBodySrc),
-        }} />
-
-        {/* ── z:2  INNER LINING — shows inside the envelope (below card) ──────── */}
-        <div style={{
-          position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
-          height: `${ENV_H}px`, zIndex: 2,
-          ...pngBg(envelopeInnerSrc),
-        }} />
-
-        {/* ── z:3  CARD — slides up from inside the envelope ───────────────────── */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0,
-          height: `${CARD_H}px`,
-          background: '#fff',
-          zIndex: 3,
-          boxShadow: '0 16px 56px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.10)',
-          transform:  revealed ? 'translateY(0)' : `translateY(${SLIDE_Y}px)`,
-          transition: revealed ? 'transform 1.0s cubic-bezier(0.22, 1, 0.36, 1) 0.38s' : 'none',
-          willChange: 'transform',
+        <p style={{
+          fontFamily: "'Gowun Batang', serif", fontSize: '0.76rem',
+          color: 'rgba(255,255,255,0.38)', letterSpacing: '1.5px',
+          lineHeight: 2, marginBottom: '28px', textAlign: 'center',
+          padding: '0 24px',
         }}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          원활한 식사 제공을 위해 참석 인원 확인이 필요합니다
+        </p>
 
-            {/* RSVP title */}
-            <div style={{ textAlign: 'center', padding: '18px 0 14px', ...hairline }}>
-              <h2 style={{
-                fontFamily: "'PP Editorial Old', 'Cormorant Garamond', serif",
-                fontStyle: 'italic', fontWeight: 200, fontSize: '1.9rem',
-                color: '#111', margin: 0, lineHeight: 1, letterSpacing: '2px',
-              }}>RSVP</h2>
-            </div>
-
-            {submitted ? (
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p style={{ textAlign: 'center', fontSize: '0.88rem', color: '#111', lineHeight: 2 }}>
-                  전달해 주셔서 감사합니다 ✓
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-
-                {/* 참석 / 불참 */}
-                <div style={{ display: 'flex', ...hairline }}>
-                  {(['yes', 'no'] as const).map((v, i) => (
-                    <button key={v} type="button" onClick={() => setAttendance(v)} style={{
-                      flex: 1, padding: '11px 0', border: 'none',
-                      borderRight: i === 0 ? '1px solid #ebebeb' : 'none',
-                      background: form.attendance === v ? '#111' : '#f8f8f8',
-                      color: form.attendance === v ? 'white' : '#bbb',
-                      fontSize: '0.76rem', fontFamily: 'inherit',
-                      cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '1.5px',
-                    }}>
-                      {v === 'yes' ? '참석' : '불참'}
-                    </button>
-                  ))}
-                </div>
-
-                {/* 성함 | 전화번호 */}
-                <div style={{ display: 'flex', ...hairline }}>
-                  {[
-                    { k: 'name',    lb: 'Name',  ph: '성함',    t: 'text' },
-                    { k: 'contact', lb: 'Phone', ph: '전화번호', t: 'tel'  },
-                  ].map((f, i) => (
-                    <div key={f.k} style={{
-                      flex: 1, padding: '10px 14px',
-                      borderRight: i === 0 ? '1px solid #ebebeb' : 'none',
-                      display: 'flex', flexDirection: 'column', gap: '5px',
-                    }}>
-                      <span style={labelSt}>{f.lb}</span>
-                      <input
-                        type={f.t} placeholder={f.ph}
-                        value={form[f.k as 'name' | 'contact']}
-                        onChange={e => setForm(p => ({ ...p, [f.k]: e.target.value }))}
-                        style={{
-                          border: 'none', borderBottom: '1px solid #ddd',
-                          outline: 'none', fontSize: '0.85rem',
-                          background: 'transparent', fontFamily: 'inherit',
-                          color: '#111', width: '100%', padding: '3px 0 5px',
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* 참석 인원 */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: '20px', padding: '12px 0', ...hairline,
-                }}>
-                  {([-1, 1] as const).map(d => (
-                    <button key={d} type="button" onClick={() => adjustGuests(d)}
-                      disabled={form.attendance === 'no'}
-                      style={{
-                        width: '28px', height: '28px',
-                        border: '1px solid #e0e0e0', borderRadius: '50%',
-                        background: 'none', cursor: form.attendance === 'no' ? 'not-allowed' : 'pointer',
-                        fontSize: '1rem', display: 'flex',
-                        alignItems: 'center', justifyContent: 'center',
-                        color: '#999', fontFamily: 'inherit',
-                        opacity: form.attendance === 'no' ? 0.3 : 1, transition: 'opacity 0.2s',
-                      }}
-                    >{d < 0 ? '−' : '+'}</button>
-                  ))}
-                  <div style={{ textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.95rem', color: '#111', display: 'block' }}>
-                      {form.totalGuests}명
-                    </span>
-                    <span style={labelSt}>참석 인원</span>
-                  </div>
-                </div>
-
-                {/* 전달하기 */}
-                <div style={{ padding: '12px 18px 16px', marginTop: 'auto' }}>
-                  <button type="submit" disabled={!canSubmit} style={{
-                    width: '100%', padding: '13px',
-                    background: '#111', color: 'white', border: 'none',
-                    fontSize: '0.78rem', fontFamily: 'inherit',
-                    cursor: canSubmit ? 'pointer' : 'not-allowed',
-                    opacity: canSubmit ? 1 : 0.35,
-                    transition: 'opacity 0.15s', letterSpacing: '2.5px',
-                  }}>
-                    {submitting ? '전송 중...' : '전달하기'}
-                  </button>
-                </div>
-
-              </form>
-            )}
-          </div>
-        </div>
-
-        {/* ── z:5  ENVELOPE FRONT (V-notch) — covers card bottom, shows envelope ── */}
-        {/* Sits at ENV_TOP, clipped to keep just the outer shell (V opening at top) */}
+        {/* ─── 봉투 씬 컨테이너 ─────────────────────────────────────────────── */}
+        {/* overflow: visible → 카드가 컨테이너 위로 솟아오를 수 있도록         */}
         <div style={{
-          position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
-          height: `${ENV_H}px`, zIndex: 5,
-          clipPath: 'polygon(0% 100%, 0% 28%, 50% 68%, 100% 28%, 100% 100%)',
-          boxShadow: '0 8px 36px rgba(0,0,0,0.22)',
-          ...pngBg(envelopeBodySrc),
-        }} />
-
-        {/* ── z:6  PENTAGON FLAP — hinged at bottom (y = ENV_TOP = 300) ─────────── */}
-        {/* Element placed at FLAP_TOP (y=195), height FLAP_H (105px).              */}
-        {/* transformOrigin '50% 100%' = hinge at the element's BOTTOM edge (y=300). */}
-        {/* Initially flat (rotateX 0), opens to -180deg when revealed.             */}
-        <div style={{
-          position: 'absolute', top: `${FLAP_TOP}px`, left: 0, right: 0,
-          height: `${FLAP_H}px`,
-          perspective: '800px',
-          zIndex: 6,
-          pointerEvents: 'none',
+          position: 'relative',
+          width: '100%', maxWidth: `${CARD_W + 60}px`,
+          height: `${CONTAINER_H}px`,
+          // overflow: visible (default) — card slides above container
         }}>
+
+          {/* z:1 — 봉투 뒷면 (전체 높이): 닫힌 상태에서 봉투 전체가 보임 */}
           <div style={{
-            position: 'absolute', inset: 0,
-            transformOrigin: '50% 100%',
-            transform: revealed ? 'rotateX(-180deg)' : 'rotateX(0deg)',
-            transition: 'transform 0.75s cubic-bezier(0.4, 0, 0.2, 1)',
-            backfaceVisibility: 'hidden',
-          }}>
-            {/* Pentagon shape: full-width top → narrows at 60% → point at bottom */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              clipPath: 'polygon(0% 0%, 100% 0%, 100% 60%, 50% 100%, 0% 60%)',
-              filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.22))',
-              ...pngBg(envelopeTopSrc),
-            }}>
-              {/* Monogram */}
-              <div style={{
-                position: 'absolute', top: '32%', left: '50%',
-                transform: 'translate(-50%, -50%)',
-                fontFamily: "'Cormorant Garamond', serif",
-                fontStyle: 'italic', fontSize: '0.82rem',
-                color: 'rgba(110,98,84,0.65)',
-                letterSpacing: '3px', whiteSpace: 'nowrap', userSelect: 'none',
-              }}>J &amp; J</div>
+            position: 'absolute', top: 0, left: 0, right: 0,
+            height: `${CONTAINER_H}px`, zIndex: 1,
+            ...pngBg(envelopeBodySrc),
+          }} />
+
+          {/* z:2 — 내부 안감: 봉투 열렸을 때 안쪽 보임 */}
+          <div style={{
+            position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
+            height: `${ENV_H}px`, zIndex: 2,
+            ...pngBg(envelopeInnerSrc),
+          }} />
+
+          {/* z:3 — 카드: 스크롤에 따라 translateY로 봉투 속→위로 이동 */}
+          <div
+            ref={cardRef}
+            style={{
+              position: 'absolute',
+              top:  `${CARD_BASE_Y}px`,
+              left: '50%',
+              transform: 'translateX(-50%) translateY(0px)',  // scroll handler가 업데이트
+              width:  `${CARD_W}px`,
+              height: `${CARD_H}px`,
+              background: '#fff',
+              zIndex: 3,
+              boxShadow: '0 16px 48px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.12)',
+            }}
+          >
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+              {/* RSVP 제목 */}
+              <div style={{ textAlign: 'center', padding: '12px 0 10px', ...hairline }}>
+                <h2 style={{
+                  fontFamily: "'PP Editorial Old', 'Cormorant Garamond', serif",
+                  fontStyle: 'italic', fontWeight: 200, fontSize: '1.55rem',
+                  color: '#111', margin: 0, lineHeight: 1, letterSpacing: '2px',
+                }}>RSVP</h2>
+              </div>
+
+              {submitted ? (
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <p style={{ textAlign: 'center', fontSize: '0.82rem', color: '#111', lineHeight: 2 }}>
+                    전달해 주셔서 감사합니다 ✓
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+
+                  {/* 참석 / 불참 */}
+                  <div style={{ display: 'flex', ...hairline }}>
+                    {(['yes', 'no'] as const).map((v, i) => (
+                      <button key={v} type="button" onClick={() => setAttendance(v)} style={{
+                        flex: 1, padding: '9px 0', border: 'none',
+                        borderRight: i === 0 ? '1px solid #ebebeb' : 'none',
+                        background: form.attendance === v ? '#111' : '#f8f8f8',
+                        color:      form.attendance === v ? 'white' : '#bbb',
+                        fontSize: '0.72rem', fontFamily: 'inherit',
+                        cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '1.5px',
+                      }}>
+                        {v === 'yes' ? '참석' : '불참'}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* 성함 | 전화번호 */}
+                  <div style={{ display: 'flex', ...hairline }}>
+                    {[
+                      { k: 'name',    lb: 'Name',  ph: '성함',    t: 'text' },
+                      { k: 'contact', lb: 'Phone', ph: '전화번호', t: 'tel'  },
+                    ].map((f, i) => (
+                      <div key={f.k} style={{
+                        flex: 1, padding: '8px 12px',
+                        borderRight: i === 0 ? '1px solid #ebebeb' : 'none',
+                        display: 'flex', flexDirection: 'column', gap: '3px',
+                      }}>
+                        <span style={labelSt}>{f.lb}</span>
+                        <input
+                          type={f.t} placeholder={f.ph}
+                          value={form[f.k as 'name' | 'contact']}
+                          onChange={e => setForm(p => ({ ...p, [f.k]: e.target.value }))}
+                          style={{
+                            border: 'none', borderBottom: '1px solid #ddd',
+                            outline: 'none', fontSize: '0.82rem',
+                            background: 'transparent', fontFamily: 'inherit',
+                            color: '#111', width: '100%', padding: '2px 0 4px',
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 참석 인원 */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '16px', padding: '9px 0', ...hairline,
+                  }}>
+                    {([-1, 1] as const).map(d => (
+                      <button key={d} type="button" onClick={() => adjustGuests(d)}
+                        disabled={form.attendance === 'no'}
+                        style={{
+                          width: '24px', height: '24px',
+                          border: '1px solid #e0e0e0', borderRadius: '50%',
+                          background: 'none',
+                          cursor: form.attendance === 'no' ? 'not-allowed' : 'pointer',
+                          fontSize: '0.9rem', display: 'flex',
+                          alignItems: 'center', justifyContent: 'center',
+                          color: '#999', fontFamily: 'inherit',
+                          opacity: form.attendance === 'no' ? 0.3 : 1,
+                        }}
+                      >{d < 0 ? '−' : '+'}</button>
+                    ))}
+                    <div style={{ textAlign: 'center' }}>
+                      <span style={{ fontSize: '0.88rem', color: '#111', display: 'block' }}>
+                        {form.totalGuests}명
+                      </span>
+                      <span style={labelSt}>참석 인원</span>
+                    </div>
+                  </div>
+
+                  {/* 전달하기 */}
+                  <div style={{ padding: '8px 14px 12px', marginTop: 'auto' }}>
+                    <button type="submit" disabled={!canSubmit} style={{
+                      width: '100%', padding: '10px',
+                      background: '#111', color: 'white', border: 'none',
+                      fontSize: '0.72rem', fontFamily: 'inherit',
+                      cursor: canSubmit ? 'pointer' : 'not-allowed',
+                      opacity: canSubmit ? 1 : 0.35,
+                      transition: 'opacity 0.15s', letterSpacing: '2.5px',
+                    }}>
+                      {submitting ? '전송 중...' : '전달하기'}
+                    </button>
+                  </div>
+
+                </form>
+              )}
             </div>
           </div>
-        </div>
 
+          {/* z:6 — 오각형 플랩: transformOrigin top (y=ENV_TOP), 스크롤 → rotateX 증가 */}
+          {/* 0deg=닫힘, ~90deg에서 backface hidden으로 사라짐, 200deg=완전 열림 */}
+          <div style={{
+            position: 'absolute',
+            top: `${ENV_TOP}px`,
+            left: 0, right: 0,
+            height: `${ENV_H}px`,
+            perspective: '800px',
+            zIndex: 6,
+            pointerEvents: 'none',
+          }}>
+            <div
+              ref={flapInnerRef}
+              style={{
+                position: 'absolute', inset: 0,
+                transformOrigin: '50% 0%',          // 힌지: 플랩 위쪽 모서리(=봉투 입구)
+                transform: 'rotateX(0deg)',          // 초기: 닫힘
+                backfaceVisibility: 'hidden',        // 90deg 이후 뒷면 숨김
+                WebkitBackfaceVisibility: 'hidden',
+              }}
+            >
+              {/* 오각형 클립 */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.22))',
+                ...pngBg(envelopeTopSrc),
+              }}>
+                {/* 모노그램 */}
+                <div style={{
+                  position: 'absolute', top: '26%', left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontStyle: 'italic', fontSize: '0.78rem',
+                  color: 'rgba(110,98,84,0.65)',
+                  letterSpacing: '3px', whiteSpace: 'nowrap', userSelect: 'none',
+                }}>J &amp; J</div>
+              </div>
+            </div>
+          </div>
+
+          {/* z:10 — 봉투 앞면 하단 (V-노치): 카드 아래 부분을 가림 */}
+          <div style={{
+            position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
+            height: `${ENV_H}px`, zIndex: 10,
+            clipPath: 'polygon(0% 100%, 0% 22%, 50% 78%, 100% 22%, 100% 100%)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.24)',
+            ...pngBg(envelopeBodySrc),
+          }} />
+
+          {/* z:11 — 하단 립 (삼각형): V 아래 봉투 바닥 */}
+          <div style={{
+            position: 'absolute', top: `${ENV_TOP}px`, left: 0, right: 0,
+            height: `${ENV_H}px`, zIndex: 11,
+            clipPath: 'polygon(18% 44%, 82% 44%, 100% 100%, 0% 100%)',
+            ...pngBg(envelopeBodySrc),
+          }} />
+
+        </div>
       </div>
     </section>
   )
