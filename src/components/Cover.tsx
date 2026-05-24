@@ -117,16 +117,18 @@ export default function Cover() {
       </div>
 
       {/* 사진 */}
-      <div style={{
-        width: '100%',
-        maxWidth: '520px',
-        aspectRatio: '4 / 5',
-        maxHeight: '50vh',
-        overflow: 'hidden',
-        margin: '0 auto',
-        borderRadius: '12px',
-        ...a(700, 'scaleIn'),
-      }}>
+      <div 
+        className="cover-image-container"
+        style={{
+          width: '100%',
+          maxWidth: '520px',
+          aspectRatio: '4 / 5',
+          overflow: 'hidden',
+          margin: '0 auto',
+          borderRadius: '12px',
+          ...a(700, 'scaleIn'),
+        }}
+      >
         <img
           src="/Image/Mobile_Main.webp"
           alt="커버 사진"
