@@ -160,3 +160,15 @@ section.dark-section {
     transform: translateY(0);
   }
 }
+
+.cover-image-container {
+  /* 모바일 환경: 세로가 긴 화면. 한 화면에 담기 위해 높이 제한 필요 */
+  max-height: 50svh; /* svh를 사용하여 모바일 브라우저 UI를 고려 */
+}
+
+@media (min-width: 768px) {
+  .cover-image-container {
+    /* PC/가로 모드 환경: 화면 세로 길이가 짧으므로 사진 비율을 우선시하여 잘림 방지 */
+    max-height: none; /* PC에서는 이미지 잘림을 방지하기 위해 제한 해제 (maxWidth 520px 기준 최대 높이는 650px) */
+  }
+}

@@ -113,7 +113,7 @@ export default function AccountInfo() {
                         padding: '8px 20px',
                         background: copiedKey === key ? 'var(--point-color)' : 'white',
                         color: copiedKey === key ? 'white' : 'var(--point-color)',
-                        border: '1px solid var(--point-color)',
+                        border: 'none',
                         borderRadius: '20px',
                         fontSize: '0.85rem', cursor: 'pointer',
                         fontFamily: 'inherit',
