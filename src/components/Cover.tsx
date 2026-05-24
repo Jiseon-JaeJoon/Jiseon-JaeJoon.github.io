@@ -1,6 +1,6 @@
 import { useReveal } from '../hooks/useReveal'
 
-const INVITED_WORDS = ["You are", "invited", "to", "the", "wedding", "of"]
+const INVITED_WORDS = ["You're", "invited", "to", "the", "wedding", "of"]
 
 export default function Cover() {
   const { ref, revealed } = useReveal(0.05)
