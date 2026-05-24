@@ -10,17 +10,15 @@ const COLLECTION = import.meta.env.DEV ? 'rsvp_dev' : 'rsvp'
 
 // ── Layout (레퍼런스 사이트 치수 그대로 재현) ──────────────────────────────────
 // 레퍼런스: container 680px, card top 460px / h 200px, env top 450px / h 200px
-// 우리 사이즈: 모바일 맞춰 약간 축소
-const CONTAINER_H  = 580   // 씬 전체 높이
-const CARD_W       = 320   // 카드 너비
-const CARD_H       = 195   // 카드 높이 (컴팩트)
-const CARD_BASE_Y  = 375   // 카드 초기 top (봉투 안, 봉투 top보다 약간 아래)
-const ENV_TOP      = 365   // 봉투 body 시작 y
-const ENV_H        = 190   // 봉투 body 높이
+const CONTAINER_H  = 600   // 씬 전체 높이
+const CARD_W       = 330   // 카드 너비 (레퍼런스 동일)
+const CARD_H       = 200   // 카드 높이 (레퍼런스 동일)
+const CARD_BASE_Y  = 390   // 카드 초기 top (봉투 안)
+const ENV_TOP      = 380   // 봉투 body 시작 y
+const ENV_H        = 200   // 봉투 body 높이
 
-// 카드가 스크롤에 따라 이동하는 총 거리 (위로)
-// 완전히 나왔을 때: 카드 top = CARD_BASE_Y + CARD_Y_TRAVEL = 375 - 315 = 60
-const CARD_Y_TRAVEL = -(CARD_BASE_Y - 60)  // -315px
+// 완전히 나왔을 때: 카드 top = CARD_BASE_Y + CARD_Y_TRAVEL = 390 - 330 = 60
+const CARD_Y_TRAVEL = -(CARD_BASE_Y - 60)  // -330px
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v }
@@ -66,12 +64,12 @@ export default function Rsvp() {
       // 섹션 top이 0(뷰포트 상단)이 됐을 때부터 progress 시작
       const scrolled = clamp01(-rect.top / (sectH - vh))
 
-      // 플랩: 스크롤 시작부터 45%까지 0→200deg (먼저 열림)
-      const flapP    = easeOut3(clamp01(scrolled / 0.45))
+      // 플랩: 스크롤 30%까지 0→200deg (먼저 빠르게 열림)
+      const flapP    = easeOut3(clamp01(scrolled / 0.30))
       const flapAngle = lerp(0, 200, flapP)
 
-      // 카드: 5% 지연 후 95%까지 안으로→밖으로
-      const cardP    = easeOut3(clamp01((scrolled - 0.05) / 0.90))
+      // 카드: 2% 지연 후 55%까지 완전히 올라옴 → 스크롤 중간쯤에 등장
+      const cardP    = easeOut3(clamp01((scrolled - 0.02) / 0.53))
       const cardY    = lerp(0, CARD_Y_TRAVEL, cardP)
 
       if (cardRef.current) {
@@ -133,7 +131,7 @@ export default function Rsvp() {
       className="dark-section"
       style={{
         display: 'block',
-        minHeight: '200vh',
+        minHeight: '150vh',
         padding: 0,
         background: 'linear-gradient(to bottom, #1c1917 0%, #111111 60%)',
         position: 'relative',
@@ -143,13 +141,14 @@ export default function Rsvp() {
         transition: 'opacity 1.8s ease-out',
       }}
     >
-      {/* ─── sticky wrapper: 뷰포트에 고정된 채 봉투 씬을 보여줌 ─────────────── */}
+      {/* ─── sticky wrapper: 뷰포트 중앙에 고정 (top:50% + translateY(-50%)) ── */}
+      {/* overflow:visible 유지 → 플랩 3D 회전 클리핑 방지                       */}
       <div style={{
-        position: 'sticky', top: 0,
-        height: '100vh',
+        position: 'sticky',
+        top: '50%',
+        transform: 'translateY(-50%)',
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        overflow: 'hidden',
+        alignItems: 'center',
       }}>
 
         <p style={{
@@ -162,12 +161,10 @@ export default function Rsvp() {
         </p>
 
         {/* ─── 봉투 씬 컨테이너 ─────────────────────────────────────────────── */}
-        {/* overflow: visible → 카드가 컨테이너 위로 솟아오를 수 있도록         */}
         <div style={{
           position: 'relative',
           width: '100%', maxWidth: `${CARD_W + 60}px`,
           height: `${CONTAINER_H}px`,
-          // overflow: visible (default) — card slides above container
         }}>
 
           {/* z:1 — 봉투 뒷면 (전체 높이): 닫힌 상태에서 봉투 전체가 보임 */}
