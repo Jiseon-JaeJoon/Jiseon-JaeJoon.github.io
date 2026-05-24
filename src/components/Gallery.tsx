@@ -4,16 +4,13 @@ import { useReveal } from '../hooks/useReveal'
 
 const photos = [
   'IMG_0221.webp',
-  'LCS_0002.webp', 'LCS_0240.webp', 'LCS_0340.webp', 'LCS_0436.webp',
-  'LCS_0672.webp', 'LCS_0678.webp', 'LCS_0686.webp', 'LCS_0711.webp',
-  'LCS_0715.webp', 'LCS_0750.webp', 'LCS_0760.webp', 'LCS_0793.webp',
-  'LCS_0805.webp', 'LCS_0872.webp', 'LCS_0916.webp', 'LCS_0953.webp',
-  'LCS_0967.webp', 'LCS_0980.webp', 'LCS_1011.webp', 'LCS_1070.webp',
+  'LCS_0240.webp', 'LCS_0340.webp', 'LCS_0672.webp', 'LCS_0678.webp',
+  'LCS_0711.webp', 'LCS_0760.webp', 'LCS_0793.webp',
+  'LCS_0805.webp', 'LCS_0980.webp',
   'LCS_1122.webp', 'LCS_1145.webp', 'LCS_1168.webp', 'LCS_1209.webp',
-  'LCS_1211.webp', 'LCS_1224.webp', 'LCS_1398.webp', 'LCS_1433.webp',
-  'LCS_1492.webp', 'LCS_1587.webp', 'LCS_1644.webp', 'LCS_1690.webp',
-  'LCS_1691.webp', 'LCS_1888.webp', 'LCS_1991.webp', 'LCS_1998.webp',
-  'LCS_2005.webp', 'LCS_2337.webp',
+  'LCS_1398.webp', 'LCS_1492.webp',
+  'LCS_1587.webp', 'LCS_1644.webp', 'LCS_1888.webp', 'LCS_1991.webp',
+  'LCS_1998.webp', 'LCS_2005.webp', 'LCS_2337.webp',
 ]
 
 const GAP = 10
@@ -28,14 +25,14 @@ export default function Gallery() {
   const [carTouchStart, setCarTouchStart] = useState<number | null>(null)
 
   const handleTouchStart = (e: React.TouchEvent) => setLbTouchStart(e.touches[0].clientX)
-  const handleTouchEnd   = (e: React.TouchEvent) => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     if (lbTouchStart === null) return
     const diff = lbTouchStart - e.changedTouches[0].clientX
     if (Math.abs(diff) > 50) diff > 0 ? nextLb() : prevLb()
     setLbTouchStart(null)
   }
 
-  const open  = (idx: number) => setLightbox(idx)
+  const open = (idx: number) => setLightbox(idx)
   const close = () => setLightbox(null)
   const prevLb = () => setLightbox(i => i !== null ? (i - 1 + photos.length) % photos.length : null)
   const nextLb = () => setLightbox(i => i !== null ? (i + 1) % photos.length : null)
@@ -61,9 +58,9 @@ export default function Gallery() {
   useEffect(() => {
     if (lightbox === null) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft')  prevLb()
+      if (e.key === 'ArrowLeft') prevLb()
       if (e.key === 'ArrowRight') nextLb()
-      if (e.key === 'Escape')     close()
+      if (e.key === 'Escape') close()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
