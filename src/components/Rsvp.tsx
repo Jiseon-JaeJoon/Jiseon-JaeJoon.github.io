@@ -69,20 +69,19 @@ export default function Rsvp() {
       const vh      = window.innerHeight
       const scrolled = clamp01(-rect.top / (sectH - vh))
 
-      // 플랩: 선형, 55% 스크롤까지 열림
-      const flapAngle = lerp(0, 200, clamp01(scrolled / 0.55))
+      // 플랩: 스크롤에 따라 살짝 커지는 느낌 (0.96→1.0), 3D 회전 없음
+      const flapScale = lerp(0.96, 1.0, clamp01(scrolled / 0.55))
 
-      // 카드: 20% 지연 후 상승 (플랩이 충분히 열린 후), easeOut2 적용
+      // 카드: 20% 지연 후 상승, easeOut2 적용
       const t = easeOut2(clamp01((scrolled - 0.20) / 0.75))
       const cardY     = lerp(0, CARD_Y_TRAVEL, t)
-      // 미묘한 스케일로 "봉투에서 꺼내는" 느낌
       const cardScale = lerp(0.96, 1.0, t)
 
       if (cardRef.current) {
         cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px) scale(${cardScale})`
       }
       if (flapInnerRef.current) {
-        flapInnerRef.current.style.transform = `rotateX(${flapAngle}deg)`
+        flapInnerRef.current.style.transform = `scale(${flapScale})`
       }
     }
 
@@ -341,32 +340,31 @@ export default function Rsvp() {
               </div>
             </div>
 
-            {/* z:12 플랩 — 봉투와 같은 크림색으로 하나로 이어지는 느낌 */}
+            {/* z:2 플랩 — 이미 열린 상태의 오각형. 스크롤로 살짝 커짐 (3D 회전 없음) */}
             <div style={{
               position: 'absolute', left: '50%', transform: 'translateX(-50%)',
               top: `${FLAP_TOP}px`, width: `${ENV_W}px`, height: `${FLAP_H}px`,
-              perspective: '900px', zIndex: 12, pointerEvents: 'none',
+              zIndex: 2, pointerEvents: 'none',
             }}>
               <div
                 ref={flapInnerRef}
                 style={{
                   position: 'absolute', inset: 0,
-                  transformOrigin: '50% 100%',   // 봉투 입구(하단)를 축으로 열림
-                  transform: 'rotateX(0deg)',
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
+                  transformOrigin: '50% 100%',   // 봉투 접힘선(하단)을 기준으로 스케일
+                  transform: 'scale(0.96)',
                   willChange: 'transform',
                 }}
               >
                 <div style={{
                   position: 'absolute', inset: 0,
-                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                  // 위로 향하는 오각형 — 레퍼런스처럼 "열린 봉투 뚜껑" 형태
+                  clipPath: 'polygon(50% 0%, 100% 50%, 100% 100%, 0% 100%, 0% 50%)',
                   backgroundColor: ENV_COLOR,
-                  filter: 'drop-shadow(0 -3px 12px rgba(0,0,0,0.35))',
+                  filter: 'drop-shadow(0 -6px 18px rgba(0,0,0,0.40))',
                 }}>
-                  {/* 플랩 상단 이니셜 */}
+                  {/* 이니셜 — 오각형 중상단 */}
                   <div style={{
-                    position: 'absolute', top: '22%', left: '50%',
+                    position: 'absolute', top: '28%', left: '50%',
                     transform: 'translate(-50%, -50%)',
                     fontFamily: "'Cormorant Garamond', serif",
                     fontStyle: 'italic', fontSize: '0.78rem',
@@ -374,21 +372,21 @@ export default function Rsvp() {
                     letterSpacing: '4px', whiteSpace: 'nowrap', userSelect: 'none',
                   }}>J &amp; J</div>
 
-                  {/* 왁스 씰 — 봉투 잠금 포인트 (레퍼런스 style) */}
+                  {/* 왁스 씰 — 접힘선 바로 위 (레퍼런스처럼 봉투 중심부에 위치) */}
                   <div style={{
-                    position: 'absolute', top: '68%', left: '50%',
+                    position: 'absolute', top: '78%', left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: '42px', height: '42px', borderRadius: '50%',
+                    width: '44px', height: '44px', borderRadius: '50%',
                     backgroundColor: SEAL_COLOR,
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.40), inset 0 1px 3px rgba(255,255,255,0.22)',
-                    border: '1px solid rgba(255,255,255,0.15)',
+                    boxShadow: '0 3px 14px rgba(0,0,0,0.50), inset 0 1px 4px rgba(255,255,255,0.25)',
+                    border: '1.5px solid rgba(255,255,255,0.20)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     userSelect: 'none',
                   }}>
                     <span style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontStyle: 'italic', fontSize: '0.62rem',
-                      color: 'rgba(255,255,255,0.90)', letterSpacing: '1px',
+                      color: 'rgba(255,255,255,0.92)', letterSpacing: '1px',
                     }}>J·J</span>
                   </div>
                 </div>
