@@ -16,7 +16,7 @@ const FLAP_H       = ENV_H
 const FLAP_TOP     = ENV_TOP - FLAP_H   // = 150px (어두운 배경 위)
 // 카드: 봉투 안에서 시작 (410-610px) → 스크롤 완료 시 봉투 위로 완전히 올라옴
 const CARD_BASE_Y  = 410               // 봉투 내부 시작 (card bottom=610=ENV_BOTTOM, 딱 맞게 숨김)
-const CARD_Y_TRAVEL = -230             // 최종: top=180px, bottom=380px=ENV_TOP (카드 전체 봉투 위에 노출)
+const CARD_Y_TRAVEL = -200             // 최종: top=210px, bottom=410px=ENV_TOP (카드 자연스럽게 노출)
 
 // ── 봉투 색상 (전체 통일로 하나의 물체처럼) ──────────────────────────────────────
 const ENV_COLOR   = '#ebe5d8'   // 봉투 전체 크림
@@ -69,11 +69,12 @@ export default function Rsvp() {
       const vh      = window.innerHeight
       const scrolled = clamp01(-rect.top / (sectH - vh))
 
-      // 플랩: 스크롤에 따라 살짝 커지는 느낌 (0.96→1.0), 3D 회전 없음
-      const flapScale = lerp(0.96, 1.0, clamp01(scrolled / 0.55))
+      // 오각형 플랩: 0에서 시작 → 연속적으로 펼쳐짐 (fold line 기준으로 위로)
+      const flapOpacity = clamp01(scrolled / 0.12)                    // 빠른 페이드인
+      const flapScale   = easeOut2(clamp01(scrolled / 0.50))          // 0→1 자연스럽게 펼쳐짐
 
-      // 카드: 20% 지연 후 상승, easeOut2 적용
-      const t = easeOut2(clamp01((scrolled - 0.20) / 0.75))
+      // 카드: 30% 지연 후 상승 (오각형 충분히 나온 후), 이동량 줄임
+      const t         = easeOut2(clamp01((scrolled - 0.30) / 0.65))
       const cardY     = lerp(0, CARD_Y_TRAVEL, t)
       const cardScale = lerp(0.96, 1.0, t)
 
@@ -82,6 +83,7 @@ export default function Rsvp() {
       }
       if (flapInnerRef.current) {
         flapInnerRef.current.style.transform = `scale(${flapScale})`
+        flapInnerRef.current.style.opacity   = `${flapOpacity}`
       }
     }
 
@@ -176,7 +178,7 @@ export default function Rsvp() {
         className="dark-section"
         style={{
           display: 'block',
-          minHeight: '130vh',
+          minHeight: '120vh',
           padding: 0,
           background: 'linear-gradient(to bottom, #1c1917 0%, #111111 60%)',
           position: 'relative',
@@ -351,8 +353,9 @@ export default function Rsvp() {
                 style={{
                   position: 'absolute', inset: 0,
                   transformOrigin: '50% 100%',   // 봉투 접힘선(하단)을 기준으로 스케일
-                  transform: 'scale(0.96)',
-                  willChange: 'transform',
+                  transform: 'scale(0)',          // 처음엔 invisible → 스크롤 시 펼쳐짐
+                  opacity: 0,
+                  willChange: 'transform, opacity',
                 }}
               >
                 <div style={{
