@@ -12,9 +12,8 @@ const CARD_H       = 200
 const ENV_W        = 336
 const ENV_TOP      = 380
 const ENV_H        = 230
-const FLAP_H       = ENV_H
-const FLAP_TOP     = ENV_TOP - FLAP_H   // = 150px (어두운 배경 위)
-// 카드: 봉투 안에서 시작 (410-610px) → 스크롤 완료 시 봉투 위로 완전히 올라옴
+const FLAP_H       = ENV_H               // 플랩 높이 = 봉투 높이 (pivot: ENV_TOP 상단)
+// 카드: 봉투 안에서 시작 (410-610px) → 스크롤 완료 시 봉투 위로 올라옴
 const CARD_BASE_Y  = 410               // 봉투 내부 시작 (card bottom=610=ENV_BOTTOM, 딱 맞게 숨김)
 const CARD_Y_TRAVEL = -200             // 최종: top=210px, bottom=410px=ENV_TOP (카드 자연스럽게 노출)
 
@@ -69,21 +68,19 @@ export default function Rsvp() {
       const vh      = window.innerHeight
       const scrolled = clamp01(-rect.top / (sectH - vh))
 
-      // 오각형 플랩: 0에서 시작 → 연속적으로 펼쳐짐 (fold line 기준으로 위로)
-      const flapOpacity = clamp01(scrolled / 0.12)                    // 빠른 페이드인
-      const flapScale   = easeOut2(clamp01(scrolled / 0.50))          // 0→1 자연스럽게 펼쳐짐
+      // 플랩: edge-on(90°) → 열린 상태(185°), rotateX 3D 폴드 (레퍼런스 스타일)
+      const flapAngle = lerp(90, 185, easeOut2(clamp01(scrolled / 0.55)))
 
-      // 카드: 30% 지연 후 상승 (오각형 충분히 나온 후), 이동량 줄임
-      const t         = easeOut2(clamp01((scrolled - 0.30) / 0.65))
-      const cardY     = lerp(0, CARD_Y_TRAVEL, t)
-      const cardScale = lerp(0.96, 1.0, t)
+      // 카드: 30% 지연, translateY + rotateX 동시 (봉투 안에서 기울어진 채 일어남)
+      const t        = easeOut2(clamp01((scrolled - 0.30) / 0.65))
+      const cardY    = lerp(0, CARD_Y_TRAVEL, t)
+      const cardRotX = lerp(30, 5, t)
 
       if (cardRef.current) {
-        cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px) scale(${cardScale})`
+        cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px) rotateX(${cardRotX}deg)`
       }
       if (flapInnerRef.current) {
-        flapInnerRef.current.style.transform = `scale(${flapScale})`
-        flapInnerRef.current.style.opacity   = `${flapOpacity}`
+        flapInnerRef.current.style.transform = `rotateX(${flapAngle}deg)`
       }
     }
 
@@ -203,6 +200,7 @@ export default function Rsvp() {
             width: `${ENV_W + 60}px`,
             maxWidth: '100%',
             height: `${CONTAINER_H}px`,
+            perspective: '1000px',
           }}>
 
             {/* z:1 봉투 뒷면 — 같은 크림색, 전체 그림자 */}
@@ -225,7 +223,8 @@ export default function Rsvp() {
               style={{
                 position: 'absolute',
                 top: `${CARD_BASE_Y}px`, left: '50%',
-                transform: 'translateX(-50%) translateY(0px) scale(0.96)',
+                transform: 'translateX(-50%) translateY(0px) rotateX(30deg)',
+                transformOrigin: '50% 0%',
                 width: `${CARD_W}px`, height: `${CARD_H}px`,
                 background: '#fff', zIndex: 3, overflow: 'hidden',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.2)',
@@ -342,42 +341,31 @@ export default function Rsvp() {
               </div>
             </div>
 
-            {/* z:2 플랩 — 이미 열린 상태의 오각형. 스크롤로 살짝 커짐 (3D 회전 없음) */}
+            {/* z:2 플랩 — 레퍼런스 스타일: rotateX 3D 폴드, top=ENV_TOP, transform-origin 상단 */}
             <div style={{
               position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-              top: `${FLAP_TOP}px`, width: `${ENV_W}px`, height: `${FLAP_H}px`,
+              top: `${ENV_TOP}px`, width: `${ENV_W}px`, height: `${FLAP_H}px`,
               zIndex: 2, pointerEvents: 'none',
             }}>
               <div
                 ref={flapInnerRef}
                 style={{
                   position: 'absolute', inset: 0,
-                  transformOrigin: '50% 100%',   // 봉투 접힘선(하단)을 기준으로 스케일
-                  transform: 'scale(0)',          // 처음엔 invisible → 스크롤 시 펼쳐짐
-                  opacity: 0,
-                  willChange: 'transform, opacity',
+                  transformOrigin: '50% 0%',     // fold line(상단)을 기준으로 rotateX
+                  transform: 'rotateX(90deg)',    // 초기: edge-on = invisible
+                  willChange: 'transform',
                 }}
               >
+                {/* 아래로 향하는 오각형 — rotateX(185°)시 위로 펼쳐진 뚜껑처럼 보임 */}
                 <div style={{
                   position: 'absolute', inset: 0,
-                  // 위로 향하는 오각형 — 레퍼런스처럼 "열린 봉투 뚜껑" 형태
-                  clipPath: 'polygon(50% 0%, 100% 50%, 100% 100%, 0% 100%, 0% 50%)',
+                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%)',
                   backgroundColor: ENV_COLOR,
-                  filter: 'drop-shadow(0 -6px 18px rgba(0,0,0,0.40))',
+                  filter: 'drop-shadow(0 -8px 20px rgba(0,0,0,0.45))',
                 }}>
-                  {/* 이니셜 — 오각형 중상단 */}
+                  {/* 왁스 씰 — 오각형 중앙 (fold line 근처) */}
                   <div style={{
-                    position: 'absolute', top: '28%', left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontStyle: 'italic', fontSize: '0.78rem',
-                    color: 'rgba(100,85,65,0.55)',
-                    letterSpacing: '4px', whiteSpace: 'nowrap', userSelect: 'none',
-                  }}>J &amp; J</div>
-
-                  {/* 왁스 씰 — 접힘선 바로 위 (레퍼런스처럼 봉투 중심부에 위치) */}
-                  <div style={{
-                    position: 'absolute', top: '78%', left: '50%',
+                    position: 'absolute', top: '32%', left: '50%',
                     transform: 'translate(-50%, -50%)',
                     width: '44px', height: '44px', borderRadius: '50%',
                     backgroundColor: SEAL_COLOR,
