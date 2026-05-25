@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { collection, addDoc, onSnapshot, orderBy, query, Timestamp, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useReveal } from '../hooks/useReveal'
+import CakeTowerModal, { type GameScore } from './CakeTowerModal'
+import CakeTowerLeaderboard from './CakeTowerLeaderboard'
 
 interface Entry {
   id: string
@@ -11,6 +13,7 @@ interface Entry {
 }
 
 const COLLECTION = import.meta.env.DEV ? 'guestbook_dev' : 'guestbook'
+const SCORES_COLLECTION = import.meta.env.DEV ? 'cakeTowerScores_dev' : 'cakeTowerScores'
 const PAGE_SIZE = 5
 const MY_ENTRIES_KEY = 'my_guestbook_entries'
 
@@ -30,6 +33,7 @@ export default function Guestbook() {
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [gameOpen, setGameOpen] = useState(false)
   const [myEntries, setMyEntries] = useState<string[]>(() => getMyEntries())
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -61,7 +65,11 @@ export default function Guestbook() {
       setName('')
       setMessage('')
       setSubmitted(true)
-      setTimeout(() => setSubmitted(false), 2000)
+      setGameOpen(true)
+      setTimeout(() => setSubmitted(false), 3000)
+    } catch (err) {
+      console.error('방명록 저장 실패:', err)
+      alert('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
     } finally {
       setSubmitting(false)
     }
@@ -86,12 +94,29 @@ export default function Guestbook() {
     }
   }
 
+  const handleScore = async (data: GameScore) => {
+    try {
+      await addDoc(collection(db, SCORES_COLLECTION), {
+        nickname: data.nickname,
+        name: data.name,
+        phone: data.phone,
+        score: data.score,
+        maxCombo: data.maxCombo,
+        layers: data.layers,
+        createdAt: Timestamp.now(),
+      })
+    } catch (err) {
+      console.error('점수 저장 실패:', err)
+    }
+  }
+
   const a = (delay: number) => ({
     opacity: revealed ? undefined : 0,
     animation: revealed ? `slideUpFade 0.6s ease ${delay}ms both` : 'none',
   })
 
   return (
+    <>
     <section
       id="guestbook"
       ref={ref}
@@ -263,6 +288,10 @@ export default function Guestbook() {
           )
         })()}
       </div>
+
+      <CakeTowerLeaderboard />
     </section>
+    <CakeTowerModal isOpen={gameOpen} onClose={() => setGameOpen(false)} onScore={handleScore} />
+    </>
   )
 }

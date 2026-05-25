@@ -3,10 +3,6 @@ import { collection, addDoc, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useReveal } from '../hooks/useReveal'
 
-import envelopeBodySrc  from '../assets/envelope-Bfk8GE_u.png'
-import envelopeTopSrc   from '../assets/envelopeTop-DNGkXVSC.png'
-import envelopeInnerSrc from '../assets/envelopeInner-Bl_NByj8.png'
-
 const COLLECTION = import.meta.env.DEV ? 'rsvp_dev' : 'rsvp'
 
 // ── 봉투 씬 레이아웃 상수 ────────────────────────────────────────────────────────
@@ -14,13 +10,19 @@ const CONTAINER_H  = 640
 const CARD_W       = 310
 const CARD_H       = 200
 const ENV_W        = 336
-const ENV_TOP      = 390
-const ENV_H        = 220
+const ENV_TOP      = 380
+const ENV_H        = 230
 const FLAP_H       = ENV_H
-const FLAP_TOP     = ENV_TOP - FLAP_H   // = 170px (어두운 배경 위)
-// 카드: 봉투 깊숙이 시작 → 봉투 상단에서 100px 위까지만 상승 (봉투와 연결 유지)
-const CARD_BASE_Y  = 500
-const CARD_Y_TRAVEL = -210              // 500 → 290 (ENV_TOP-100), 봉투에서 분리되지 않게
+const FLAP_TOP     = ENV_TOP - FLAP_H   // = 150px (어두운 배경 위)
+// 카드: 봉투 안에서 시작 (410-610px) → 스크롤 완료 시 봉투 위로 완전히 올라옴
+const CARD_BASE_Y  = 410               // 봉투 내부 시작 (card bottom=610=ENV_BOTTOM, 딱 맞게 숨김)
+const CARD_Y_TRAVEL = -230             // 최종: top=180px, bottom=380px=ENV_TOP (카드 전체 봉투 위에 노출)
+
+// ── 봉투 색상 (전체 통일로 하나의 물체처럼) ──────────────────────────────────────
+const ENV_COLOR   = '#ebe5d8'   // 봉투 전체 크림
+const INNER_COLOR = '#f9f6ef'   // 봉투 안감 (밝게 — V 개구부 대비 확보)
+const FOLD_COLOR  = '#d8d0c0'   // 접힘선·하단립 (어둡게 — 물리적 그림자 표현)
+const SEAL_COLOR  = '#b8955a'   // 왁스 씰 브론즈
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v }
@@ -122,11 +124,6 @@ export default function Rsvp() {
   }
   const hairline: React.CSSProperties = { borderBottom: '1px solid #ebebeb' }
 
-  const pngBg = (src: string): React.CSSProperties => ({
-    backgroundImage: `url(${src})`,
-    backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
-  })
-
   const envEl = (extra: React.CSSProperties): React.CSSProperties => ({
     position: 'absolute', left: '50%', transform: 'translateX(-50%)',
     width: `${ENV_W}px`, ...extra,
@@ -207,16 +204,18 @@ export default function Rsvp() {
             height: `${CONTAINER_H}px`,
           }}>
 
-            {/* z:1 봉투 뒷면 (ENV_TOP부터 — 위는 어두운 배경이 보여 플랩 대비) */}
+            {/* z:1 봉투 뒷면 — 같은 크림색, 전체 그림자 */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H + 10}px`,
-              zIndex: 1, ...pngBg(envelopeBodySrc), borderRadius: '0 0 4px 4px',
+              zIndex: 1, backgroundColor: ENV_COLOR,
+              borderRadius: '0 0 6px 6px',
+              boxShadow: '0 28px 70px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.30)',
             })} />
 
-            {/* z:2 봉투 내부 안감 (플랩 열리면 보임) */}
+            {/* z:2 봉투 내부 안감 (플랩 열리면 V-갭으로 보임) */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H}px`,
-              zIndex: 2, ...pngBg(envelopeInnerSrc),
+              zIndex: 2, backgroundColor: INNER_COLOR,
             })} />
 
             {/* z:3 카드 (스크롤로 translateY 업데이트) */}
@@ -342,7 +341,7 @@ export default function Rsvp() {
               </div>
             </div>
 
-            {/* z:12 오각형 플랩 (어두운 배경 위 → 흰 오각형 뚜렷하게 보임) */}
+            {/* z:12 플랩 — 봉투와 같은 크림색으로 하나로 이어지는 느낌 */}
             <div style={{
               position: 'absolute', left: '50%', transform: 'translateX(-50%)',
               top: `${FLAP_TOP}px`, width: `${ENV_W}px`, height: `${FLAP_H}px`,
@@ -352,7 +351,7 @@ export default function Rsvp() {
                 ref={flapInnerRef}
                 style={{
                   position: 'absolute', inset: 0,
-                  transformOrigin: '50% 0%',
+                  transformOrigin: '50% 100%',   // 봉투 입구(하단)를 축으로 열림
                   transform: 'rotateX(0deg)',
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
@@ -362,39 +361,60 @@ export default function Rsvp() {
                 <div style={{
                   position: 'absolute', inset: 0,
                   clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%)',
-                  ...pngBg(envelopeTopSrc),
-                  filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.50))',
+                  backgroundColor: ENV_COLOR,
+                  filter: 'drop-shadow(0 -3px 12px rgba(0,0,0,0.35))',
                 }}>
+                  {/* 플랩 상단 이니셜 */}
                   <div style={{
-                    position: 'absolute', top: '50%', left: '8%', right: '8%',
-                    height: '1px', background: 'rgba(160,150,140,0.30)',
-                  }} />
-                  <div style={{
-                    position: 'absolute', top: '28%', left: '50%',
+                    position: 'absolute', top: '22%', left: '50%',
                     transform: 'translate(-50%, -50%)',
                     fontFamily: "'Cormorant Garamond', serif",
-                    fontStyle: 'italic', fontSize: '0.74rem',
-                    color: 'rgba(100,90,78,0.50)',
-                    letterSpacing: '3px', whiteSpace: 'nowrap', userSelect: 'none',
+                    fontStyle: 'italic', fontSize: '0.78rem',
+                    color: 'rgba(100,85,65,0.55)',
+                    letterSpacing: '4px', whiteSpace: 'nowrap', userSelect: 'none',
                   }}>J &amp; J</div>
+
+                  {/* 왁스 씰 — 봉투 잠금 포인트 (레퍼런스 style) */}
+                  <div style={{
+                    position: 'absolute', top: '68%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '42px', height: '42px', borderRadius: '50%',
+                    backgroundColor: SEAL_COLOR,
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.40), inset 0 1px 3px rgba(255,255,255,0.22)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    userSelect: 'none',
+                  }}>
+                    <span style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontStyle: 'italic', fontSize: '0.62rem',
+                      color: 'rgba(255,255,255,0.90)', letterSpacing: '1px',
+                    }}>J·J</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* z:10 봉투 앞면 V-노치 */}
+            {/* z:10 봉투 앞면 V-접힘 (플랩·뒷면과 같은 크림색 → 통일감) */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H}px`, zIndex: 10,
               clipPath: 'polygon(0% 100%, 0% 20%, 50% 76%, 100% 20%, 100% 100%)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.28)',
-              ...pngBg(envelopeBodySrc),
+              backgroundColor: ENV_COLOR,
             })} />
 
-            {/* z:11 봉투 하단 립 */}
+            {/* z:11 봉투 하단 삼각 (어둡게 → 물리적 그림자·접힘 표현) */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H}px`, zIndex: 11,
               clipPath: 'polygon(14% 44%, 86% 44%, 100% 100%, 0% 100%)',
-              ...pngBg(envelopeBodySrc),
+              backgroundColor: FOLD_COLOR,
             })} />
+
+            {/* ENV_TOP 경계선 — 플랩·앞면 연결부 접힘선 */}
+            <div style={{
+              position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+              top: `${ENV_TOP}px`, width: `${ENV_W}px`, height: '1px',
+              zIndex: 9, backgroundColor: 'rgba(130,110,85,0.55)', pointerEvents: 'none',
+            }} />
 
             {/* 장식 사진 (봉투 왼쪽에 걸쳐 있는 흑백 소형 포토) */}
             <div style={{
