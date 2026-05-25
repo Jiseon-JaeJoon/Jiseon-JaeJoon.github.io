@@ -13,13 +13,14 @@ const COLLECTION = import.meta.env.DEV ? 'rsvp_dev' : 'rsvp'
 const CONTAINER_H  = 640
 const CARD_W       = 310
 const CARD_H       = 200
-const CARD_BASE_Y  = 410
 const ENV_W        = 336
 const ENV_TOP      = 390
 const ENV_H        = 220
 const FLAP_H       = ENV_H
 const FLAP_TOP     = ENV_TOP - FLAP_H   // = 170px (어두운 배경 위)
-const CARD_Y_TRAVEL = -(CARD_BASE_Y - 55)
+// 카드: 봉투 깊숙이 시작 → 봉투 상단에서 100px 위까지만 상승 (봉투와 연결 유지)
+const CARD_BASE_Y  = 500
+const CARD_Y_TRAVEL = -210              // 500 → 290 (ENV_TOP-100), 봉투에서 분리되지 않게
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v }
@@ -66,14 +67,17 @@ export default function Rsvp() {
       const vh      = window.innerHeight
       const scrolled = clamp01(-rect.top / (sectH - vh))
 
-      // 플랩: 선형, 65% 스크롤까지 열림 (90deg 지나면 뒷면 숨김 = 봉투 입구 열림)
-      const flapAngle = lerp(0, 200, clamp01(scrolled / 0.65))
+      // 플랩: 선형, 55% 스크롤까지 열림
+      const flapAngle = lerp(0, 200, clamp01(scrolled / 0.55))
 
-      // 카드: 5% 지연, easeOut2, 85%까지 상승
-      const cardY = lerp(0, CARD_Y_TRAVEL, easeOut2(clamp01((scrolled - 0.05) / 0.80)))
+      // 카드: 20% 지연 후 상승 (플랩이 충분히 열린 후), easeOut2 적용
+      const t = easeOut2(clamp01((scrolled - 0.20) / 0.75))
+      const cardY     = lerp(0, CARD_Y_TRAVEL, t)
+      // 미묘한 스케일로 "봉투에서 꺼내는" 느낌
+      const cardScale = lerp(0.96, 1.0, t)
 
       if (cardRef.current) {
-        cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px)`
+        cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px) scale(${cardScale})`
       }
       if (flapInnerRef.current) {
         flapInnerRef.current.style.transform = `rotateX(${flapAngle}deg)`
@@ -176,7 +180,7 @@ export default function Rsvp() {
         className="dark-section"
         style={{
           display: 'block',
-          minHeight: '160vh',
+          minHeight: '130vh',
           padding: 0,
           background: 'linear-gradient(to bottom, #1c1917 0%, #111111 60%)',
           position: 'relative',
@@ -221,10 +225,11 @@ export default function Rsvp() {
               style={{
                 position: 'absolute',
                 top: `${CARD_BASE_Y}px`, left: '50%',
-                transform: 'translateX(-50%) translateY(0px)',
+                transform: 'translateX(-50%) translateY(0px) scale(0.96)',
                 width: `${CARD_W}px`, height: `${CARD_H}px`,
                 background: '#fff', zIndex: 3, overflow: 'hidden',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.2)',
+                willChange: 'transform',
               }}
             >
               <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -351,6 +356,7 @@ export default function Rsvp() {
                   transform: 'rotateX(0deg)',
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
+                  willChange: 'transform',
                 }}
               >
                 <div style={{
