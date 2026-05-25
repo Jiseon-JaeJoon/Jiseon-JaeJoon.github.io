@@ -24,8 +24,11 @@ export default function Greeting() {
     animation: revealed ? `slideUpFade 0.6s ease ${delay}ms both` : 'none',
   })
 
+  const START_DELAY = 350
+
   return (
     <section id="greeting" ref={ref} className={revealed ? 'revealed' : ''}>
+      <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: '1.25rem', letterSpacing: '3px', color: 'var(--text-light)', marginBottom: '32px', ...a(0) }}>초대합니다</p>
 
       <div style={{ fontFamily: "'Gowun Batang', serif", lineHeight: 2.4, color: 'var(--text-main)', marginBottom: '50px' }}>
         {LINES.map((line, li) => (
@@ -37,7 +40,7 @@ export default function Greeting() {
                   display: 'inline-block',
                   whiteSpace: 'pre',
                   opacity: revealed ? undefined : 0,
-                  animation: revealed ? `charReveal 0.35s ease ${DELAYS[li][ci]}ms both` : 'none',
+                  animation: revealed ? `charReveal 0.35s ease ${DELAYS[li][ci] + START_DELAY}ms both` : 'none',
                 }}
               >
                 {char}
@@ -48,10 +51,10 @@ export default function Greeting() {
       </div>
 
       <div style={{ fontSize: '1.1rem', lineHeight: 2 }}>
-        <p style={a(TOTAL_CHARS * CHAR_MS + 100)}>
+        <p style={a(TOTAL_CHARS * CHAR_MS + START_DELAY + 100)}>
           <span style={{ color: 'var(--text-light)' }}>손성규 · 김채안</span> 의 아들 <strong style={{ fontSize: '1.2rem' }}>     손재준</strong>
         </p>
-        <p style={a(TOTAL_CHARS * CHAR_MS + 260)}>
+        <p style={a(TOTAL_CHARS * CHAR_MS + START_DELAY + 260)}>
           <span style={{ color: 'var(--text-light)' }}>장경오 · 남궁선미</span> 의 딸 <strong style={{ fontSize: '1.2rem' }}>     장지선</strong>
         </p>
       </div>

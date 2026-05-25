@@ -94,7 +94,7 @@ export default function Transportation() {
           ...a(430),
         }}
       >
-       약도 보기
+        약도 보기
       </button>
 
       {showMap && (
