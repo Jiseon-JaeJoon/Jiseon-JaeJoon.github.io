@@ -1,31 +1,32 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useReveal } from '../hooks/useReveal'
+import envFaceTexture  from '../assets/envelopeTop-DNGkXVSC.png'
+import envInnerTexture from '../assets/envelopeInner-Bl_NByj8.png'
 
 const COLLECTION = import.meta.env.DEV ? 'rsvp_dev' : 'rsvp'
 
 // ── 봉투 씬 레이아웃 상수 ────────────────────────────────────────────────────────
-const CONTAINER_H  = 640
-const CARD_W       = 310
-const CARD_H       = 200
-const ENV_W        = 336
-const ENV_TOP      = 380
-const ENV_H        = 230
-const FLAP_H       = ENV_H               // 플랩 높이 = 봉투 높이 (pivot: ENV_TOP 상단)
-// 카드: 봉투 안에서 시작 (410-610px) → 스크롤 완료 시 봉투 위로 올라옴
-const CARD_BASE_Y  = 410               // 봉투 내부 시작 (card bottom=610=ENV_BOTTOM, 딱 맞게 숨김)
-const CARD_Y_TRAVEL = -240             // 최종: 카드가 봉투 위로 충분히 노출
+const CONTAINER_H   = 580
+const CARD_W        = 310
+const CARD_H        = 220               // 전달하기 버튼 살짝 여유
+const ENV_W         = 336
+const ENV_TOP       = 160              // 봉투를 씬 상단으로 올려 갭 제거
+const ENV_H         = 230
+const FLAP_H        = ENV_H
+const CARD_BASE_Y   = 190             // ENV_TOP + 30 (봉투 안쪽 시작)
+const CARD_Y_TRAVEL = -200             // 카드 상승 거리
 
-// ── 봉투 색상 (전체 통일로 하나의 물체처럼) ──────────────────────────────────────
-const ENV_COLOR   = '#ebe5d8'   // 봉투 전체 크림
-const INNER_COLOR = '#f9f6ef'   // 봉투 안감 (밝게 — V 개구부 대비 확보)
-const FOLD_COLOR  = '#d8d0c0'   // 접힘선·하단립 (어둡게 — 물리적 그림자 표현)
-const SEAL_COLOR  = '#b8955a'   // 왁스 씰 브론즈
+const SEAL_COLOR = '#b8955a'
 
+// ── easing 함수 (기존 quadratic → cubic/inOut 으로 부드럽게) ──────────────────
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v }
-function easeOut2(t: number) { return 1 - (1 - t) ** 2 }
+// 플랩: ease-in-out — 자연스러운 뚜껑 열림
+function easeInOut2(t: number) { return t < 0.5 ? 2*t*t : 1 - (-2*t+2)**2/2 }
+// 카드: ease-out cubic — 빠르게 나왔다가 부드럽게 멈춤
+function easeOut3(t: number) { return 1 - (1 - t) ** 3 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -47,9 +48,9 @@ export default function Rsvp() {
   const { ref: headerRef, revealed: headerRevealed } = useReveal(0.2)
 
   // 봉투 씬 refs
-  const darkRef      = useRef<HTMLElement>(null)
-  const cardRef      = useRef<HTMLDivElement>(null)
-  const flapInnerRef = useRef<HTMLDivElement>(null)
+  const darkRef        = useRef<HTMLElement>(null)
+  const cardRef        = useRef<HTMLDivElement>(null)
+  const flapInnerRef   = useRef<HTMLDivElement>(null)
 
   // 봉투 섹션: IntersectionObserver(페이드인) + scroll(애니메이션)
   useEffect(() => {
@@ -66,15 +67,16 @@ export default function Rsvp() {
       const rect    = section.getBoundingClientRect()
       const sectH   = section.offsetHeight
       const vh      = window.innerHeight
-      const scrolled = clamp01(-rect.top / (sectH - vh))
+      // 봉투가 화면 하단에 나타나는 순간(rect.top=vh)부터 시작, 섹션 끝에서 완료
+      const scrolled = clamp01((vh - rect.top) / sectH)
 
-      // 플랩: 10% 지연 후 빠르게 열림 (90°→185°, 25% 구간 완료)
-      const flapAngle = lerp(90, 185, easeOut2(clamp01((scrolled - 0.10) / 0.25)))
+      // 플랩: 봉투가 화면에 등장하는 시점(~32%)부터 → 60%에 완료
+      const flapAngle = lerp(90, 160, easeInOut2(clamp01((scrolled - 0.32) / 0.28)))
 
-      // 카드: 20% 지연 후 상승 (플랩 열린 후 등장)
-      const t        = easeOut2(clamp01((scrolled - 0.20) / 0.65))
+      // 카드: 봉투 등장 시점(~32%)부터 → 62%에 완료 (rotateX 45° 초기)
+      const t        = easeOut3(clamp01((scrolled - 0.32) / 0.30))
       const cardY    = lerp(0, CARD_Y_TRAVEL, t)
-      const cardRotX = lerp(30, 5, t)
+      const cardRotX = lerp(45, 3, t)
 
       if (cardRef.current) {
         cardRef.current.style.transform = `translateX(-50%) translateY(${cardY}px) rotateX(${cardRotX}deg)`
@@ -175,33 +177,31 @@ export default function Rsvp() {
         className="dark-section"
         style={{
           display: 'block',
-          minHeight: '200vh',
+          height: '115vh',
           padding: 0,
-          background: '#f9f6ef',   // 봉투와 같은 크림색 — 흰색 영역
+          background: '#ffffff',   // 섹션 배경은 흰색 — 다크는 sticky wrapper에만
           position: 'relative',
           opacity: darkRevealed ? 1 : 0,
           transition: 'opacity 1.2s ease-out',
+          transform: 'none',
         }}
       >
-        {/* sticky wrapper — 섹션 스크롤 시 뷰포트에 고정, 내용은 세로 중앙 정렬 */}
+        {/* sticky wrapper — index.css body의 overflow-x:hidden 제거 후 CSS sticky 정상 동작 */}
         <div style={{
           position: 'sticky',
           top: 0,
           height: '100vh',
+          // 봉투 위쪽 흰색→검정, 봉투 밑 적당한 어두움 후 투명
+          background: `linear-gradient(to bottom,
+            #ffffff calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP - 20}px),
+            #111111 calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP + 20}px),
+            #111111 calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP + ENV_H + 60}px),
+            rgba(17,17,17,0) calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP + ENV_H + 110}px)
+          )`,
           display: 'flex', flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-
-          {/* 봉투 영역만 어두운 배경 — ENV_TOP 기준, 뷰포트 하단까지 full-width */}
-          <div style={{
-            position: 'absolute',
-            top: `calc(50% + ${ENV_TOP - CONTAINER_H / 2}px)`,  // = calc(50% + 60px)
-            bottom: 0, left: 0, right: 0,
-            background: 'linear-gradient(to bottom, #1c1917 0%, #111111 40%)',
-            zIndex: 0,
-            pointerEvents: 'none',
-          }} />
 
           {/* ── 봉투 씬 컨테이너 ──────────────────────────────────────────────── */}
           <div style={{
@@ -213,18 +213,23 @@ export default function Rsvp() {
             zIndex: 1,
           }}>
 
-            {/* z:1 봉투 뒷면 — 같은 크림색, 전체 그림자 */}
+            {/* z:1 봉투 뒷면 — 위 좁고 아래 넓은 사다리꼴 */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H + 10}px`,
-              zIndex: 1, backgroundColor: ENV_COLOR,
-              borderRadius: '0 0 6px 6px',
+              zIndex: 1,
+              backgroundImage: `url(${envFaceTexture})`,
+              backgroundSize: 'cover', backgroundPosition: 'center',
+              clipPath: 'polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)',
               boxShadow: '0 28px 70px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.30)',
             })} />
 
-            {/* z:2 봉투 내부 안감 (플랩 열리면 V-갭으로 보임) */}
+            {/* z:2 봉투 내부 안감 — 위 좁고 아래 넓은 사다리꼴 */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H}px`,
-              zIndex: 2, backgroundColor: INNER_COLOR,
+              zIndex: 2,
+              backgroundImage: `url(${envInnerTexture})`,
+              backgroundSize: 'cover', backgroundPosition: 'center',
+              clipPath: 'polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)',
             })} />
 
             {/* z:3 카드 (스크롤로 translateY 업데이트) */}
@@ -236,7 +241,8 @@ export default function Rsvp() {
                 transform: 'translateX(-50%) translateY(0px) rotateX(30deg)',
                 transformOrigin: '50% 0%',
                 width: `${CARD_W}px`, height: `${CARD_H}px`,
-                background: '#fff', zIndex: 3, overflow: 'hidden',
+                backgroundColor: '#faf9f7',
+                zIndex: 3, overflow: 'hidden',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.2)',
                 willChange: 'transform',
               }}
@@ -304,32 +310,36 @@ export default function Rsvp() {
                       ))}
                     </div>
 
-                    {/* 참석 인원 */}
+                    {/* 참석 인원 — [−] 1명/참석인원 [+] 순서 */}
                     <div style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       gap: '14px', padding: '7px 0', ...hairline,
                     }}>
-                      {([-1, 1] as const).map(d => (
-                        <button key={d} type="button" onClick={() => adjustGuests(d)}
-                          disabled={form.attendance === 'no'}
-                          style={{
-                            width: '22px', height: '22px',
-                            border: '1px solid #e0e0e0', borderRadius: '50%',
-                            background: 'none',
-                            cursor: form.attendance === 'no' ? 'not-allowed' : 'pointer',
-                            fontSize: '0.85rem', display: 'flex',
-                            alignItems: 'center', justifyContent: 'center',
-                            color: '#999', fontFamily: 'inherit',
-                            opacity: form.attendance === 'no' ? 0.3 : 1,
-                          }}
-                        >{d < 0 ? '−' : '+'}</button>
+                      {([-1, 1] as const).map((d, i) => (
+                        <React.Fragment key={d}>
+                          <button type="button" onClick={() => adjustGuests(d)}
+                            disabled={form.attendance === 'no'}
+                            style={{
+                              width: '22px', height: '22px',
+                              border: '1px solid #e0e0e0', borderRadius: '50%',
+                              background: 'none',
+                              cursor: form.attendance === 'no' ? 'not-allowed' : 'pointer',
+                              fontSize: '0.85rem', display: 'flex',
+                              alignItems: 'center', justifyContent: 'center',
+                              color: '#999', fontFamily: 'inherit',
+                              opacity: form.attendance === 'no' ? 0.3 : 1,
+                            }}
+                          >{d < 0 ? '−' : '+'}</button>
+                          {i === 0 && (
+                            <div style={{ textAlign: 'center' }}>
+                              <span style={{ fontSize: '0.86rem', color: '#111', display: 'block' }}>
+                                {form.totalGuests}명
+                              </span>
+                              <span style={labelSt}>참석 인원</span>
+                            </div>
+                          )}
+                        </React.Fragment>
                       ))}
-                      <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.86rem', color: '#111', display: 'block' }}>
-                          {form.totalGuests}명
-                        </span>
-                        <span style={labelSt}>참석 인원</span>
-                      </div>
                     </div>
 
                     {/* 전달하기 */}
@@ -366,16 +376,17 @@ export default function Rsvp() {
                   willChange: 'transform',
                 }}
               >
-                {/* 아래로 향하는 오각형 — rotateX(185°)시 위로 펼쳐진 뚜껑처럼 보임 */}
+                {/* 아래로 향하는 오각형 — 사다리꼴 상단 맞춤 */}
                 <div style={{
                   position: 'absolute', inset: 0,
-                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%)',
-                  backgroundColor: ENV_COLOR,
+                  clipPath: 'polygon(5% 0%, 95% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                  backgroundImage: `url(${envFaceTexture})`,
+                  backgroundSize: 'cover', backgroundPosition: 'center',
                   filter: 'drop-shadow(0 -8px 20px rgba(0,0,0,0.45))',
                 }}>
                   {/* 왁스 씰 — 오각형 중앙 (fold line 근처) */}
                   <div style={{
-                    position: 'absolute', top: '32%', left: '50%',
+                    position: 'absolute', top: '22%', left: '50%',
                     transform: 'translate(-50%, -50%)',
                     width: '44px', height: '44px', borderRadius: '50%',
                     backgroundColor: SEAL_COLOR,
@@ -394,26 +405,50 @@ export default function Rsvp() {
               </div>
             </div>
 
-            {/* z:10 봉투 앞면 V-접힘 (플랩·뒷면과 같은 크림색 → 통일감) */}
+            {/* z:10 봉투 앞면 V-접힘 — 외곽을 사다리꼴 기울기에 맞춤 */}
             <div style={envEl({
               top: `${ENV_TOP}px`, height: `${ENV_H}px`, zIndex: 10,
-              clipPath: 'polygon(0% 100%, 0% 20%, 50% 76%, 100% 20%, 100% 100%)',
-              backgroundColor: ENV_COLOR,
+              clipPath: 'polygon(0% 100%, 4% 20%, 50% 76%, 96% 20%, 100% 100%)',
+              backgroundImage: `url(${envFaceTexture})`,
+              backgroundSize: 'cover', backgroundPosition: 'center',
             })} />
 
-            {/* z:11 봉투 하단 삼각 (어둡게 → 물리적 그림자·접힘 표현) */}
+            {/* z:11 봉투 하단 사다리꼴 — z:1과 동일한 높이(ENV_H+10)로 바닥까지 딱 맞춤 */}
             <div style={envEl({
-              top: `${ENV_TOP}px`, height: `${ENV_H}px`, zIndex: 11,
-              clipPath: 'polygon(14% 44%, 86% 44%, 100% 100%, 0% 100%)',
-              backgroundColor: FOLD_COLOR,
+              top: `${ENV_TOP}px`, height: `${ENV_H + 10}px`, zIndex: 11,
+              clipPath: 'polygon(18% 42%, 82% 42%, 100% 100%, 0% 100%)',
+              backgroundImage: `url(${envFaceTexture})`,
+              backgroundSize: 'cover', backgroundPosition: 'center',
+              filter: 'brightness(0.82)',
             })} />
 
-            {/* ENV_TOP 경계선 — 플랩·앞면 연결부 접힘선 */}
+            {/* ENV_TOP 접힘선 — 미세한 구분선 */}
             <div style={{
               position: 'absolute', left: '50%', transform: 'translateX(-50%)',
               top: `${ENV_TOP}px`, width: `${ENV_W}px`, height: '1px',
-              zIndex: 9, backgroundColor: 'rgba(130,110,85,0.55)', pointerEvents: 'none',
+              zIndex: 9, backgroundColor: 'rgba(180,160,140,0.35)', pointerEvents: 'none',
             }} />
+
+            {/* INVITATION 텍스트 — 항상 표시 (애니메이션 없음) */}
+            <div
+              style={{
+                position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+                top: `${ENV_TOP + 130}px`,
+                width: `${ENV_W}px`,
+                textAlign: 'center', zIndex: 12, pointerEvents: 'none',
+              }}
+            >
+              <div style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontStyle: 'italic', fontWeight: 800, fontSize: '1.3rem',
+                letterSpacing: '5px', color: 'rgba(255,255,255,0.97)',
+              }}>INVITATION</div>
+              <div style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 700, fontSize: '0.85rem', letterSpacing: '3px',
+                color: 'rgba(255,255,255,0.85)', marginTop: '6px',
+              }}>2026.09.19</div>
+            </div>
 
             {/* 장식 사진 (봉투 왼쪽에 걸쳐 있는 흑백 소형 포토) */}
             <div style={{
