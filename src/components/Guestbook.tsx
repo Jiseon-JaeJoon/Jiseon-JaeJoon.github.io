@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { collection, addDoc, onSnapshot, orderBy, query, Timestamp, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useReveal } from '../hooks/useReveal'
@@ -36,6 +36,9 @@ export default function Guestbook() {
   const [gameOpen, setGameOpen] = useState(false)
   const [myEntries, setMyEntries] = useState<string[]>(() => getMyEntries())
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [formError, setFormError] = useState('')
+  const [deleteError, setDeleteError] = useState('')
 
   useEffect(() => {
     const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'))
@@ -69,14 +72,13 @@ export default function Guestbook() {
       setTimeout(() => setSubmitted(false), 3000)
     } catch (err) {
       console.error('방명록 저장 실패:', err)
-      alert('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
+      setFormError('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
     } finally {
       setSubmitting(false)
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('작성하신 방명록을 삭제하시겠습니까?')) return
     setDeletingId(id)
     try {
       await deleteDoc(doc(db, COLLECTION, id))
@@ -88,13 +90,13 @@ export default function Guestbook() {
       if (currentPage > totalPages && totalPages > 0) setCurrentPage(totalPages)
     } catch (err) {
       console.error('삭제 실패:', err)
-      alert('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.')
+      setDeleteError('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.')
     } finally {
       setDeletingId(null)
     }
   }
 
-  const handleScore = async (data: GameScore) => {
+  const handleScore = useCallback(async (data: GameScore) => {
     try {
       await addDoc(collection(db, SCORES_COLLECTION), {
         nickname: data.nickname,
@@ -108,7 +110,7 @@ export default function Guestbook() {
     } catch (err) {
       console.error('점수 저장 실패:', err)
     }
-  }
+  }, [])
 
   const a = (delay: number) => ({
     opacity: revealed ? undefined : 0,
@@ -198,6 +200,9 @@ export default function Guestbook() {
         >
           {submitted ? '작성 완료 ✓' : submitting ? '전송 중...' : '축하 남기기'}
         </button>
+        {formError && (
+          <p style={{ fontSize: '0.85rem', color: '#f87171', marginTop: '10px', textAlign: 'center' }}>{formError}</p>
+        )}
       </form>
 
       {/* 방명록 목록 */}
@@ -235,23 +240,41 @@ export default function Guestbook() {
                         {dateStr}
                       </span>
                       {myEntries.includes(entry.id) && (
-                        <button
-                          onClick={() => handleDelete(entry.id)}
-                          disabled={deletingId === entry.id}
-                          style={{
-                            marginLeft: 'auto',
-                            background: 'none',
-                            border: 'none',
-                            cursor: deletingId === entry.id ? 'not-allowed' : 'pointer',
-                            color: '#666',
-                            fontSize: '1rem',
-                            padding: '0 2px',
-                            lineHeight: 1,
-                            opacity: deletingId === entry.id ? 0.3 : 0.7,
-                          }}
-                        >
-                          ×
-                        </button>
+                        confirmDeleteId === entry.id ? (
+                          <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <button
+                              onClick={() => { setConfirmDeleteId(null); handleDelete(entry.id) }}
+                              disabled={deletingId === entry.id}
+                              style={{ background: 'none', border: '1px solid #666', borderRadius: '6px', cursor: 'pointer', color: '#f0f0f0', fontSize: '0.75rem', padding: '2px 8px' }}
+                            >
+                              삭제
+                            </button>
+                            <button
+                              onClick={() => setConfirmDeleteId(null)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666', fontSize: '0.75rem', padding: '2px 4px' }}
+                            >
+                              취소
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmDeleteId(entry.id)}
+                            disabled={deletingId === entry.id}
+                            style={{
+                              marginLeft: 'auto',
+                              background: 'none',
+                              border: 'none',
+                              cursor: deletingId === entry.id ? 'not-allowed' : 'pointer',
+                              color: '#666',
+                              fontSize: '1rem',
+                              padding: '0 2px',
+                              lineHeight: 1,
+                              opacity: deletingId === entry.id ? 0.3 : 0.7,
+                            }}
+                          >
+                            ×
+                          </button>
+                        )
                       )}
                     </div>
                     <p style={{ fontSize: '0.9rem', color: '#d0d0d0', lineHeight: 1.75, whiteSpace: 'pre-wrap', margin: 0 }}>
@@ -289,6 +312,9 @@ export default function Guestbook() {
         })()}
       </div>
 
+      {deleteError && (
+        <p style={{ fontSize: '0.85rem', color: '#f87171', textAlign: 'center', marginBottom: '8px' }}>{deleteError}</p>
+      )}
       <CakeTowerLeaderboard />
     </section>
     <CakeTowerModal isOpen={gameOpen} onClose={() => setGameOpen(false)} onScore={handleScore} />

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export interface GameScore {
   nickname: string
@@ -16,6 +16,8 @@ interface Props {
 }
 
 export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
+  const savedOverflow = useRef('')
+
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.data?.type === 'CAKE_TOWER_SCORE') {
@@ -25,6 +27,18 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
   }, [onScore])
+
+  useEffect(() => {
+    if (isOpen) {
+      savedOverflow.current = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = savedOverflow.current
+    }
+    return () => {
+      document.body.style.overflow = savedOverflow.current
+    }
+  }, [isOpen])
 
   if (!isOpen) return null
 
@@ -36,7 +50,6 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
         zIndex: 1000,
         background: 'rgba(0,0,0,0.92)',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
       }}
@@ -47,16 +60,21 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
           aria-label="게임 닫기"
           style={{
             position: 'absolute',
-            top: '-40px',
-            right: '4px',
-            background: 'none',
+            top: '8px',
+            right: '8px',
+            background: 'rgba(0,0,0,0.45)',
             border: 'none',
-            color: 'rgba(255,255,255,0.7)',
-            fontSize: '1.4rem',
+            borderRadius: '50%',
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: '1.1rem',
             cursor: 'pointer',
-            padding: '6px 10px',
-            lineHeight: 1,
+            width: '32px',
+            height: '32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             zIndex: 1001,
+            lineHeight: 1,
           }}
         >
           ✕

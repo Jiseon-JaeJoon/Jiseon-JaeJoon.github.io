@@ -145,9 +145,9 @@ export default function Rsvp() {
         ref={headerRef}
         className={headerRevealed ? 'revealed' : ''}
       >
-        <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>
+        {/* <h2 className="section-title" style={{ marginBottom: '6px', ...a(0) }}>
           RSVP
-        </h2>
+        </h2> */}
         <p style={{
           fontFamily: "'Gowun Batang', serif",
           fontSize: '1.25rem', letterSpacing: '3px',
@@ -177,7 +177,7 @@ export default function Rsvp() {
         className="dark-section"
         style={{
           display: 'block',
-          height: '115vh',
+          height: '106vh',
           padding: 0,
           background: '#ffffff',   // 섹션 배경은 흰색 — 다크는 sticky wrapper에만
           position: 'relative',
@@ -191,12 +191,12 @@ export default function Rsvp() {
           position: 'sticky',
           top: 0,
           height: '100vh',
-          // 봉투 위쪽 흰색→검정, 봉투 밑 적당한 어두움 후 투명
+          // 봉투 위쪽 흰색→검정, 봉투 밑 검정 → viewport 하단 근처까지 유지 후 짧게 페이드
           background: `linear-gradient(to bottom,
             #ffffff calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP - 20}px),
             #111111 calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP + 20}px),
-            #111111 calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP + ENV_H + 60}px),
-            rgba(17,17,17,0) calc((100vh - ${CONTAINER_H}px) / 2 + ${ENV_TOP + ENV_H + 110}px)
+            #111111 88vh,
+            rgba(17,17,17,0) 96vh
           )`,
           display: 'flex', flexDirection: 'column',
           alignItems: 'center',
@@ -440,7 +440,7 @@ export default function Rsvp() {
             >
               <div style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontStyle: 'italic', fontWeight: 800, fontSize: '1.3rem',
+                fontStyle: 'italic', fontWeight: 1000, fontSize: '1.3rem',
                 letterSpacing: '5px', color: 'rgba(255,255,255,0.97)',
               }}>INVITATION</div>
               <div style={{

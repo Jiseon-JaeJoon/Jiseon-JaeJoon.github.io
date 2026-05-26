@@ -45,6 +45,12 @@ section {
   padding-bottom: clamp(40px, 5vh, 60px);
 }
 
+#location {
+  min-height: unset;
+  padding-top: 0;
+  justify-content: flex-start;
+}
+
 section.dark-section {
   background-color: #111111;
   --text-main: #ffffff;
