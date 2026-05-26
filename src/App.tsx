@@ -46,7 +46,7 @@ function App() {
       </div>
 
       <div className="footer-section">
-        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1rem', letterSpacing: '2px' }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', letterSpacing: '2px' }}>
           Made by JaeJoon & Jiseon
         </p>
       </div>
