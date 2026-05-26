@@ -15,7 +15,7 @@ const ENV_H        = 230
 const FLAP_H       = ENV_H               // 플랩 높이 = 봉투 높이 (pivot: ENV_TOP 상단)
 // 카드: 봉투 안에서 시작 (410-610px) → 스크롤 완료 시 봉투 위로 올라옴
 const CARD_BASE_Y  = 410               // 봉투 내부 시작 (card bottom=610=ENV_BOTTOM, 딱 맞게 숨김)
-const CARD_Y_TRAVEL = -200             // 최종: top=210px, bottom=410px=ENV_TOP (카드 자연스럽게 노출)
+const CARD_Y_TRAVEL = -240             // 최종: 카드가 봉투 위로 충분히 노출
 
 // ── 봉투 색상 (전체 통일로 하나의 물체처럼) ──────────────────────────────────────
 const ENV_COLOR   = '#ebe5d8'   // 봉투 전체 크림
@@ -68,11 +68,11 @@ export default function Rsvp() {
       const vh      = window.innerHeight
       const scrolled = clamp01(-rect.top / (sectH - vh))
 
-      // 플랩: edge-on(90°) → 열린 상태(185°), rotateX 3D 폴드 (레퍼런스 스타일)
-      const flapAngle = lerp(90, 185, easeOut2(clamp01(scrolled / 0.55)))
+      // 플랩: 10% 지연 후 빠르게 열림 (90°→185°, 25% 구간 완료)
+      const flapAngle = lerp(90, 185, easeOut2(clamp01((scrolled - 0.10) / 0.25)))
 
-      // 카드: 30% 지연, translateY + rotateX 동시 (봉투 안에서 기울어진 채 일어남)
-      const t        = easeOut2(clamp01((scrolled - 0.30) / 0.65))
+      // 카드: 20% 지연 후 상승 (플랩 열린 후 등장)
+      const t        = easeOut2(clamp01((scrolled - 0.20) / 0.65))
       const cardY    = lerp(0, CARD_Y_TRAVEL, t)
       const cardRotX = lerp(30, 5, t)
 
@@ -175,13 +175,12 @@ export default function Rsvp() {
         className="dark-section"
         style={{
           display: 'block',
-          minHeight: '120vh',
+          minHeight: '200vh',
           padding: 0,
-          background: 'linear-gradient(to bottom, #1c1917 0%, #111111 60%)',
+          background: '#f9f6ef',   // 봉투와 같은 크림색 — 흰색 영역
           position: 'relative',
-          transform: 'translateY(0)',
           opacity: darkRevealed ? 1 : 0,
-          transition: 'opacity 1.8s ease-out',
+          transition: 'opacity 1.2s ease-out',
         }}
       >
         {/* sticky wrapper — 섹션 스크롤 시 뷰포트에 고정, 내용은 세로 중앙 정렬 */}
@@ -194,6 +193,16 @@ export default function Rsvp() {
           justifyContent: 'center',
         }}>
 
+          {/* 봉투 영역만 어두운 배경 — ENV_TOP 기준, 뷰포트 하단까지 full-width */}
+          <div style={{
+            position: 'absolute',
+            top: `calc(50% + ${ENV_TOP - CONTAINER_H / 2}px)`,  // = calc(50% + 60px)
+            bottom: 0, left: 0, right: 0,
+            background: 'linear-gradient(to bottom, #1c1917 0%, #111111 40%)',
+            zIndex: 0,
+            pointerEvents: 'none',
+          }} />
+
           {/* ── 봉투 씬 컨테이너 ──────────────────────────────────────────────── */}
           <div style={{
             position: 'relative',
@@ -201,6 +210,7 @@ export default function Rsvp() {
             maxWidth: '100%',
             height: `${CONTAINER_H}px`,
             perspective: '1000px',
+            zIndex: 1,
           }}>
 
             {/* z:1 봉투 뒷면 — 같은 크림색, 전체 그림자 */}
@@ -409,7 +419,7 @@ export default function Rsvp() {
             <div style={{
               position: 'absolute',
               left: '50%', marginLeft: `-${ENV_W / 2 + 14}px`,
-              top: `${ENV_TOP - 58}px`,
+              top: `${ENV_TOP + 15}px`,
               width: '70px', height: '88px',
               zIndex: 13, overflow: 'hidden',
               boxShadow: '0 4px 18px rgba(0,0,0,0.50)',
