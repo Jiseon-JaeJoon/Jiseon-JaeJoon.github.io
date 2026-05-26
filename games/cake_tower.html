@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>🎂 웨딩케이크 타워</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#FBF5F0;display:flex;justify-content:center;align-items:center;height:100dvh;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+canvas{display:block;touch-action:none;user-select:none}
+#ov{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;pointer-events:none;z-index:20}
+.pnl{background:rgba(255,255,255,0.97);border-radius:28px;padding:36px 28px 28px;box-shadow:0 12px 60px rgba(42,14,30,.16);max-width:320px;width:calc(100% - 40px);text-align:center;pointer-events:all;animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:none}}
+.ey{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#C4A0B4;margin-bottom:7px}
+.hd{font-size:30px;font-weight:900;color:#2A0E1E;line-height:1.15;letter-spacing:-.5px}
+.sb{font-size:14px;color:#8B506A;margin:10px 0 22px;line-height:1.6}
+.hw{background:#FBF5F0;border-radius:14px;padding:13px 15px;margin-bottom:20px;text-align:left}
+.hr{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;color:#5A3050}
+.bj{font-size:10px;font-weight:800;letter-spacing:.05em;padding:3px 7px;border-radius:6px;flex-shrink:0}
+.bp{background:#FFE0E8;color:#FF4D6D}.bg{background:#FFF3CD;color:#C8800A}.bm{background:#EAD8D4;color:#8B506A}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#2A0E1E;color:#fff;border:none;border-radius:16px;padding:17px 24px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 6px 24px rgba(42,14,30,.28);transition:transform .12s,box-shadow .12s}
+.btn:active{transform:scale(.96);box-shadow:0 3px 12px rgba(42,14,30,.22)}
+.gh{background:transparent;color:#8B506A;border:2px solid #EAD8D4;box-shadow:none;margin-top:10px;padding:14px 24px}
+input{width:100%;border:2px solid #EAD8D4;border-radius:14px;padding:15px 16px;font-size:15px;font-family:inherit;color:#2A0E1E;background:#FBF5F0;outline:none;transition:border-color .18s,box-shadow .18s;margin-bottom:14px}
+input:focus{border-color:#C4A0B4;box-shadow:0 0 0 3px rgba(196,160,180,.18)}
+input::placeholder{color:#C4A0B4}
+.dv{height:1px;background:#F0E4E0;margin:18px 0}
+.sc{font-size:52px;font-weight:900;color:#2A0E1E;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;margin-bottom:18px;display:flex;align-items:baseline;justify-content:center;gap:6px}
+.ssfx{font-size:18px;font-weight:700;color:#C4A0B4;letter-spacing:0;font-variant-numeric:normal}
+.sl{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C4A0B4;margin:4px 0 16px}
+.tg{display:inline-flex;align-items:center;gap:5px;background:#FFF0EC;color:#FF4D6D;font-size:12px;font-weight:800;letter-spacing:.04em;border-radius:999px;padding:5px 12px;margin-bottom:14px}
+.lb{text-align:left;margin-bottom:20px}
+.lr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:3px;font-size:14px;color:#2A0E1E}
+.lr.me{background:#FFF4F0;border:1.5px solid #FFDDE5}
+.lrk{font-size:15px;width:22px;flex-shrink:0;text-align:center}
+.lnm{flex:1;font-weight:600}.lsc{font-weight:800;font-variant-numeric:tabular-nums}
+.lr.me .lsc{color:#FF4D6D}
+#rstats{display:flex;justify-content:space-around;margin:14px 0 4px;padding:14px 0;border-top:1px solid #F0E4E0;border-bottom:1px solid #F0E4E0}
+.rsi{text-align:center;flex:1}
+.rsn{font-size:19px;font-weight:800;color:#2A0E1E;font-variant-numeric:tabular-nums;line-height:1}
+.rsl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#C4A0B4;margin-top:5px}
+.lbmore{text-align:center;color:#C4A0B4;font-size:11px;letter-spacing:.4em;margin:3px 0 1px}
+.fld{text-align:left;margin-bottom:11px}
+.lab{display:flex;align-items:baseline;gap:6px;font-size:11px;font-weight:700;color:#5A3050;margin-bottom:5px;letter-spacing:.02em}
+.lab .req{color:#FF4D6D;font-size:11px}
+.lab .sub{font-weight:500;color:#C4A0B4;font-size:10px;letter-spacing:0;margin-left:auto}
+.fld input{margin-bottom:0}
+input.bad{border-color:#FF4D6D;background:#FFF0F0}
+input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
+.prv{display:flex;align-items:center;gap:6px;font-size:11px;color:#8B506A;background:#FFF4F0;border:1px solid #FFDDE5;border-radius:11px;padding:9px 12px;margin:4px 0 14px;line-height:1.4;text-align:left}
+.prv .ico{font-size:13px;flex-shrink:0}
+.nick-row{display:flex;gap:8px;align-items:stretch}
+.nick-row input{margin-bottom:0;flex:1;min-width:0}
+.dice{flex-shrink:0;width:52px;background:#FBF5F0;border:2px solid #EAD8D4;border-radius:14px;font-size:20px;cursor:pointer;transition:transform .12s,background .12s,border-color .12s;font-family:inherit;padding:0;line-height:1}
+.dice:hover{border-color:#C4A0B4;background:#FFF0EC}
+.dice:active{transform:scale(.9) rotate(15deg);background:#FFE0E8}
+.err{font-size:11px;color:#FF4D6D;font-weight:600;margin-top:5px;min-height:14px;text-align:left;line-height:1.3}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ov">
+  <div class="pnl" id="SP">
+    <div class="ey">Wedding Game</div>
+    <div class="hd">🎂 웨딩케이크<br>타워</div>
+    <div class="sb">블록이 위에서 떨어집니다<br>탭해서 정확히 쌓으세요 ✨</div>
+    <div class="hw">
+      <div class="hr"><span class="bj bp">PERFECT</span>완벽 — 블록 복원 + 콤보!</div>
+      <div class="hr"><span class="bj bg">GOOD</span>살짝 어긋남 — 레이어가 좁아져요</div>
+      <div class="hr"><span class="bj bm">MISS</span>겹침 없음 — 게임 오버</div>
+    </div>
+    <button class="btn" id="startBtn">🎮  게임 시작</button>
+  </div>
+  <div class="pnl" id="NP" style="display:none">
+    <div class="ey">Score Saved</div>
+    <div class="sc"><span id="nps">0</span><span class="ssfx">점</span></div>
+    <div class="sb" style="margin:0 0 16px">정보를 남기시면 🎁 추첨에 참여돼요</div>
+    <div class="fld">
+      <label class="lab" for="ni">닉네임 <span class="req">*</span><span class="sub">리더보드 표시</span></label>
+      <div class="nick-row">
+        <input type="text" id="ni" placeholder="행복한 카피바라" maxlength="10" autocomplete="off">
+        <button type="button" id="niDice" class="dice" aria-label="랜덤 닉네임">🎲</button>
+      </div>
+      <div class="err" id="niErr"></div>
+    </div>
+    <div class="fld">
+      <label class="lab" for="nm">성함 <span class="sub">상품 발송용</span></label>
+      <input type="text" id="nm" placeholder="홍길동" maxlength="20" autocomplete="name">
+    </div>
+    <div class="fld">
+      <label class="lab" for="np">연락처 <span class="sub">010-XXXX-XXXX</span></label>
+      <input type="tel" id="np" placeholder="010-1234-5678" maxlength="13" autocomplete="tel" inputmode="numeric">
+    </div>
+    <div class="prv"><span class="ico">🔒</span><span>성함·연락처는 비공개 — 신랑신부만 확인합니다</span></div>
+    <button class="btn" id="subBtn">등록하기 →</button>
+    <button class="btn gh" id="skipBtn">닉네임만 등록</button>
+  </div>
+  <div class="pnl" id="RP" style="display:none">
+    <div class="tg" id="rtg">🏆 새 기록!</div>
+    <div class="ey">My Score</div>
+    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 7,777</span></div>
+    <div id="rstats"></div>
+    <div class="dv"></div>
+    <div class="lb" id="lbl"></div>
+    <button class="btn" id="retBtn">다시 도전 🎂</button>
+  </div>
+</div>
+<script>
+// ════════════════════════════════════════
+//  CANVAS
+// ════════════════════════════════════════
+const cv=document.getElementById('c'),X=cv.getContext('2d');
+const DPR=Math.min(window.devicePixelRatio||1,2);
+const W=375,H=680;
+cv.width=W*DPR;cv.height=H*DPR;
+cv.style.cssText=`width:${W}px;height:${H}px`;
+X.scale(DPR,DPR);
+
+// ════════════════════════════════════════
+//  CONSTANTS
+// ════════════════════════════════════════
+const LH=26,BW=158,MIN_OV=4,MAX_SC=7777;
+const FLOOR=H-50;
+const S_SY=90;           // slider fixed screen Y
+const CAM_TGT=H*0.62;   // desired screen Y of stack top
+const GRAV=0.7;
+const PERF=0.055,GOOD=0.20;
+const LBK='weddingCakeLB_v2';
+const BSK='weddingCakeBS';
+const PRK='weddingCakePrize_v1'; // local stub — replace with Firebase later
+const SPEED_NOTIF=[2.8,3.2,3.7,4.1]; // speed thresholds for notifications
+
+// ════════════════════════════════════════
+//  PALETTE
+// ════════════════════════════════════════
+const PAL=[
+  {b:'#FBB8A0',c:'#FFF3EE',s:'#D87858'}, // coral
+  {b:'#98C8F8',c:'#EEF6FF',s:'#5888C8'}, // sky
+  {b:'#98D898',c:'#EEFAEE',s:'#58A060'}, // mint
+  {b:'#F8DC88',c:'#FFFCE0',s:'#C89030'}, // lemon
+  {b:'#CC9EE8',c:'#F6EEFF',s:'#9055C0'}, // lavender
+  {b:'#F89898',c:'#FFEEEE',s:'#C85858'}, // rose
+  {b:'#88D8CC',c:'#E8FFFC',s:'#489890'}, // teal
+];
+const A={bg0:'#FBF5F0',bg1:'#EDE0D8',acc:'#FF4D6D',gld:'#E8A020',lt:'#C4A0B4',tx:'#2A0E1E'};
+
+// ════════════════════════════════════════
+//  WEB AUDIO
+// ════════════════════════════════════════
+let _AC=null;
+function getAC(){
+  if(!_AC)_AC=new(window.AudioContext||window.webkitAudioContext)();
+  if(_AC.state==='suspended')_AC.resume();
+  return _AC;
+}
+function tone(freq,dur,type,vol,delay){
+  try{
+    const ac=getAC(),t=ac.currentTime+(delay||0);
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type||'sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(vol||0.12,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur);
+  }catch(e){}
+}
+const SND={
+  good:()=>tone(440,0.09,'sine',0.10),
+  perf:()=>{tone(660,0.14,'sine',0.13);tone(880,0.10,'sine',0.08,0.07);tone(1100,0.08,'sine',0.06,0.14);},
+  miss:()=>tone(160,0.35,'sawtooth',0.09),
+  speedUp:()=>{[380,480,600].forEach((f,i)=>tone(f,0.07,'sine',0.08,i*0.07));},
+  milestone:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,0.16,'sine',0.10,i*0.09));},
+  combo:()=>tone(550+combo*30,0.07,'sine',0.08),
+};
+
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let mode='idle';
+let placed=[];
+let slider=null;
+let drop=null;
+let falling=[],ptcls=[],rings=[],flt=[];
+let score=0,disp=0,combo=0,maxCombo=0;
+let camT=0,tCam=0,camV=0;   // spring camera
+let sq=1,sqV=0;              // squash spring for top layer
+let flash=0,shk=0,dclk=0;
+let myIdx=-1,fn=0,lastT=0;
+let raf=null;
+let nextSpdIdx=0;            // index into SPEED_NOTIF
+
+// background floating hearts
+let bgH=[];
+function initBgH(){
+  bgH=Array.from({length:16},()=>({
+    x:Math.random()*W,
+    y:Math.random()*H,
+    sz:5+Math.random()*9,
+    spd:0.25+Math.random()*0.45,
+    rot:Math.random()*Math.PI*2,
+    rv:(Math.random()-.5)*0.018,
+    alpha:0.07+Math.random()*0.08,
+    type:Math.random()<0.65?'heart':'ring',
+  }));
+}
+initBgH();
+
+// ════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════
+function w2s(wy){return wy+camT;}
+function s2w(sy){return sy-camT;}
+function lerp(a,b,t){return a+(b-a)*t;}
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+
+function rr(x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);
+  X.beginPath();
+  X.moveTo(x+r,y);X.arcTo(x+w,y,x+w,y+r,r);
+  X.arcTo(x+w,y+h,x+w-r,y+h,r);X.arcTo(x,y+h,x,y+h-r,r);
+  X.arcTo(x,y,x+r,y,r);X.closePath();
+}
+function rrC(x,y,w,h,tl,tr,br,bl){
+  X.beginPath();
+  X.moveTo(x+tl,y);
+  X.lineTo(x+w-tr,y);if(tr>0)X.arcTo(x+w,y,x+w,y+tr,tr);else X.lineTo(x+w,y);
+  X.lineTo(x+w,y+h-br);if(br>0)X.arcTo(x+w,y+h,x+w-br,y+h,br);else X.lineTo(x+w,y+h);
+  X.lineTo(x+bl,y+h);if(bl>0)X.arcTo(x,y+h,x,y+h-bl,bl);else X.lineTo(x,y+h);
+  X.lineTo(x,y+tl);if(tl>0)X.arcTo(x,y,x+tl,y,tl);else X.lineTo(x,y);
+  X.closePath();
+}
+
+// ════════════════════════════════════════
+//  SQUASH VALUE  (damped oscillation)
+// ════════════════════════════════════════
+function getSq(){
+  // sq starts at 0.72 on land, springs to 1.0 with overshoot
+  // Driven by spring: sqV += (1-sq)*0.22; sqV*=0.68; sq+=sqV
+  return sq;
+}
+
+// ════════════════════════════════════════
+//  DRAW CAKE LAYER
+// ════════════════════════════════════════
+function drawLayer(x,y,w,ci,a){
+  if(w<2)return;
+  const p=PAL[ci%PAL.length];
+  const prev=X.globalAlpha;
+  if(a!==undefined)X.globalAlpha=prev*a;
+  const CR=9,R=7;
+  // shadow
+  X.fillStyle='rgba(42,14,30,0.10)';rr(x+2,y+5,w,LH,R);X.fill();
+  // sponge
+  X.fillStyle=p.b;rr(x,y,w,LH,R);X.fill();
+  // cream overlay (top CR px, clipped)
+  X.save();X.beginPath();X.rect(x-1,y-1,w+2,CR+2);X.clip();
+  X.fillStyle=p.c;rr(x,y,w,LH,R);X.fill();X.restore();
+  // cream–sponge border
+  X.strokeStyle='rgba(255,255,255,0.40)';X.lineWidth=1;
+  X.beginPath();X.moveTo(x+3,y+CR);X.lineTo(x+w-3,y+CR);X.stroke();
+  // drip blobs
+  if(w>=18){
+    X.fillStyle=p.c;
+    const sp=15,cnt=Math.max(1,Math.floor((w-4)/sp));
+    const off=x+(w-cnt*sp)/2+sp/2;
+    for(let i=0;i<cnt;i++){X.beginPath();X.arc(off+i*sp,y+CR,4.5,0,Math.PI);X.fill();}
+  }
+  // pearl dots
+  if(w>40){
+    X.fillStyle='rgba(255,255,255,0.36)';
+    const dc=Math.floor((w-10)/14),ds=x+(w-(dc-1)*14)/2;
+    for(let i=0;i<dc;i++){X.beginPath();X.arc(ds+i*14,y+CR+9,2,0,Math.PI*2);X.fill();}
+  }
+  // bottom shadow
+  X.save();X.globalAlpha=(a!==undefined?a:1)*0.45;X.fillStyle=p.s;
+  rrC(x+4,y+LH-5,Math.max(0,w-8),4,2,2,2,2);X.fill();X.restore();
+  // top shine
+  X.fillStyle='rgba(255,255,255,0.20)';
+  X.save();X.beginPath();X.rect(x+4,y+1,w-8,4);X.clip();rr(x,y,w,LH,R);X.fill();X.restore();
+  X.globalAlpha=prev;
+}
+
+// ════════════════════════════════════════
+//  PLATE
+// ════════════════════════════════════════
+function drawPlate(wy){
+  const pw=BW+52,ph=16,px=W/2-pw/2;
+  // shadow
+  X.fillStyle='rgba(42,14,30,0.10)';
+  X.beginPath();X.ellipse(W/2,wy+ph+6,pw/2+2,7,0,0,Math.PI*2);X.fill();
+  // plate body
+  X.fillStyle='#FFF8F5';rrC(px,wy,pw,ph,8,8,8,8);X.fill();
+  // gold trim (top + bottom edges)
+  X.fillStyle='rgba(232,160,32,0.36)';X.fillRect(px+6,wy+2,pw-12,1.2);
+  X.fillStyle='rgba(232,160,32,0.20)';X.fillRect(px+6,wy+ph-2.6,pw-12,1);
+  // top shine
+  X.fillStyle='rgba(255,255,255,0.78)';
+  X.beginPath();X.ellipse(W/2,wy+3,pw/2-8,3,0,0,Math.PI*2);X.fill();
+  // decorative gold feet
+  X.fillStyle='rgba(232,160,32,0.55)';
+  X.beginPath();X.arc(px+12,wy+ph-2,2.6,0,Math.PI*2);X.fill();
+  X.beginPath();X.arc(px+pw-12,wy+ph-2,2.6,0,Math.PI*2);X.fill();
+}
+
+// ════════════════════════════════════════
+//  CHERRY
+// ════════════════════════════════════════
+function drawCherry(wy,tx,tw){
+  if(placed.length<2)return;
+  const cx=tx+tw/2,cy=wy-14;
+  X.strokeStyle='#5A8838';X.lineWidth=2;X.lineCap='round';
+  X.beginPath();X.moveTo(cx,cy+5);X.quadraticCurveTo(cx+10,cy-8,cx+7,cy-4);X.stroke();
+  const cg=X.createRadialGradient(cx-2,cy-2,1,cx,cy,7);
+  cg.addColorStop(0,'#FF8888');cg.addColorStop(0.6,A.acc);cg.addColorStop(1,'#C01840');
+  X.fillStyle=cg;X.beginPath();X.arc(cx,cy,7,0,Math.PI*2);X.fill();
+  X.fillStyle='rgba(255,255,255,0.55)';X.beginPath();X.arc(cx-2,cy-2,2.5,0,Math.PI*2);X.fill();
+}
+
+// ════════════════════════════════════════
+//  HEART  (bg decoration)
+// ════════════════════════════════════════
+function drawHeart(col,sz){
+  const s=sz/2;
+  X.fillStyle=col;
+  X.beginPath();
+  X.moveTo(0,s*0.3);
+  X.bezierCurveTo(0,-s*0.4,-s,-s*0.4,-s,s*0.1);
+  X.bezierCurveTo(-s,s*0.65,0,s,0,s);
+  X.bezierCurveTo(0,s,s,s*0.65,s,s*0.1);
+  X.bezierCurveTo(s,-s*0.4,0,-s*0.4,0,s*0.3);
+  X.closePath();X.fill();
+}
+
+// ════════════════════════════════════════
+//  LEADERBOARD
+// ════════════════════════════════════════
+function lbLoad(){try{return JSON.parse(localStorage.getItem(LBK))||[];}catch{return[];}}
+function lbSave(a){localStorage.setItem(LBK,JSON.stringify(a));}
+function lbIns(name,sc){
+  const lb=lbLoad();lb.push({name,score:sc});
+  lb.sort((a,b)=>b.score-a.score);lb.splice(100);lbSave(lb);
+  return lb.findIndex(e=>e.name===name&&e.score===sc);
+}
+function getBest(){return parseInt(localStorage.getItem(BSK)||'0');}
+function setBest(s){if(s>getBest())localStorage.setItem(BSK,String(s));}
+
+// ── Prize submission ─────────────────
+// Stored locally for now. Replace `submitPrize` body with a Firebase call later.
+function submitPrize(data){
+  try{
+    const arr=JSON.parse(localStorage.getItem(PRK)||'[]');
+    arr.push(data);
+    localStorage.setItem(PRK,JSON.stringify(arr));
+  }catch(e){}
+  // TODO(firebase):
+  //   import { getFirestore, collection, addDoc } from 'firebase/firestore';
+  //   await addDoc(collection(db,'wedding_cake_prizes'), data);
+}
+function fmtPhone(v){
+  v=(v||'').replace(/\D/g,'').slice(0,11);
+  if(v.length<4)return v;
+  if(v.length<8)return v.slice(0,3)+'-'+v.slice(3);
+  return v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+}
+function isValidPhone(v){return /^010-\d{4}-\d{4}$/.test(v);}
+
+// ── Random nickname (adj + animal) ─────
+const NICK_ADJ=[
+  '행복한','즐거운','귀여운','용감한','똑똑한','우아한','신비한','반짝이는','사랑스런','멋쟁이',
+  '따뜻한','다정한','친절한','씩씩한','명랑한','활발한','부드러운','상냥한','포근한','달콤한',
+  '새침한','늠름한','수줍은','부지런한','신난','빛나는','깜찍한','발랄한','슬기로운','자유로운',
+  '향기로운','화사한','산뜻한','든든한','잔잔한','폭신한','동글한','통통한','솜털같은','호기심많은',
+  '사랑꾼','행운의','단정한','보송한'
+];
+const NICK_ANI=[
+  '카피바라','기린','토끼','다람쥐','펭귄','코알라','판다','여우','사슴','수달',
+  '알파카','라쿤','미어캣','친칠라','비버','너구리','햄스터','고양이','강아지','오리',
+  '쿼카','두더지','문어','부엉이','곰','늑대','양','거북이','병아리','백조',
+  '참새','앵무새','돌고래','거위','나무늘보','청설모','카멜레온','라마','하마','얼룩말',
+  '노루','고슴도치','펠리컨','사막여우'
+];
+function randNick(){
+  const a=NICK_ADJ[Math.floor(Math.random()*NICK_ADJ.length)];
+  const n=NICK_ANI[Math.floor(Math.random()*NICK_ANI.length)];
+  return a+' '+n;
+}
+// random nick that doesn't collide with existing leaderboard entries
+function uniqueRandNick(){
+  const taken=new Set(lbLoad().map(e=>e.name));
+  for(let i=0;i<30;i++){
+    const n=randNick();
+    if(!taken.has(n))return n;
+  }
+  // fallback: append number suffix
+  return dedupNick(randNick());
+}
+// if name is taken, append the smallest available number
+function dedupNick(nick){
+  const taken=new Set(lbLoad().map(e=>e.name));
+  if(!taken.has(nick))return nick;
+  let i=2;
+  while(taken.has(`${nick}${i}`))i++;
+  return `${nick}${i}`;
+}
+
+// ════════════════════════════════════════
+//  PANELS
+// ════════════════════════════════════════
+const $s=document.getElementById('SP'),$n=document.getElementById('NP'),$r=document.getElementById('RP');
+function showP(id){[$s,$n,$r].forEach(p=>p.style.display='none');
+  if(id){const e=document.getElementById(id);e.style.animation='none';void e.offsetWidth;e.style.animation='';e.style.display='block';}}
+showP('SP');
+
+// ════════════════════════════════════════
+//  SPEED / SCORE
+// ════════════════════════════════════════
+function spd(n){const t=Math.min(n/50,1);return 2.2+t*t*2.0;}
+function calcPts(off,ov,cb){
+  const wf=Math.max(0.25,ov/BW);
+  const b=off<PERF?190:off<GOOD?70+100*(1-(off-PERF)/(GOOD-PERF)):22;
+  return Math.round(b*wf*(1+Math.min(cb,10)*0.07));
+}
+
+// ════════════════════════════════════════
+//  EFFECTS  (all in screen space)
+// ════════════════════════════════════════
+function burst(sx,sy,col,n){
+  for(let i=0;i<n;i++){
+    const a=(Math.PI*2*i/n)+Math.random()*.5,s=2.5+Math.random()*4.5;
+    ptcls.push({x:sx,y:sy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.8,r:2+Math.random()*3.5,col,alpha:1});
+  }
+}
+function addRing(sx,sy){rings.push({x:sx,y:sy,r:8,max:90,alpha:.85});}
+function addFlt(lbl,sx,sy,col,sz){flt.push({lbl,x:sx,y:sy,vy:-1.8,alpha:1,col,sz:sz||15});}
+function spawnFall(wx,wy,w,h,ci){
+  falling.push({x:wx,wy,w,h,ci,vx:(Math.random()-.5)*3.5,vy:-1.5+Math.random()*-2,rot:0,rv:(Math.random()-.5)*.16,alpha:1});
+}
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+function initGame(){
+  placed=[];slider=null;drop=null;
+  falling=[];ptcls=[];rings=[];flt=[];
+  score=0;disp=0;combo=0;maxCombo=0;
+  camT=0;tCam=0;camV=0;
+  sq=1;sqV=0;
+  flash=0;shk=0;dclk=0;myIdx=-1;fn=0;lastT=0;
+  nextSpdIdx=0;
+  placed.push({x:(W-BW)/2,w:BW,wy:FLOOR-LH,ci:0});
+  mkSlider();
+}
+
+function mkSlider(){
+  const top=placed[placed.length-1];
+  const dir=Math.random()<.5?1:-1;
+  slider={x:dir>0?-top.w-8:W+8,w:top.w,dir,spd:spd(placed.length)};
+  // check speed up notification
+  checkSpeedUp(slider.spd);
+}
+
+function checkSpeedUp(s){
+  if(nextSpdIdx<SPEED_NOTIF.length&&s>=SPEED_NOTIF[nextSpdIdx]){
+    nextSpdIdx++;
+    addFlt('⚡ SPEED UP!',W/2,H*0.38,A.acc,16);
+    SND.speedUp();
+    flash=Math.max(flash,0.12);
+  }
+}
+
+// ════════════════════════════════════════
+//  DROP
+// ════════════════════════════════════════
+function startDrop(){
+  if(!slider||mode!=='playing')return;
+  const ci=placed.length%PAL.length;
+  drop={x:slider.x,w:slider.w,wy:s2w(S_SY),vy:2.2,ci};
+  slider=null;mode='dropping';
+}
+
+// ════════════════════════════════════════
+//  LAND
+// ════════════════════════════════════════
+function land(){
+  const top=placed[placed.length-1];
+  const tWY=top.wy-LH;
+  const cl=drop.x,cr=drop.x+drop.w,tl=top.x,tr=top.x+top.w;
+  const ol=Math.max(cl,tl),or_=Math.min(cr,tr),ov=or_-ol;
+
+  if(ov<MIN_OV){
+    spawnFall(drop.x,drop.wy,drop.w,LH,drop.ci);
+    drop=null;die(false);return;
+  }
+
+  const cut=drop.w-ov,off=cut/drop.w,isP=off<PERF;
+  combo=isP?combo+1:0;
+  if(combo>maxCombo)maxCombo=combo;
+  score=Math.min(MAX_SC,score+calcPts(off,ov,combo));
+
+  // cut-off piece
+  if(cut>1){const cx=drop.x<top.x?drop.x:or_;spawnFall(cx,drop.wy,cut,LH,drop.ci);}
+
+  // PERFECT: restore up to 3px width (reward for precision)
+  const ci=drop.ci;
+  let fw=ov,fx=ol;
+  if(isP&&ov<top.w){
+    const gain=Math.min(3,top.w-ov);
+    fw=ov+gain;
+    fx=clamp(ol-gain/2,top.x,top.x+top.w-fw);
+  }
+  placed.push({x:fx,w:fw,wy:tWY,ci});
+  drop=null;
+
+  // squash spring on landing (stronger for PERFECT)
+  sq=isP?0.60:0.78;sqV=0;
+
+  // screen-space effects
+  const topSY=w2s(tWY),midSY=topSY+LH/2;
+  if(isP){
+    addFlt('PERFECT ✨',W/2,topSY-22,A.acc);
+    if(combo>=2){addFlt(`${combo}× COMBO`,W/2,topSY-42,A.gld,13);SND.combo();}
+    flash=0.48;burst(W/2,midSY,PAL[ci].b,26);addRing(W/2,topSY);
+    SND.perf();
+  }else if(off<GOOD){
+    addFlt('GOOD',W/2,topSY-22,A.gld);SND.good();
+  }else{
+    addFlt('NARROW…',W/2,topSY-22,A.lt);SND.good();
+  }
+
+  // 10-layer milestone
+  const layers=placed.length-1;
+  if(layers>0&&layers%10===0){
+    addFlt(`🎉 ${layers}층 달성!`,W/2,H*0.42,A.gld,17);
+    SND.milestone();
+    burst(W/4,H/2,'#F0B8A8',14);burst(3*W/4,H/2,'#A8C8F0',14);
+    flash=Math.max(flash,0.18);
+  }
+
+  // camera spring target
+  const ts=w2s(tWY);
+  if(ts<CAM_TGT)tCam+=CAM_TGT-ts;
+
+  if(score>=MAX_SC){setTimeout(()=>win(),300);return;}
+  mode='playing';mkSlider();
+}
+
+// ════════════════════════════════════════
+//  DIE / WIN
+// ════════════════════════════════════════
+function die(isW){
+  mode='dying';dclk=0;
+  if(isW){
+    flash=0.75;shk=0;
+    const t=placed[placed.length-1];
+    burst(W/2,w2s(t.wy+LH/2),A.gld,55);
+    for(let i=0;i<5;i++)setTimeout(()=>addRing(W/2,w2s(placed[placed.length-1].wy)),i*90);
+    addFlt('🎊 PERFECT GAME!',W/2,w2s(placed[placed.length-1].wy)-34,A.gld,18);
+    SND.milestone();
+  }else{
+    flash=0.22;shk=26;SND.miss();
+    if(placed.length>0){
+      const lastTop=placed[placed.length-1];
+      addFlt('MISS! 🎂',W/2,w2s(lastTop.wy)-32,A.acc,19);
+      addFlt('블록이 빗나갔어요',W/2,w2s(lastTop.wy)-12,A.lt,11);
+    }
+  }
+}
+function win(){slider=null;drop=null;die(true);}
+
+// ════════════════════════════════════════
+//  UPDATE  (delta-time driven)
+// ════════════════════════════════════════
+function upd(dt){
+  fn++;
+
+  // spring camera
+  camV+=(tCam-camT)*0.14*dt;
+  camV*=Math.pow(0.72,dt);
+  camT+=camV*dt;
+
+  // squash spring
+  sqV+=(1-sq)*0.22*dt;
+  sqV*=Math.pow(0.64,dt);
+  sq+=sqV*dt;
+  if(Math.abs(sq-1)<0.001&&Math.abs(sqV)<0.001)sq=1;
+
+  // slider
+  if(slider&&mode==='playing'){
+    slider.x+=slider.dir*slider.spd*dt;
+    if(slider.x+slider.w>W+10)slider.dir=-1;
+    if(slider.x<-10)slider.dir=1;
+  }
+
+  // dropper
+  if(drop&&mode==='dropping'){
+    drop.vy+=GRAV*dt;drop.wy+=drop.vy*dt;
+    const tWY=placed[placed.length-1].wy-LH;
+    if(drop.wy>=tWY){drop.wy=tWY;land();}
+  }
+
+  // dying → name input
+  if(mode==='dying'){dclk+=dt;
+    if(dclk>=100){
+      mode='naming';showP('NP');
+      document.getElementById('nps').textContent=score.toLocaleString();
+      // auto-fill a unique random nickname if empty
+      const niEl=document.getElementById('ni');
+      if(!niEl.value)niEl.value=uniqueRandNick();
+    }
+  }
+
+  // animated score counter
+  disp+=(score-disp)*clamp(0.13*dt,0,1);
+  if(Math.abs(disp-score)<.5)disp=score;
+
+  flash=Math.max(0,flash-0.022*dt);
+  shk=Math.max(0,shk-dt);
+
+  // particles
+  ptcls=ptcls.filter(p=>p.alpha>.02);
+  for(const p of ptcls){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=0.22*dt;p.alpha-=0.023*dt;}
+
+  // rings
+  rings=rings.filter(r=>r.alpha>.01);
+  for(const r of rings){r.r+=(r.max-r.r)*(0.09*dt);r.alpha-=.036*dt;}
+
+  // float texts
+  flt=flt.filter(f=>f.alpha>.02);
+  for(const f of flt){f.y+=f.vy*dt;f.alpha-=.020*dt;}
+
+  // falling cut-offs
+  falling=falling.filter(b=>b.alpha>.01);
+  for(const b of falling){
+    b.wy+=b.vy*dt;b.vy+=0.4*dt;b.x+=b.vx*dt;b.rot+=b.rv*dt;
+    if(w2s(b.wy)>H+60){b.alpha=0;continue;}
+    b.alpha=Math.max(0,b.alpha-0.015*dt);
+  }
+
+  // background hearts drift
+  for(const h of bgH){
+    h.y+=h.spd*dt;h.rot+=h.rv*dt;
+    if(h.y>H+16){h.y=-16;h.x=Math.random()*W;}
+  }
+}
+
+// ════════════════════════════════════════
+//  DRAW BACKGROUND HEARTS
+// ════════════════════════════════════════
+function drawBgH(){
+  for(const h of bgH){
+    X.save();
+    X.globalAlpha=h.alpha;
+    X.translate(h.x,h.y);X.rotate(h.rot);
+    if(h.type==='heart'){drawHeart('#F0A8B0',h.sz);}
+    else{X.strokeStyle='#D4B8D4';X.lineWidth=1.2;X.beginPath();X.arc(0,0,h.sz/2,0,Math.PI*2);X.stroke();}
+    X.restore();
+  }
+}
+
+// ════════════════════════════════════════
+//  DRAW HUD
+// ════════════════════════════════════════
+function drawHUD(){
+  // score card
+  X.fillStyle='rgba(255,255,255,0.93)';
+  X.shadowColor='rgba(42,14,30,.10)';X.shadowBlur=18;
+  rr(W/2-63,12,126,54,17);X.fill();X.shadowBlur=0;
+  X.textAlign='center';
+  X.font='800 27px -apple-system,system-ui,sans-serif';
+  X.fillStyle=A.tx;X.fillText(Math.round(disp).toLocaleString(),W/2,42);
+  X.font='500 11px -apple-system,system-ui,sans-serif';
+  X.fillStyle=A.lt;X.fillText('/ 7,777 pts',W/2,58);
+
+  // PB indicator
+  const best=getBest();
+  if(best>0&&score>0){
+    const isPB=score>best;
+    X.font='700 10px -apple-system,system-ui,sans-serif';
+    X.fillStyle=isPB?A.acc:A.lt;
+    X.fillText(isPB?'🔥 PB 갱신 중!':`PB ${best.toLocaleString()}`,W/2,70);
+  }
+
+  // layer count
+  const lc=placed.length-1;
+  X.fillStyle='rgba(255,255,255,0.91)';
+  X.shadowColor='rgba(42,14,30,.08)';X.shadowBlur=12;
+  rr(14,12,54,54,15);X.fill();X.shadowBlur=0;
+  X.font='800 22px -apple-system,system-ui,sans-serif';X.fillStyle=A.tx;X.fillText(lc,41,39);
+  X.font='500 10px -apple-system,system-ui,sans-serif';X.fillStyle=A.lt;X.fillText('층',41,56);
+
+  // combo
+  if(combo>=2){
+    X.fillStyle='rgba(255,255,255,0.93)';
+    X.shadowColor='rgba(255,77,109,.20)';X.shadowBlur=14;
+    rr(W-68,12,54,54,15);X.fill();X.shadowBlur=0;
+    X.font=`800 ${combo>9?15:17}px -apple-system,system-ui,sans-serif`;
+    X.fillStyle=A.acc;X.fillText(`${combo}×🔥`,W-41,32);
+    X.font='500 10px -apple-system,system-ui,sans-serif';X.fillStyle=A.lt;X.fillText('COMBO',W-41,49);
+  }
+
+  // speed dots
+  const sv=slider?slider.spd:spd(placed.length);
+  const sr=Math.min((sv-2.2)/2,1),dc=5,df=Math.round(sr*dc);
+  const gx=W-21,gy=90;
+  X.font='500 9px -apple-system,system-ui,sans-serif';X.textAlign='center';
+  X.fillStyle=A.lt;X.fillText('SPD',gx,gy-3);
+  for(let i=0;i<dc;i++){
+    X.fillStyle=i<df?A.acc:'#EAD8D4';
+    X.beginPath();X.arc(gx,gy+10+i*13,4.5,0,Math.PI*2);X.fill();
+  }
+
+  // progress bar
+  X.fillStyle='#EAD8D4';rr(20,H-18,W-40,4,2);X.fill();
+  if(score>0){
+    const pg=Math.min(score/MAX_SC,1);
+    const g=X.createLinearGradient(20,0,W-20,0);
+    g.addColorStop(0,'#F0C8B8');g.addColorStop(1,A.acc);
+    X.fillStyle=g;rr(20,H-18,(W-40)*pg,4,2);X.fill();
+  }
+
+  // tap hint
+  if(placed.length<=3&&(mode==='playing'||mode==='dropping')){
+    const pulse=0.45+0.55*Math.sin(fn*0.09);
+    X.globalAlpha=pulse;X.font='600 14px -apple-system,system-ui,sans-serif';
+    X.textAlign='center';X.fillStyle='#8B506A';
+    X.fillText('탭해서 쌓기! 👆',W/2,H-92);X.globalAlpha=1;
+  }
+}
+
+// ════════════════════════════════════════
+//  DRAW SLIDER UI
+// ════════════════════════════════════════
+function drawSliderUI(){
+  if(!slider||mode!=='playing')return;
+  const top=placed[placed.length-1];
+  const scx=slider.x+slider.w/2,tsy=w2s(top.wy);
+  const tcx=top.x+top.w/2;
+
+  // guide line
+  X.save();X.strokeStyle='rgba(196,160,180,0.55)';X.lineWidth=1.5;X.setLineDash([4,7]);
+  X.beginPath();X.moveTo(scx,S_SY+LH+3);X.lineTo(tcx,tsy-1);X.stroke();
+  X.setLineDash([]);X.restore();
+
+  // target zone
+  X.save();X.strokeStyle='rgba(196,160,180,0.65)';X.lineWidth=1.6;X.setLineDash([3,5]);
+  rr(top.x,tsy-LH-2,top.w,LH+2,7);X.stroke();X.setLineDash([]);X.restore();
+
+  // PERFECT zone — pink glow + centerline (pulses subtly)
+  const pzW=Math.max(8,PERF*top.w*2);
+  const puls=0.22+0.10*Math.sin(fn*0.12);
+  X.save();
+  const grad=X.createLinearGradient(tcx-pzW/2,0,tcx+pzW/2,0);
+  grad.addColorStop(0,'rgba(255,77,109,0)');
+  grad.addColorStop(0.5,`rgba(255,77,109,${puls})`);
+  grad.addColorStop(1,'rgba(255,77,109,0)');
+  X.fillStyle=grad;
+  X.fillRect(tcx-pzW/2,tsy-LH-1,pzW,LH+1);
+  X.strokeStyle='rgba(255,77,109,0.62)';X.lineWidth=1.5;X.setLineDash([2,3]);
+  X.beginPath();X.moveTo(tcx,tsy-LH+1);X.lineTo(tcx,tsy-1);X.stroke();
+  X.setLineDash([]);X.restore();
+
+  // slider with breathing pulse
+  const breath=1+0.025*Math.sin(fn*0.085);
+  X.save();
+  X.translate(scx,S_SY+LH/2);X.scale(breath,breath);
+  drawLayer(-slider.w/2,-LH/2,slider.w,placed.length%PAL.length,0.93);
+  X.restore();
+
+  // down arrow
+  X.fillStyle='rgba(139,80,106,0.48)';
+  X.beginPath();X.moveTo(scx,S_SY+LH+8);X.lineTo(scx-6,S_SY+LH);X.lineTo(scx+6,S_SY+LH);X.closePath();X.fill();
+}
+
+// ════════════════════════════════════════
+//  MAIN DRAW
+// ════════════════════════════════════════
+function draw(){
+  // shake
+  let ox=0,oy=0;
+  if(shk>0){const s=shk/26;ox=(Math.random()-.5)*8*s;oy=(Math.random()-.5)*6*s;}
+  X.save();X.translate(ox,oy);
+
+  // background
+  const bg=X.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#FBF5F0');bg.addColorStop(1,'#EAD8D0');
+  X.fillStyle=bg;X.fillRect(0,0,W,H);
+
+  // subtle lines
+  X.strokeStyle='rgba(196,160,180,0.05)';X.lineWidth=1;
+  for(let y=0;y<H;y+=38){X.beginPath();X.moveTo(0,y);X.lineTo(W,y);X.stroke();}
+
+  // floating hearts (behind everything)
+  drawBgH();
+
+  // ── WORLD TRANSFORM ──
+  X.save();X.translate(0,camT);
+
+  // floor
+  X.fillStyle='#E8D4C4';X.fillRect(0,FLOOR,W,H-FLOOR+40);
+  X.fillStyle='#D4B4A0';X.fillRect(0,FLOOR,W,3);
+
+  // plate
+  drawPlate(FLOOR);
+
+  // all placed layers except top
+  for(let i=0;i<placed.length-1;i++){
+    const b=placed[i];
+    const sy=b.wy+camT;
+    if(sy>H+LH||sy<-LH*3)continue;
+    drawLayer(b.x,b.wy,b.w,b.ci);
+  }
+
+  // top placed layer — with squash & stretch
+  if(placed.length>0){
+    const b=placed[placed.length-1];
+    const sy=b.wy+camT;
+    if(sy>-LH*3&&sy<H+LH){
+      const sqv=getSq();
+      if(Math.abs(sqv-1)>0.002){
+        const cx=b.x+b.w/2,cy=b.wy+LH/2;
+        X.save();
+        X.translate(cx,cy);
+        // squash: compress Y, expand X slightly (volume conservation feel)
+        X.scale(1+(1-sqv)*0.25,sqv);
+        X.translate(-cx,-cy);
+        drawLayer(b.x,b.wy,b.w,b.ci);
+        X.restore();
+      }else{
+        drawLayer(b.x,b.wy,b.w,b.ci);
+      }
+    }
+  }
+
+  // cherry on top
+  if(placed.length>1){
+    const t=placed[placed.length-1];
+    const cherryY=t.wy+(1-getSq())*LH*0.5; // moves with squash
+    drawCherry(cherryY,t.x,t.w);
+  }
+
+  // dropper falling block + motion trail
+  if(drop){
+    for(let g=3;g>=1;g--){
+      drawLayer(drop.x,drop.wy-drop.vy*g*0.5,drop.w,drop.ci,0.04+g*0.04);
+    }
+    drawLayer(drop.x,drop.wy,drop.w,drop.ci,0.96);
+  }
+
+  // falling cut-offs
+  for(const b of falling){
+    const sy=b.wy+camT;
+    if(sy>H+60||sy<-LH)continue;
+    X.save();X.globalAlpha=b.alpha;
+    X.translate(b.x+b.w/2,b.wy+b.h/2);X.rotate(b.rot);
+    drawLayer(-b.w/2,-b.h/2,b.w,b.ci);
+    X.restore();
+  }
+
+  X.restore(); // end world transform
+
+  // screen-space effects
+  for(const r of rings){
+    X.save();X.globalAlpha=r.alpha;X.strokeStyle=A.acc;X.lineWidth=2.5;
+    X.beginPath();X.arc(r.x,r.y,r.r,0,Math.PI*2);X.stroke();X.restore();
+  }
+  for(const p of ptcls){
+    X.save();X.globalAlpha=p.alpha;X.fillStyle=p.col;
+    X.beginPath();X.arc(p.x,p.y,p.r,0,Math.PI*2);X.fill();X.restore();
+  }
+  X.textAlign='center';
+  for(const f of flt){
+    X.save();X.globalAlpha=f.alpha;
+    X.font=`700 ${f.sz}px -apple-system,system-ui,sans-serif`;
+    X.fillStyle=f.col;X.shadowColor='rgba(255,255,255,.9)';X.shadowBlur=10;
+    X.fillText(f.lbl,f.x,f.y);X.restore();
+  }
+
+  // slider
+  drawSliderUI();
+
+  X.restore(); // end shake
+
+  // HUD (no shake)
+  drawHUD();
+
+  // flash
+  if(flash>.004){X.fillStyle=`rgba(255,255,255,${flash})`;X.fillRect(0,0,W,H);}
+}
+
+// ════════════════════════════════════════
+//  LOOP  (delta-time)
+// ════════════════════════════════════════
+function loop(ts){
+  const dt=lastT?Math.min((ts-lastT)/(1000/60),4):1;
+  lastT=ts;
+  upd(dt);draw();
+  raf=requestAnimationFrame(loop);
+}
+
+// ════════════════════════════════════════
+//  RESULT
+// ════════════════════════════════════════
+function showResult(){
+  mode='result';
+  setBest(score);
+  showP('RP');
+  document.getElementById('rsc').textContent=score.toLocaleString();
+  // stats: layers / max combo / accuracy
+  const layers=placed.length-1;
+  const acc=Math.round(score/MAX_SC*100);
+  document.getElementById('rstats').innerHTML=
+    `<div class="rsi"><div class="rsn">${layers}</div><div class="rsl">층</div></div>`+
+    `<div class="rsi"><div class="rsn">${maxCombo}×</div><div class="rsl">MAX 콤보</div></div>`+
+    `<div class="rsi"><div class="rsn">${acc}%</div><div class="rsl">달성률</div></div>`;
+  const tg=document.getElementById('rtg');
+  if(score>=MAX_SC){tg.textContent='🎊 만점 달성!';tg.style.display='inline-flex';}
+  else if(myIdx===0){tg.textContent='🏆 1위 등극!';tg.style.display='inline-flex';}
+  else if(myIdx>0&&myIdx<=2){tg.textContent=`🥈 TOP ${myIdx+1} 진입!`;tg.style.display='inline-flex';}
+  else if(myIdx>0){tg.textContent=`📍 ${myIdx+1}위 기록`;tg.style.display='inline-flex';}
+  else{tg.style.display='none';}
+  const lb=lbLoad(),el=document.getElementById('lbl'),md=['🥇','🥈','🥉'];
+  if(!lb.length){el.innerHTML='<div style="color:#C4A0B4;font-size:13px;text-align:center;padding:8px">아직 기록이 없어요 🎂</div>';return;}
+  let lbHTML=lb.slice(0,5).map((e,i)=>`<div class="lr${i===myIdx?' me':''}"><div class="lrk">${md[i]||i+1}</div><div class="lnm">${e.name}</div><div class="lsc">${e.score.toLocaleString()}</div></div>`).join('');
+  if(myIdx>=5){
+    const me=lb[myIdx];
+    lbHTML+=`<div class="lbmore">⋯</div>`;
+    lbHTML+=`<div class="lr me"><div class="lrk">${myIdx+1}</div><div class="lnm">${me.name}</div><div class="lsc">${me.score.toLocaleString()}</div></div>`;
+  }
+  el.innerHTML=lbHTML;
+}
+
+// ════════════════════════════════════════
+//  BUTTONS & INPUT
+// ════════════════════════════════════════
+document.getElementById('startBtn').onclick=()=>{
+  showP(null);mode='playing';initGame();
+  if(!raf)raf=requestAnimationFrame(loop);
+};
+// re-roll random nickname (avoids existing leaderboard names)
+document.getElementById('niDice').onclick=()=>{
+  const el=document.getElementById('ni');
+  el.value=uniqueRandNick();
+  el.classList.remove('bad');
+  document.getElementById('niErr').textContent='';
+};
+// clear error as user edits the nickname
+document.getElementById('ni').addEventListener('input',()=>{
+  document.getElementById('ni').classList.remove('bad');
+  document.getElementById('niErr').textContent='';
+});
+
+// auto-format phone input
+document.getElementById('np').addEventListener('input',e=>{
+  const pos=e.target.selectionStart;
+  const before=e.target.value;
+  const after=fmtPhone(before);
+  e.target.value=after;
+  // keep caret roughly in place
+  e.target.setSelectionRange(pos+(after.length-before.length),pos+(after.length-before.length));
+});
+
+function checkNickAvailable(nick,niEl,niErr){
+  if(!nick){niEl.classList.add('bad');niErr.textContent='닉네임을 입력해 주세요';niEl.focus();return false;}
+  if(lbLoad().some(e=>e.name===nick)){
+    niEl.classList.add('bad');
+    niErr.textContent='이미 사용 중인 닉네임이에요. 🎲로 다시 뽑거나 직접 수정해 주세요';
+    niEl.focus();return false;
+  }
+  return true;
+}
+
+document.getElementById('subBtn').onclick=()=>{
+  const niEl=document.getElementById('ni'),nmEl=document.getElementById('nm'),npEl=document.getElementById('np');
+  const niErr=document.getElementById('niErr');
+  const nick=niEl.value.trim(),name=nmEl.value.trim(),phone=npEl.value.trim();
+  [niEl,nmEl,npEl].forEach(el=>el.classList.remove('bad'));
+  niErr.textContent='';
+  if(!checkNickAvailable(nick,niEl,niErr))return;
+  // if either name or phone filled, both required (prize delivery needs both)
+  if(name||phone){
+    if(!name){nmEl.classList.add('bad');nmEl.focus();return;}
+    if(!isValidPhone(phone)){npEl.classList.add('bad');npEl.focus();return;}
+    submitPrize({nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,ts:Date.now()});
+  }
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},'*');showResult();
+};
+document.getElementById('skipBtn').onclick=()=>{
+  const niEl=document.getElementById('ni');
+  const niErr=document.getElementById('niErr');
+  const nick=niEl.value.trim();
+  niEl.classList.remove('bad');niErr.textContent='';
+  if(!nick){myIdx=-1;window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:'익명',name:'',phone:'',score,maxCombo,layers:placed.length-1},'*');showResult();return;}
+  if(!checkNickAvailable(nick,niEl,niErr))return;
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name:'',phone:'',score,maxCombo,layers:placed.length-1},'*');showResult();
+};
+document.getElementById('retBtn').onclick=()=>{
+  showP(null);
+  ['ni','nm','np'].forEach(id=>{const el=document.getElementById(id);el.value='';el.classList.remove('bad');});
+  document.getElementById('niErr').textContent='';
+  mode='playing';initGame();
+};
+cv.addEventListener('pointerdown',e=>{e.preventDefault();if(mode==='playing')startDrop();});
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(mode==='playing')startDrop();}});
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
