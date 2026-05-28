@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 
 export interface GameScore {
   nickname: string
@@ -16,10 +17,14 @@ interface Props {
 }
 
 export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
-  const savedOverflow = useRef('')
+  const savedScrollY = useRef(0)
+  const savedBodyStyles = useRef({ overflow: '', position: '', top: '', width: '' })
+
+  const handleClose = useCallback(() => onClose(), [onClose])
 
   useEffect(() => {
     const handler = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin) return
       if (e.data?.type === 'CAKE_TOWER_SCORE') {
         onScore(e.data as GameScore)
       }
@@ -30,19 +35,42 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
 
   useEffect(() => {
     if (isOpen) {
-      savedOverflow.current = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
+      savedScrollY.current = window.scrollY
+      const b = document.body.style
+      savedBodyStyles.current = { overflow: b.overflow, position: b.position, top: b.top, width: b.width }
+      b.overflow = 'hidden'
+      b.position = 'fixed'
+      b.top = `-${savedScrollY.current}px`
+      b.width = '100%'
     } else {
-      document.body.style.overflow = savedOverflow.current
+      const b = document.body.style
+      const s = savedBodyStyles.current
+      b.overflow = s.overflow
+      b.position = s.position
+      b.top = s.top
+      b.width = s.width
+      window.scrollTo(0, savedScrollY.current)
     }
     return () => {
-      document.body.style.overflow = savedOverflow.current
+      const b = document.body.style
+      const s = savedBodyStyles.current
+      b.overflow = s.overflow
+      b.position = s.position
+      b.top = s.top
+      b.width = s.width
     }
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isOpen, handleClose])
+
   if (!isOpen) return null
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
@@ -81,10 +109,12 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
         </button>
         <iframe
           src="/games/cake_tower.html"
+          sandbox="allow-same-origin allow-scripts allow-forms"
           style={{ width: '100%', height: '100%', border: 'none', borderRadius: '16px', display: 'block' }}
           title="웨딩케이크 타워"
         />
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

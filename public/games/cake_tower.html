@@ -177,6 +177,7 @@ const SND={
 //  STATE
 // ════════════════════════════════════════
 let mode='idle';
+let scoreSubmitted=false;
 let placed=[];
 let slider=null;
 let drop=null;
@@ -446,7 +447,7 @@ function initGame(){
   camT=0;tCam=0;camV=0;
   sq=1;sqV=0;
   flash=0;shk=0;dclk=0;myIdx=-1;fn=0;lastT=0;
-  nextSpdIdx=0;
+  nextSpdIdx=0;scoreSubmitted=false;
   placed.push({x:(W-BW)/2,w:BW,wy:FLOOR-LH,ci:0});
   mkSlider();
 }
@@ -970,6 +971,7 @@ function checkNickAvailable(nick,niEl,niErr){
 }
 
 document.getElementById('subBtn').onclick=()=>{
+  if(scoreSubmitted)return;
   const niEl=document.getElementById('ni'),nmEl=document.getElementById('nm'),npEl=document.getElementById('np');
   const niErr=document.getElementById('niErr');
   const nick=niEl.value.trim(),name=nmEl.value.trim(),phone=npEl.value.trim();
@@ -982,16 +984,19 @@ document.getElementById('subBtn').onclick=()=>{
     if(!isValidPhone(phone)){npEl.classList.add('bad');npEl.focus();return;}
     submitPrize({nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,ts:Date.now()});
   }
-  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},'*');showResult();
+  scoreSubmitted=true;
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
 };
 document.getElementById('skipBtn').onclick=()=>{
+  if(scoreSubmitted)return;
   const niEl=document.getElementById('ni');
   const niErr=document.getElementById('niErr');
   const nick=niEl.value.trim();
   niEl.classList.remove('bad');niErr.textContent='';
-  if(!nick){myIdx=-1;window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:'익명',name:'',phone:'',score,maxCombo,layers:placed.length-1},'*');showResult();return;}
+  if(!nick){myIdx=-1;scoreSubmitted=true;window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:'익명',name:'',phone:'',score,maxCombo,layers:placed.length-1},window.location.origin);showResult();return;}
   if(!checkNickAvailable(nick,niEl,niErr))return;
-  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name:'',phone:'',score,maxCombo,layers:placed.length-1},'*');showResult();
+  scoreSubmitted=true;
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name:'',phone:'',score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
 };
 document.getElementById('retBtn').onclick=()=>{
   showP(null);
