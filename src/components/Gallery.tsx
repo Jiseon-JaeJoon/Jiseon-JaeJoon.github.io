@@ -6,7 +6,7 @@ const photos = [
   'IMG_0221.webp',
   'LCS_0240.webp', 'LCS_0340.webp', 'LCS_0672.webp', 'LCS_0678.webp',
   'LCS_0711.webp', 'LCS_0760.webp', 'LCS_0793.webp',
-  'LCS_0805.webp', 'LCS_0980.webp',
+  'LCS_0980.webp',
   'LCS_1122.webp', 'LCS_1145.webp', 'LCS_1168.webp', 'LCS_1209.webp',
   'LCS_1398.webp', 'LCS_1492.webp',
   'LCS_1587.webp', 'LCS_1644.webp', 'LCS_1888.webp', 'LCS_1991.webp',
@@ -50,10 +50,15 @@ export default function Gallery() {
   }, [])
 
   useEffect(() => {
-    if (lightbox !== null) return
+    if (!revealed) return
+    setCarouselIdx(0)
+  }, [revealed])
+
+  useEffect(() => {
+    if (!revealed || lightbox !== null) return
     const timer = setInterval(nextCar, 3000)
     return () => clearInterval(timer)
-  }, [lightbox]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [revealed, lightbox]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (lightbox === null) return
