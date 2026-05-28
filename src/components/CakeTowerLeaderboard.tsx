@@ -16,6 +16,7 @@ const MEDALS = ['🥇', '🥈', '🥉']
 
 export default function CakeTowerLeaderboard() {
   const [scores, setScores] = useState<ScoreEntry[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const q = query(
@@ -25,13 +26,15 @@ export default function CakeTowerLeaderboard() {
     )
     const unsub = onSnapshot(q, snap => {
       setScores(snap.docs.map(d => ({ id: d.id, ...d.data() } as ScoreEntry)))
+      setLoaded(true)
     }, err => {
       console.error('리더보드 로드 실패:', err)
+      setLoaded(true)
     })
     return () => unsub()
   }, [])
 
-  if (!scores.length) return null
+  if (!loaded || !scores.length) return null
 
   return (
     <div style={{ marginTop: '48px' }}>

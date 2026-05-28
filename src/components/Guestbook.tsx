@@ -56,6 +56,7 @@ export default function Guestbook() {
     e.preventDefault()
     if (!name.trim() || !message.trim()) return
     setSubmitting(true)
+    setFormError('')
     try {
       const docRef = await addDoc(collection(db, COLLECTION), {
         name: name.trim(),
@@ -80,6 +81,7 @@ export default function Guestbook() {
 
   const handleDelete = async (id: string) => {
     setDeletingId(id)
+    setDeleteError('')
     try {
       await deleteDoc(doc(db, COLLECTION, id))
       const updated = getMyEntries().filter(e => e !== id)
@@ -95,6 +97,8 @@ export default function Guestbook() {
       setDeletingId(null)
     }
   }
+
+  const closeGame = useCallback(() => setGameOpen(false), [])
 
   const handleScore = useCallback(async (data: GameScore) => {
     try {
@@ -317,7 +321,7 @@ export default function Guestbook() {
       )}
       <CakeTowerLeaderboard />
     </section>
-    <CakeTowerModal isOpen={gameOpen} onClose={() => setGameOpen(false)} onScore={handleScore} />
+    <CakeTowerModal isOpen={gameOpen} onClose={closeGame} onScore={handleScore} />
     </>
   )
 }
