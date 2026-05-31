@@ -107,6 +107,7 @@ input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
     <div class="dv"></div>
     <div class="lb" id="lbl"></div>
     <button class="btn" id="retBtn">다시 도전 🎂</button>
+    <button class="btn gh" id="closeBtn">닫기</button>
   </div>
 </div>
 <script>
@@ -1007,6 +1008,9 @@ document.getElementById('retBtn').onclick=()=>{
   ['ni','nm','np'].forEach(id=>{const el=document.getElementById(id);el.value='';el.classList.remove('bad');});
   document.getElementById('niErr').textContent='';
   mode='playing';initGame();
+};
+document.getElementById('closeBtn').onclick=()=>{
+  window.parent?.postMessage({type:'CAKE_TOWER_CLOSE'},window.location.origin);
 };
 cv.addEventListener('pointerdown',e=>{e.preventDefault();if(mode==='playing')startDrop();});
 document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(mode==='playing')startDrop();}});
