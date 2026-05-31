@@ -62,11 +62,11 @@ input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
 <div id="ov">
   <div class="pnl" id="SP">
     <div class="ey">Wedding Game</div>
-    <div class="hd">🎂 웨딩케이크<br>타워</div>
+    <div class="hd">🎂 웨딩케이크 타워</div>
     <div class="sb">방명록을 남겨주셔서 감사합니다 💌<br>지금부터 하객만 즐기는 비밀 게임이에요</div>
     <div class="hw">
-      <div class="hr" style="font-size:12px;color:#8B506A;font-weight:600;padding-bottom:8px;border-bottom:1px solid #F0E4E0;margin-bottom:4px">🎁 상위 랭커에게 기프티콘 선물!</div>
-      <div class="hr" style="font-size:11px;color:#5A3050;line-height:1.5">순위권에 들면 결혼식 이후 연락처로<br>선물을 전달해 드릴게요 🎀</div>
+      <div class="hr" style="font-size:12px;color:#8B506A;font-weight:600;padding-bottom:8px;border-bottom:1px solid #F0E4E0;margin-bottom:4px">🎁 TOP 3에게 깜짝 선물!</div>
+      <div class="hr" style="font-size:11px;color:#5A3050;line-height:1.5">결혼식 이후 연락처로 선물을 전달해 드릴게요 🎀</div>
     </div>
     <div class="hw" style="margin-top:-10px">
       <div class="hr"><span class="bj bp">PERFECT</span>완벽 — 블록 복원 + 콤보!</div>
@@ -102,7 +102,7 @@ input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
   <div class="pnl" id="RP" style="display:none">
     <div class="tg" id="rtg">🏆 새 기록!</div>
     <div class="ey">My Score</div>
-    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 7,777</span></div>
+    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 9,999</span></div>
     <div id="rstats"></div>
     <div class="dv"></div>
     <div class="lb" id="lbl"></div>
@@ -123,7 +123,7 @@ X.scale(DPR,DPR);
 // ════════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════════
-const LH=26,BW=158,MIN_OV=4,MAX_SC=7777;
+const LH=26,BW=158,MIN_OV=4,MAX_SC=9999;
 const FLOOR=H-50;
 const S_SY=90;           // slider fixed screen Y
 const CAM_TGT=H*0.62;   // desired screen Y of stack top
@@ -674,7 +674,7 @@ function drawHUD(){
   X.font='800 27px -apple-system,system-ui,sans-serif';
   X.fillStyle=A.tx;X.fillText(Math.round(disp).toLocaleString(),W/2,42);
   X.font='500 11px -apple-system,system-ui,sans-serif';
-  X.fillStyle=A.lt;X.fillText('/ 7,777 pts',W/2,58);
+  X.fillStyle=A.lt;X.fillText('/ 9,999 pts',W/2,58);
 
   // PB indicator
   const best=getBest();
