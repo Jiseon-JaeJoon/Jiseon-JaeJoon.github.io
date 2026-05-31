@@ -132,7 +132,7 @@ export default function Cover() {
         <img
           src="/Image/Mobile_Main.webp"
           alt="커버 사진"
-          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover', objectPosition: 'center 30%' }}
+          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover', objectPosition: 'center 50%' }}
         />
       </div>
 
