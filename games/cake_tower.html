@@ -62,9 +62,13 @@ input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
 <div id="ov">
   <div class="pnl" id="SP">
     <div class="ey">Wedding Game</div>
-    <div class="hd">🎂 웨딩케이크<br>타워</div>
-    <div class="sb">블록이 위에서 떨어집니다<br>탭해서 정확히 쌓으세요 ✨</div>
+    <div class="hd">🎂 웨딩케이크 타워</div>
+    <div class="sb">방명록을 남겨주셔서 감사합니다 💌<br>지금부터 하객만 즐기는 비밀 게임이에요</div>
     <div class="hw">
+      <div class="hr" style="font-size:12px;color:#8B506A;font-weight:600;padding-bottom:8px;border-bottom:1px solid #F0E4E0;margin-bottom:4px">🎁 TOP 3에게 깜짝 선물!</div>
+      <div class="hr" style="font-size:11px;color:#5A3050;line-height:1.5">결혼식 이후 연락처로 선물을 전달해 드릴게요 🎀</div>
+    </div>
+    <div class="hw" style="margin-top:-10px">
       <div class="hr"><span class="bj bp">PERFECT</span>완벽 — 블록 복원 + 콤보!</div>
       <div class="hr"><span class="bj bg">GOOD</span>살짝 어긋남 — 레이어가 좁아져요</div>
       <div class="hr"><span class="bj bm">MISS</span>겹침 없음 — 게임 오버</div>
@@ -98,7 +102,7 @@ input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
   <div class="pnl" id="RP" style="display:none">
     <div class="tg" id="rtg">🏆 새 기록!</div>
     <div class="ey">My Score</div>
-    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 7,777</span></div>
+    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 9,999</span></div>
     <div id="rstats"></div>
     <div class="dv"></div>
     <div class="lb" id="lbl"></div>
@@ -119,7 +123,7 @@ X.scale(DPR,DPR);
 // ════════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════════
-const LH=26,BW=158,MIN_OV=4,MAX_SC=7777;
+const LH=26,BW=158,MIN_OV=4,MAX_SC=9999;
 const FLOOR=H-50;
 const S_SY=90;           // slider fixed screen Y
 const CAM_TGT=H*0.62;   // desired screen Y of stack top
@@ -177,6 +181,7 @@ const SND={
 //  STATE
 // ════════════════════════════════════════
 let mode='idle';
+let scoreSubmitted=false;
 let placed=[];
 let slider=null;
 let drop=null;
@@ -446,7 +451,7 @@ function initGame(){
   camT=0;tCam=0;camV=0;
   sq=1;sqV=0;
   flash=0;shk=0;dclk=0;myIdx=-1;fn=0;lastT=0;
-  nextSpdIdx=0;
+  nextSpdIdx=0;scoreSubmitted=false;
   placed.push({x:(W-BW)/2,w:BW,wy:FLOOR-LH,ci:0});
   mkSlider();
 }
@@ -669,7 +674,7 @@ function drawHUD(){
   X.font='800 27px -apple-system,system-ui,sans-serif';
   X.fillStyle=A.tx;X.fillText(Math.round(disp).toLocaleString(),W/2,42);
   X.font='500 11px -apple-system,system-ui,sans-serif';
-  X.fillStyle=A.lt;X.fillText('/ 7,777 pts',W/2,58);
+  X.fillStyle=A.lt;X.fillText('/ 9,999 pts',W/2,58);
 
   // PB indicator
   const best=getBest();
@@ -970,6 +975,7 @@ function checkNickAvailable(nick,niEl,niErr){
 }
 
 document.getElementById('subBtn').onclick=()=>{
+  if(scoreSubmitted)return;
   const niEl=document.getElementById('ni'),nmEl=document.getElementById('nm'),npEl=document.getElementById('np');
   const niErr=document.getElementById('niErr');
   const nick=niEl.value.trim(),name=nmEl.value.trim(),phone=npEl.value.trim();
@@ -982,16 +988,19 @@ document.getElementById('subBtn').onclick=()=>{
     if(!isValidPhone(phone)){npEl.classList.add('bad');npEl.focus();return;}
     submitPrize({nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,ts:Date.now()});
   }
-  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},'*');showResult();
+  scoreSubmitted=true;
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
 };
 document.getElementById('skipBtn').onclick=()=>{
+  if(scoreSubmitted)return;
   const niEl=document.getElementById('ni');
   const niErr=document.getElementById('niErr');
   const nick=niEl.value.trim();
   niEl.classList.remove('bad');niErr.textContent='';
-  if(!nick){myIdx=-1;window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:'익명',name:'',phone:'',score,maxCombo,layers:placed.length-1},'*');showResult();return;}
+  if(!nick){myIdx=-1;scoreSubmitted=true;window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:'익명',name:'',phone:'',score,maxCombo,layers:placed.length-1},window.location.origin);showResult();return;}
   if(!checkNickAvailable(nick,niEl,niErr))return;
-  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name:'',phone:'',score,maxCombo,layers:placed.length-1},'*');showResult();
+  scoreSubmitted=true;
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name:'',phone:'',score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
 };
 document.getElementById('retBtn').onclick=()=>{
   showP(null);
