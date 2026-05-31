@@ -3,7 +3,6 @@ import { collection, addDoc, onSnapshot, orderBy, query, Timestamp, deleteDoc, d
 import { db } from '../lib/firebase'
 import { useReveal } from '../hooks/useReveal'
 import CakeTowerModal, { type GameScore } from './CakeTowerModal'
-import CakeTowerLeaderboard from './CakeTowerLeaderboard'
 
 interface Entry {
   id: string
@@ -16,7 +15,6 @@ const COLLECTION = import.meta.env.DEV ? 'guestbook_dev' : 'guestbook'
 const SCORES_COLLECTION = import.meta.env.DEV ? 'cakeTowerScores_dev' : 'cakeTowerScores'
 const PAGE_SIZE = 5
 const MY_ENTRIES_KEY = 'my_guestbook_entries'
-const HAS_PLAYED_KEY = 'has_played_cake_tower'
 
 function getMyEntries(): string[] {
   try {
@@ -35,7 +33,6 @@ export default function Guestbook() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [gameOpen, setGameOpen] = useState(false)
-  const [hasPlayedGame, setHasPlayedGame] = useState(() => localStorage.getItem(HAS_PLAYED_KEY) === 'true')
   const [myEntries, setMyEntries] = useState<string[]>(() => getMyEntries())
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
@@ -103,8 +100,6 @@ export default function Guestbook() {
   const closeGame = useCallback(() => setGameOpen(false), [])
 
   const handleScore = useCallback(async (data: GameScore) => {
-    localStorage.setItem(HAS_PLAYED_KEY, 'true')
-    setHasPlayedGame(true)
     try {
       await addDoc(collection(db, SCORES_COLLECTION), {
         nickname: data.nickname,
@@ -323,7 +318,6 @@ export default function Guestbook() {
       {deleteError && (
         <p style={{ fontSize: '0.85rem', color: '#f87171', textAlign: 'center', marginBottom: '8px' }}>{deleteError}</p>
       )}
-      {hasPlayedGame && <CakeTowerLeaderboard />}
     </section>
     <CakeTowerModal isOpen={gameOpen} onClose={closeGame} onScore={handleScore} />
     </>

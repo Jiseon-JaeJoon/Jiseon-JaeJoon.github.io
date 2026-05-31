@@ -28,10 +28,13 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
       if (e.data?.type === 'CAKE_TOWER_SCORE') {
         onScore(e.data as GameScore)
       }
+      if (e.data?.type === 'CAKE_TOWER_CLOSE') {
+        handleClose()
+      }
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
-  }, [onScore])
+  }, [onScore, handleClose])
 
   useEffect(() => {
     if (isOpen) {
