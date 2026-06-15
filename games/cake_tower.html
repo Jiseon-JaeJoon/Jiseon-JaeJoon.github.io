@@ -97,16 +97,16 @@ input.bad:focus{box-shadow:0 0 0 3px rgba(255,77,109,.15)}
     </div>
     <div class="prv"><span class="ico">🔒</span><span>성함·연락처는 비공개 — 신랑신부만 확인합니다</span></div>
     <button class="btn" id="subBtn">등록하기 →</button>
-    <button class="btn gh" id="skipBtn">닉네임만 등록</button>
+    <button class="btn gh" id="retBtn">다시 도전 🎂</button>
   </div>
   <div class="pnl" id="RP" style="display:none">
     <div class="tg" id="rtg">🏆 새 기록!</div>
     <div class="ey">My Score</div>
-    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 9,999</span></div>
+    <div class="sc"><span id="rsc">0</span><span class="ssfx">/ 99,999</span></div>
     <div id="rstats"></div>
     <div class="dv"></div>
     <div class="lb" id="lbl"></div>
-    <button class="btn" id="retBtn">다시 도전 🎂</button>
+    <button class="btn" id="retBtn2">다시 도전 🎂</button>
     <button class="btn gh" id="closeBtn">닫기</button>
   </div>
 </div>
@@ -124,7 +124,7 @@ X.scale(DPR,DPR);
 // ════════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════════
-const LH=26,BW=158,MIN_OV=4,MAX_SC=9999;
+const LH=26,BW=158,MIN_OV=4,MAX_SC=99999;
 const FLOOR=H-50;
 const S_SY=90;           // slider fixed screen Y
 const CAM_TGT=H*0.62;   // desired screen Y of stack top
@@ -183,6 +183,10 @@ const SND={
 // ════════════════════════════════════════
 let mode='idle';
 let scoreSubmitted=false;
+let retryCount=0;
+let lastSubmittedNick='';
+let lastSubmittedScore=-1;
+let dbLeaderboard=[];
 let placed=[];
 let slider=null;
 let drop=null;
@@ -675,7 +679,7 @@ function drawHUD(){
   X.font='800 27px -apple-system,system-ui,sans-serif';
   X.fillStyle=A.tx;X.fillText(Math.round(disp).toLocaleString(),W/2,42);
   X.font='500 11px -apple-system,system-ui,sans-serif';
-  X.fillStyle=A.lt;X.fillText('/ 9,999 pts',W/2,58);
+  X.fillStyle=A.lt;X.fillText('/ 99,999 pts',W/2,58);
 
   // PB indicator
   const best=getBest();
@@ -918,17 +922,24 @@ function showResult(){
     `<div class="rsi"><div class="rsn">${layers}</div><div class="rsl">층</div></div>`+
     `<div class="rsi"><div class="rsn">${maxCombo}×</div><div class="rsl">MAX 콤보</div></div>`+
     `<div class="rsi"><div class="rsn">${acc}%</div><div class="rsl">달성률</div></div>`;
-  const tg=document.getElementById('rtg');
+  renderLeaderboard();
+}
+function renderLeaderboard(){
+  const el=document.getElementById('lbl'),tg=document.getElementById('rtg'),md=['🥇','🥈','🥉'];
+  if(!dbLeaderboard.length){
+    el.innerHTML='<div style="color:#C4A0B4;font-size:13px;text-align:center;padding:8px">아직 기록이 없어요 🎂</div>';
+    tg.style.display='none';
+    return;
+  }
+  const myIdx=dbLeaderboard.findIndex(e=>e.name===lastSubmittedNick&&e.score===lastSubmittedScore);
   if(score>=MAX_SC){tg.textContent='🎊 만점 달성!';tg.style.display='inline-flex';}
   else if(myIdx===0){tg.textContent='🏆 1위 등극!';tg.style.display='inline-flex';}
   else if(myIdx>0&&myIdx<=2){tg.textContent=`🥈 TOP ${myIdx+1} 진입!`;tg.style.display='inline-flex';}
   else if(myIdx>0){tg.textContent=`📍 ${myIdx+1}위 기록`;tg.style.display='inline-flex';}
   else{tg.style.display='none';}
-  const lb=lbLoad(),el=document.getElementById('lbl'),md=['🥇','🥈','🥉'];
-  if(!lb.length){el.innerHTML='<div style="color:#C4A0B4;font-size:13px;text-align:center;padding:8px">아직 기록이 없어요 🎂</div>';return;}
-  let lbHTML=lb.slice(0,5).map((e,i)=>`<div class="lr${i===myIdx?' me':''}"><div class="lrk">${md[i]||i+1}</div><div class="lnm">${e.name}</div><div class="lsc">${e.score.toLocaleString()}</div></div>`).join('');
+  let lbHTML=dbLeaderboard.slice(0,5).map((e,i)=>`<div class="lr${i===myIdx?' me':''}"><div class="lrk">${md[i]||i+1}</div><div class="lnm">${e.name}</div><div class="lsc">${e.score.toLocaleString()}</div></div>`).join('');
   if(myIdx>=5){
-    const me=lb[myIdx];
+    const me=dbLeaderboard[myIdx];
     lbHTML+=`<div class="lbmore">⋯</div>`;
     lbHTML+=`<div class="lr me"><div class="lrk">${myIdx+1}</div><div class="lnm">${me.name}</div><div class="lsc">${me.score.toLocaleString()}</div></div>`;
   }
@@ -988,30 +999,40 @@ document.getElementById('subBtn').onclick=()=>{
   if(!isValidPhone(phone)){npEl.classList.add('bad');npEl.focus();return;}
   submitPrize({nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,ts:Date.now()});
   scoreSubmitted=true;
-  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
+  lastSubmittedNick=nick;
+  lastSubmittedScore=score;
+  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,retryCount},window.location.origin);showResult();
 };
-document.getElementById('skipBtn').onclick=()=>{
-  if(scoreSubmitted)return;
-  const niEl=document.getElementById('ni');
-  const niErr=document.getElementById('niErr');
-  const nick=niEl.value.trim();
-  niEl.classList.remove('bad');niErr.textContent='';
-  if(!nick){myIdx=-1;scoreSubmitted=true;window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:'익명',name:'',phone:'',score,maxCombo,layers:placed.length-1},window.location.origin);showResult();return;}
-  if(!checkNickAvailable(nick,niEl,niErr))return;
-  scoreSubmitted=true;
-  myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name:'',phone:'',score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
-};
-document.getElementById('retBtn').onclick=()=>{
+const retHandler=()=>{
   showP(null);
   ['ni','nm','np'].forEach(id=>{const el=document.getElementById(id);el.value='';el.classList.remove('bad');});
   document.getElementById('niErr').textContent='';
+  if(scoreSubmitted){
+    retryCount=0;
+  }else{
+    retryCount++;
+  }
+  scoreSubmitted=false;
   mode='playing';initGame();
 };
+document.getElementById('retBtn').onclick=retHandler;
+document.getElementById('retBtn2').onclick=retHandler;
 document.getElementById('closeBtn').onclick=()=>{
   window.parent?.postMessage({type:'CAKE_TOWER_CLOSE'},window.location.origin);
 };
 cv.addEventListener('pointerdown',e=>{e.preventDefault();if(mode==='playing')startDrop();});
 document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(mode==='playing')startDrop();}});
+
+window.addEventListener('message',(e)=>{
+  if(e.origin!==window.location.origin)return;
+  if(e.data?.type==='CAKE_TOWER_LEADERBOARD'){
+    dbLeaderboard=e.data.leaderboard||[];
+    if(mode==='result'){
+      renderLeaderboard();
+    }
+  }
+});
+window.parent?.postMessage({type:'CAKE_TOWER_READY'},window.location.origin);
 
 requestAnimationFrame(loop);
 </script>
