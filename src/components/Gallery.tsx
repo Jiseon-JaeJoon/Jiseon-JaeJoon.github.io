@@ -18,11 +18,13 @@ const GAP = 10
 export default function Gallery() {
   const { ref, revealed } = useReveal(0.1)
   const [lightbox, setLightbox] = useState<number | null>(null)
-  const [carouselIdx, setCarouselIdx] = useState(0)
+  const [carouselIdx, setCarouselIdx] = useState(photos.length)
   const [containerWidth, setContainerWidth] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const [lbTouchStart, setLbTouchStart] = useState<number | null>(null)
-  const [carTouchStart, setCarTouchStart] = useState<number | null>(null)
+  
+  const isDraggingRef = useRef(false)
+  const lastTouchPosRef = useRef<number | null>(null)
 
   const handleTouchStart = (e: React.TouchEvent) => setLbTouchStart(e.touches[0].clientX)
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -36,8 +38,6 @@ export default function Gallery() {
   const close = () => setLightbox(null)
   const prevLb = () => setLightbox(i => i !== null ? (i - 1 + photos.length) % photos.length : null)
   const nextLb = () => setLightbox(i => i !== null ? (i + 1) % photos.length : null)
-  const prevCar = () => setCarouselIdx(i => (i - 1 + photos.length) % photos.length)
-  const nextCar = () => setCarouselIdx(i => (i + 1) % photos.length)
 
   useLayoutEffect(() => {
     const el = containerRef.current
@@ -51,13 +51,34 @@ export default function Gallery() {
 
   useEffect(() => {
     if (!revealed) return
-    setCarouselIdx(0)
+    setCarouselIdx(photos.length)
   }, [revealed])
 
   useEffect(() => {
     if (!revealed || lightbox !== null) return
-    const timer = setInterval(nextCar, 3000)
-    return () => clearInterval(timer)
+    let lastTime = performance.now()
+    let frameId: number
+    const speed = 0.15 // 1초에 이동할 이미지 갯수 (조금 더 느리게 수정)
+
+    const animate = (time: number) => {
+      const delta = (time - lastTime) / 1000
+      lastTime = time
+      
+      if (!isDraggingRef.current) {
+        setCarouselIdx(prev => {
+          let next = prev + speed * delta
+          if (next >= photos.length * 2) {
+            next -= photos.length
+          } else if (next <= 0) {
+            next += photos.length
+          }
+          return next
+        })
+      }
+      frameId = requestAnimationFrame(animate)
+    }
+    frameId = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(frameId)
   }, [revealed, lightbox]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -80,6 +101,8 @@ export default function Gallery() {
   const offset = containerWidth > 0
     ? (containerWidth - photoWidth) / 2 - carouselIdx * (photoWidth + GAP)
     : 0
+
+  const extendedPhotos = [...photos, ...photos, ...photos]
 
   return (
     <section id="gallery" ref={ref} className={`dark-section${revealed ? ' revealed' : ''}`} style={{ padding: 'clamp(60px, 10vh, 120px) 0' }}>
@@ -107,54 +130,95 @@ export default function Gallery() {
       <div
         ref={containerRef}
         style={{ position: 'relative', overflow: 'hidden', visibility: containerWidth === 0 ? 'hidden' : 'visible' }}
-        onTouchStart={e => setCarTouchStart(e.touches[0].clientX)}
-        onTouchEnd={e => {
-          if (carTouchStart === null) return
-          const diff = carTouchStart - e.changedTouches[0].clientX
-          if (Math.abs(diff) > 50) diff > 0 ? nextCar() : prevCar()
-          setCarTouchStart(null)
+        onTouchStart={e => {
+          isDraggingRef.current = true
+          lastTouchPosRef.current = e.touches[0].clientX
+        }}
+        onTouchMove={e => {
+          if (!isDraggingRef.current || lastTouchPosRef.current === null) return
+          const current = e.touches[0].clientX
+          const diff = lastTouchPosRef.current - current
+          lastTouchPosRef.current = current
+          if (photoWidth > 0) {
+            setCarouselIdx(prev => prev + diff / (photoWidth + GAP))
+          }
+        }}
+        onTouchEnd={() => {
+          isDraggingRef.current = false
+          lastTouchPosRef.current = null
+        }}
+        onMouseDown={e => {
+          isDraggingRef.current = true
+          lastTouchPosRef.current = e.clientX
+        }}
+        onMouseMove={e => {
+          if (!isDraggingRef.current || lastTouchPosRef.current === null) return
+          const current = e.clientX
+          const diff = lastTouchPosRef.current - current
+          lastTouchPosRef.current = current
+          if (photoWidth > 0) {
+            setCarouselIdx(prev => prev + diff / (photoWidth + GAP))
+          }
+        }}
+        onMouseUp={() => {
+          isDraggingRef.current = false
+          lastTouchPosRef.current = null
+        }}
+        onMouseLeave={() => {
+          isDraggingRef.current = false
+          lastTouchPosRef.current = null
         }}
       >
         <div
           style={{
             display: 'flex',
             gap: `${GAP}px`,
-            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            // transform이 매 프레임 업데이트되므로 transition은 제거
             transform: `translateX(${offset}px)`,
+            cursor: isDraggingRef.current ? 'grabbing' : 'grab',
           }}
         >
-          {photos.map((filename, idx) => (
-            <div
-              key={filename}
-              onClick={() => open(idx)}
-              style={{
-                flexShrink: 0,
-                width: `${photoWidth}px`,
-                height: `${photoWidth * (4 / 3)}px`,
-                borderRadius: '12px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                opacity: idx === carouselIdx ? 1 : 0.55,
-                transform: idx === carouselIdx ? 'scale(1)' : 'scale(0.93)',
-                transition: 'opacity 0.5s ease, transform 0.5s ease',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >
-              <img
-                src={`/Image/webp/${filename}`}
-                alt=""
-                loading={idx < 4 ? 'eager' : 'lazy'}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
-          ))}
+          {extendedPhotos.map((filename, idx) => {
+            const isCenter = idx === Math.round(carouselIdx);
+            return (
+              <div
+                key={`${filename}-${idx}`}
+                onClick={(e) => {
+                  if (isDraggingRef.current && lastTouchPosRef.current !== null) {
+                    // 드래그 중 클릭 방지
+                    e.preventDefault();
+                    return;
+                  }
+                  open(idx % photos.length)
+                }}
+                style={{
+                  flexShrink: 0,
+                  width: `${photoWidth}px`,
+                  height: `${photoWidth * (4 / 3)}px`,
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  opacity: isCenter ? 1 : 0.55,
+                  transform: isCenter ? 'scale(1)' : 'scale(0.93)',
+                  transition: 'opacity 0.5s ease, transform 0.5s ease',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <img
+                  src={`/Image/webp/${filename}`}
+                  alt=""
+                  loading={idx < 4 ? 'eager' : 'lazy'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
+                />
+              </div>
+            )
+          })}
         </div>
 
       </div>
 
       {/* 전체보기 버튼 */}
       <button
-        onClick={() => open(carouselIdx)}
+        onClick={() => open(Math.round(carouselIdx) % photos.length)}
         style={{
           marginTop: '12px', width: 'calc(100% - clamp(40px, 14vw, 240px))', marginLeft: 'clamp(20px, 7vw, 120px)', padding: '14px',
           border: '1px solid var(--point-color)', borderRadius: '8px',
