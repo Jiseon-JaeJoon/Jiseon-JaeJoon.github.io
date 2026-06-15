@@ -983,12 +983,10 @@ document.getElementById('subBtn').onclick=()=>{
   [niEl,nmEl,npEl].forEach(el=>el.classList.remove('bad'));
   niErr.textContent='';
   if(!checkNickAvailable(nick,niEl,niErr))return;
-  // if either name or phone filled, both required (prize delivery needs both)
-  if(name||phone){
-    if(!name){nmEl.classList.add('bad');nmEl.focus();return;}
-    if(!isValidPhone(phone)){npEl.classList.add('bad');npEl.focus();return;}
-    submitPrize({nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,ts:Date.now()});
-  }
+  // both name and phone are strictly required for prize registration
+  if(!name){nmEl.classList.add('bad');nmEl.focus();return;}
+  if(!isValidPhone(phone)){npEl.classList.add('bad');npEl.focus();return;}
+  submitPrize({nickname:nick,name,phone,score,maxCombo,layers:placed.length-1,ts:Date.now()});
   scoreSubmitted=true;
   myIdx=lbIns(nick,score);window.parent?.postMessage({type:'CAKE_TOWER_SCORE',nickname:nick,name,phone,score,maxCombo,layers:placed.length-1},window.location.origin);showResult();
 };
