@@ -111,6 +111,7 @@ export default function Guestbook() {
         maxCombo: data.maxCombo,
         layers: data.layers,
         guestbookId: lastGuestbookId,
+        retryCount: data.retryCount,
         createdAt: Timestamp.now(),
       })
     } catch (err) {

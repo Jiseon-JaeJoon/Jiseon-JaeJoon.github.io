@@ -1,5 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
+import { db } from '../lib/firebase'
+
+const SCORES_COLLECTION = import.meta.env.DEV ? 'cakeTowerScores_dev' : 'cakeTowerScores'
 
 export interface GameScore {
   nickname: string
@@ -8,6 +12,7 @@ export interface GameScore {
   score: number
   maxCombo: number
   layers: number
+  retryCount: number
 }
 
 interface Props {
@@ -19,6 +24,8 @@ interface Props {
 export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
   const savedScrollY = useRef(0)
   const savedBodyStyles = useRef({ overflow: '', position: '', top: '', width: '' })
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const latestLeaderboard = useRef<any[] | null>(null)
 
   const handleClose = useCallback(() => onClose(), [onClose])
 
@@ -31,10 +38,42 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
       if (e.data?.type === 'CAKE_TOWER_CLOSE') {
         handleClose()
       }
+      if (e.data?.type === 'CAKE_TOWER_READY') {
+        if (latestLeaderboard.current) {
+          iframeRef.current?.contentWindow?.postMessage({
+            type: 'CAKE_TOWER_LEADERBOARD',
+            leaderboard: latestLeaderboard.current
+          }, window.location.origin)
+        }
+      }
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
   }, [onScore, handleClose])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const q = query(
+      collection(db, SCORES_COLLECTION),
+      orderBy('score', 'desc'),
+      limit(10)
+    )
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const leaderboard = snapshot.docs.map(doc => ({
+        name: doc.data().nickname || doc.data().name || '익명',
+        score: doc.data().score
+      }))
+      latestLeaderboard.current = leaderboard
+
+      iframeRef.current?.contentWindow?.postMessage({
+        type: 'CAKE_TOWER_LEADERBOARD',
+        leaderboard
+      }, window.location.origin)
+    }, err => {
+      console.error('리더보드 로드 실패:', err)
+    })
+    return () => unsubscribe()
+  }, [isOpen])
 
   useEffect(() => {
     if (isOpen) {
@@ -111,6 +150,7 @@ export default function CakeTowerModal({ isOpen, onClose, onScore }: Props) {
           ✕
         </button>
         <iframe
+          ref={iframeRef}
           src="/games/cake_tower.html"
           sandbox="allow-same-origin allow-scripts allow-forms"
           style={{ width: '100%', height: '100%', border: 'none', borderRadius: '16px', display: 'block' }}
