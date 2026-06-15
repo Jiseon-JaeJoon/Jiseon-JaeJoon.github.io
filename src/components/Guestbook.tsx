@@ -33,6 +33,7 @@ export default function Guestbook() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [gameOpen, setGameOpen] = useState(false)
+  const [lastGuestbookId, setLastGuestbookId] = useState<string | null>(null)
   const [myEntries, setMyEntries] = useState<string[]>(() => getMyEntries())
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
@@ -65,6 +66,7 @@ export default function Guestbook() {
       const updated = [...getMyEntries(), docRef.id]
       localStorage.setItem(MY_ENTRIES_KEY, JSON.stringify(updated))
       setMyEntries(updated)
+      setLastGuestbookId(docRef.id)
       setName('')
       setMessage('')
       setSubmitted(true)
@@ -108,12 +110,13 @@ export default function Guestbook() {
         score: data.score,
         maxCombo: data.maxCombo,
         layers: data.layers,
+        guestbookId: lastGuestbookId,
         createdAt: Timestamp.now(),
       })
     } catch (err) {
       console.error('점수 저장 실패:', err)
     }
-  }, [])
+  }, [lastGuestbookId])
 
   const a = (delay: number) => ({
     opacity: revealed ? undefined : 0,
