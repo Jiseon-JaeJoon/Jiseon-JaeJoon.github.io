@@ -20,8 +20,9 @@ import Guestbook from './components/Guestbook'
 const isKakaoTalk = /KAKAOTALK/i.test(navigator.userAgent)
 
 function App() {
-  const [introPlayed, setIntroPlayed] = useState(false)
-
+  const [introPlayed, setIntroPlayed] = useState(() => {
+    return window.location.hash === '#wedding';
+  })
   if (isKakaoTalk) {
     return <KakaoGuide />
   }
