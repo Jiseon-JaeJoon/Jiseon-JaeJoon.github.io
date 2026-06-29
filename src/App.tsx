@@ -16,10 +16,13 @@ import Location from './components/Location'
 import AccountInfo from './components/AccountInfo'
 import Rsvp from './components/Rsvp'
 import Guestbook from './components/Guestbook'
+import { usePreventPageZoom } from './hooks/usePreventPageZoom'
 
 const isKakaoTalk = /KAKAOTALK/i.test(navigator.userAgent)
 
 function App() {
+  usePreventPageZoom()
+
   const [introPlayed, setIntroPlayed] = useState(() => {
     return window.location.hash === '#wedding';
   })
