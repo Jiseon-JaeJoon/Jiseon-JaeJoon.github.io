@@ -20,17 +20,39 @@ export default function Gallery() {
   const [lightbox, setLightbox] = useState<number | null>(null)
   const [carouselIdx, setCarouselIdx] = useState(photos.length)
   const [containerWidth, setContainerWidth] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const [lbTouchStart, setLbTouchStart] = useState<number | null>(null)
   
   const isDraggingRef = useRef(false)
   const lastTouchPosRef = useRef<number | null>(null)
 
-  const handleTouchStart = (e: React.TouchEvent) => setLbTouchStart(e.touches[0].clientX)
+  const startDragging = (position: number) => {
+    isDraggingRef.current = true
+    lastTouchPosRef.current = position
+    setIsDragging(true)
+  }
+
+  const stopDragging = () => {
+    isDraggingRef.current = false
+    lastTouchPosRef.current = null
+    setIsDragging(false)
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) {
+      setLbTouchStart(null)
+      return
+    }
+    setLbTouchStart(e.touches[0].clientX)
+  }
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (lbTouchStart === null) return
     const diff = lbTouchStart - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) diff > 0 ? nextLb() : prevLb()
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextLb()
+      else prevLb()
+    }
     setLbTouchStart(null)
   }
 
@@ -51,6 +73,8 @@ export default function Gallery() {
 
   useEffect(() => {
     if (!revealed) return
+    // Reset the carousel at the moment the gallery first comes into view.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCarouselIdx(photos.length)
   }, [revealed])
 
@@ -79,7 +103,7 @@ export default function Gallery() {
     }
     frameId = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(frameId)
-  }, [revealed, lightbox]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [revealed, lightbox])
 
   useEffect(() => {
     if (lightbox === null) return
@@ -95,6 +119,28 @@ export default function Gallery() {
   useEffect(() => {
     document.body.style.overflow = lightbox !== null ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
+  }, [lightbox !== null]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (lightbox === null) return
+
+    const preventPinchZoom = (event: TouchEvent) => {
+      if (event.touches.length > 1) event.preventDefault()
+    }
+    const preventGesture = (event: Event) => event.preventDefault()
+    const nonPassiveOptions: AddEventListenerOptions = { passive: false }
+
+    document.addEventListener('touchmove', preventPinchZoom, nonPassiveOptions)
+    document.addEventListener('gesturestart', preventGesture, nonPassiveOptions)
+    document.addEventListener('gesturechange', preventGesture, nonPassiveOptions)
+    document.addEventListener('gestureend', preventGesture, nonPassiveOptions)
+
+    return () => {
+      document.removeEventListener('touchmove', preventPinchZoom, nonPassiveOptions)
+      document.removeEventListener('gesturestart', preventGesture, nonPassiveOptions)
+      document.removeEventListener('gesturechange', preventGesture, nonPassiveOptions)
+      document.removeEventListener('gestureend', preventGesture, nonPassiveOptions)
+    }
   }, [lightbox !== null]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const photoWidth = containerWidth * 0.55
@@ -131,8 +177,11 @@ export default function Gallery() {
         ref={containerRef}
         style={{ position: 'relative', overflow: 'hidden', visibility: containerWidth === 0 ? 'hidden' : 'visible' }}
         onTouchStart={e => {
-          isDraggingRef.current = true
-          lastTouchPosRef.current = e.touches[0].clientX
+          if (e.touches.length !== 1) {
+            stopDragging()
+            return
+          }
+          startDragging(e.touches[0].clientX)
         }}
         onTouchMove={e => {
           if (!isDraggingRef.current || lastTouchPosRef.current === null) return
@@ -144,12 +193,10 @@ export default function Gallery() {
           }
         }}
         onTouchEnd={() => {
-          isDraggingRef.current = false
-          lastTouchPosRef.current = null
+          stopDragging()
         }}
         onMouseDown={e => {
-          isDraggingRef.current = true
-          lastTouchPosRef.current = e.clientX
+          startDragging(e.clientX)
         }}
         onMouseMove={e => {
           if (!isDraggingRef.current || lastTouchPosRef.current === null) return
@@ -161,12 +208,10 @@ export default function Gallery() {
           }
         }}
         onMouseUp={() => {
-          isDraggingRef.current = false
-          lastTouchPosRef.current = null
+          stopDragging()
         }}
         onMouseLeave={() => {
-          isDraggingRef.current = false
-          lastTouchPosRef.current = null
+          stopDragging()
         }}
       >
         <div
@@ -175,7 +220,7 @@ export default function Gallery() {
             gap: `${GAP}px`,
             // transform이 매 프레임 업데이트되므로 transition은 제거
             transform: `translateX(${offset}px)`,
-            cursor: isDraggingRef.current ? 'grabbing' : 'grab',
+            cursor: isDragging ? 'grabbing' : 'grab',
           }}
         >
           {extendedPhotos.map((filename, idx) => {
@@ -239,6 +284,10 @@ export default function Gallery() {
             backgroundColor: 'rgba(245, 245, 245, 0.97)',
             zIndex: 1000,
             display: 'flex', flexDirection: 'column',
+            touchAction: 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            WebkitTouchCallout: 'none',
           }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -285,6 +334,10 @@ export default function Gallery() {
                 objectFit: 'contain', display: 'block',
                 borderRadius: '8px',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                touchAction: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                WebkitTouchCallout: 'none',
               }}
             />
 

@@ -1,4 +1,13 @@
-# React + TypeScript + Vite
+# Wedding Invitation
+
+## Gallery
+
+- Mobile gallery lightbox zoom is intentionally blocked while the full-screen viewer is open.
+- The viewport meta tag alone is not treated as enough because modern iOS and Android browsers can ignore `maximum-scale=1.0` and `user-scalable=no`.
+- `src/components/Gallery.tsx` blocks multi-touch pinch zoom with `touchmove` and iOS WebKit `gesture*` event handling, while keeping one-finger swipe and left/right tap navigation available.
+- This zoom block is scoped to the gallery lightbox only, so the rest of the invitation page keeps its normal mobile behavior.
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
