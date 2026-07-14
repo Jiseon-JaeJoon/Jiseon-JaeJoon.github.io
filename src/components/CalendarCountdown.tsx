@@ -117,8 +117,8 @@ export default function CalendarCountdown() {
 
       {/* 달력 */}
       <div style={{ fontFamily: "'Gowun Batang', serif", marginBottom: '40px', maxWidth: '480px', margin: '0 auto 40px' }}>
-        <p style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)', marginBottom: '16px', color: 'var(--text-main)', letterSpacing: '2px', ...a(80) }}>
-          2026년 9월
+        <p style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)', marginBottom: '16px', color: 'var(--text-main)', letterSpacing: '2px', ...a(80) }}> 
+          2026년 9월 19일 토요일 오후 1시
         </p>
 
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>

@@ -104,7 +104,7 @@ export default function Navigation() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  fontSize: '0.7rem',
+                  fontSize: '0.85rem',
                   letterSpacing: '1.5px',
                   color: isActive ? 'var(--point-color)' : '#111',
                   cursor: 'pointer',
