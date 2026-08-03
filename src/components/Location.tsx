@@ -8,7 +8,7 @@ const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
     icon: '🚇',
     title: '지하철',
     lines: [
-      { text: '2호선: 8번 출구 지하에서 연결', dot: '#00A84D' },
+      { text: '2호선: 8번 출구 지하에서 연결 \n 사옥 들어오신 후 좌측 에스컬레이터 이용', dot: '#00A84D' },
       { text: '신분당선: 6번 출구 도보 2분', dot: '#9B0D54' },
     ],
   },
@@ -29,7 +29,7 @@ const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
       '내비게이션 "삼성전자 서초사옥 주차장"',
       '지하주차장 6, 7층 이용',
       '주차장 입구는 약도에 표시되어 있습니다.',
-      '* 축의대에 비치된 무료 주차 도장 날인',
+      '* 축의대에 비치된 주차 도장 날인 (3시간 무료)',
     ],
   },
 ]
@@ -124,9 +124,9 @@ export default function Location() {
             typeof line === 'string' ? (
               <p key={i} style={{ color: 'var(--text-main)' }}>{line}</p>
             ) : (
-              <p key={i} style={{ color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
-                {line.text}
+              <p key={i} style={{ color: 'var(--text-main)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', marginTop: '0.6em', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
+                <span style={{ whiteSpace: 'pre-line' }}>{line.text}</span>
               </p>
             )
           )}
