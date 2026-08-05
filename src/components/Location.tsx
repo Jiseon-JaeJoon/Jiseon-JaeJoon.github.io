@@ -3,14 +3,28 @@ import { useReveal } from '../hooks/useReveal'
 
 type Line = string | { text: string; dot: string }
 
-const transportInfo: { icon: string; title: string; lines: Line[] }[] = [
+const transportInfo: {
+  icon: string
+  title: string
+  lines: Line[]
+  inline?: boolean
+  destination?: string
+  directions?: string[]
+  alternative?: string
+}[] = [
   {
     icon: '🚇',
     title: '지하철',
+    inline: true,
     lines: [
-      { text: '2호선: 8번 출구 지하에서 연결 \n 사옥 들어오신 후 좌측 에스컬레이터 이용', dot: '#00A84D' },
-      { text: '신분당선: 6번 출구 도보 2분', dot: '#9B0D54' },
+      { text: '2호선', dot: '#00A84D' },
+      { text: '신분당선', dot: '#9B0D54' },
     ],
+    destination: '8번 출구 지하에서 연결됩니다.',
+    directions: [
+      '사옥으로 들어오신 후 좌측 에스컬레이터를 이용해 주세요.',
+    ],
+    alternative: '※ 신분당선 6번 출구 이용 시 지상 도보 약 2분',
   },
   {
     icon: '🚌',
@@ -117,18 +131,29 @@ export default function Location() {
         ))}
       </div>
 
-      {transportInfo.map(({ icon, title, lines }, ti) => (
+      {transportInfo.map(({ icon, title, lines, inline, destination, directions, alternative }, ti) => (
         <div key={title} style={{ ...boxStyle, ...a(460 + ti * 110) }}>
           <p style={{ fontWeight: 600, marginBottom: '4px' }}>{icon} {title}</p>
-          {lines.map((line, i) =>
-            typeof line === 'string' ? (
-              <p key={i} style={{ color: 'var(--text-main)' }}>{line}</p>
-            ) : (
-              <p key={i} style={{ color: 'var(--text-main)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', marginTop: '0.6em', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
-                <span style={{ whiteSpace: 'pre-line' }}>{line.text}</span>
-              </p>
-            )
+          <div style={{ display: inline ? 'flex' : 'block', alignItems: 'center', columnGap: inline ? '14px' : undefined }}>
+            {lines.map((line, i) =>
+              typeof line === 'string' ? (
+                <p key={i} style={{ color: 'var(--text-main)' }}>{line}</p>
+              ) : (
+                <p key={i} style={{ color: 'var(--text-main)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                  <span style={{ width: '8px', height: '8px', marginTop: '0.6em', borderRadius: '50%', background: line.dot, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ whiteSpace: 'pre-line' }}>{line.text}</span>
+                </p>
+              )
+            )}
+          </div>
+          {destination && (
+            <p style={{ color: 'var(--text-main)', fontWeight: 500, paddingLeft: '14px' }}>{destination}</p>
+          )}
+          {directions?.map((direction) => (
+            <p key={direction} style={{ color: 'var(--text-main)', paddingLeft: '14px' }}>{direction}</p>
+          ))}
+          {alternative && (
+            <p style={{ color: 'var(--text-light)', fontSize: '0.82rem', paddingLeft: '14px', marginTop: '4px' }}>{alternative}</p>
           )}
         </div>
       ))}
