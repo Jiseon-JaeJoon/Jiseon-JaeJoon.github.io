@@ -91,8 +91,12 @@ export default function Location() {
       <h3 style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.5rem)', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)', ...a(100) }}>
         삼성전자 서초사옥 5층
       </h3>
-      <p style={{ fontSize: '0.95rem', color: 'var(--text-light)', marginBottom: '24px', ...a(180) }}>
+      <p style={{ fontSize: '0.95rem', color: 'var(--text-light)', marginBottom: '14px', ...a(180) }}>
         서울 서초구 서초대로74길 120
+      </p>
+
+      <p style={{ fontSize: '0.82rem', color: 'var(--text-light)', marginBottom: '24px', ...a(220) }}>
+        ※ ATM은 지하 1층에 있습니다.
       </p>
 
       <div
